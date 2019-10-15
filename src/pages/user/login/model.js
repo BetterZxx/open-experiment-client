@@ -1,0 +1,74 @@
+import { routerRedux } from 'dva/router';
+import { fakeAccountLogin, getFakeCaptcha,reqToken ,reqCaptchaP,reqUserInfo} from './service';
+import { getPageQuery, setAuthority,setToken } from './utils/utils';
+import {message} from 'antd'
+
+const Model = {
+  namespace: 'userLogin',
+  state: {
+    status: undefined,
+    imgSrc: ''
+  },
+  effects: {
+    *login({ payload }, { call, put }) {
+      const response = yield call(fakeAccountLogin, payload);
+      yield put({
+        type: 'changeLoginStatus',
+        payload: response,
+      }); // Login successfully
+      const res = yield call(reqToken,payload)
+      if(res.code===0){
+        setAuthority('admin');
+        setToken(res.data.token)
+        message.success('登录成功')
+      }else{
+        message.error('登录失败')
+      }
+      const res1 = yield call(reqUserInfo)
+      if (response.status === 'ok'&&res.code===0) {
+        const urlParams = new URL(window.location.href);
+        const params = getPageQuery();
+        let { redirect } = params;
+
+        if (redirect) {
+          const redirectUrlParams = new URL(redirect);
+
+          if (redirectUrlParams.origin === urlParams.origin) {
+            redirect = redirect.substr(urlParams.origin.length);
+
+            if (redirect.match(/^\/.*#/)) {
+              redirect = redirect.substr(redirect.indexOf('#') + 1);
+            }
+          } else {
+            window.location.href = redirect;
+            return;
+          }
+        }
+
+        yield put(routerRedux.replace(redirect || '/'));
+      }
+    },
+
+    *getCaptcha({ payload }, { call }) {
+      yield call(getFakeCaptcha, payload);
+    },
+    //获取图片验证码
+    *getCaptchaP({ payload },{ call,put }) {
+      const res = yield call(reqCaptchaP);
+      yield put({
+        type: 'setImgSrc',
+        payload: res,
+      }); // Login successfully
+    },
+  },
+  reducers: {
+    changeLoginStatus(state, { payload }) {
+      setAuthority(payload.currentAuthority);
+      return { ...state, status: payload.status, type: payload.type };
+    },
+    setImgSrc(state,{payload}){
+      return { ...state, imgSrc:`data:image/jpg;base64,${payload.data}` }
+    }
+  },
+};
+export default Model;
