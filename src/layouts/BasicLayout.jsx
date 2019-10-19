@@ -62,9 +62,9 @@ const BasicLayout = props => {
       dispatch({
         type: 'settings/getSetting',
       });
-      dispatch({
-        type: 'user/getUserInfo'
-      })
+      // dispatch({
+      //   type: 'user/getUserInfo'
+      // })
     }
   }, []);
   /**

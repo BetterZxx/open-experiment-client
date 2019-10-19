@@ -7,6 +7,20 @@ const { pwa, primaryColor } = defaultSettings; // preview.pro.ant.design only do
 
 const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
+
+//开发模式代理
+const proxyURL = 'http://47.107.61.232:8666' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/']
+const proxyOptions = {
+  target: proxyURL,
+  changeOrigin: true,
+}
+const proxy = {}
+proxyKeys.forEach(item=>{
+  proxy[item] = proxyOptions
+})
+
+
 const plugins = [
   [
     'umi-plugin-react',
@@ -218,6 +232,12 @@ export default {
                       name: '立项审批',
                       path: '/projects/auth/lab/projects',
                       component: './agreement/lab/projects',
+                      icon: 'team'
+                    },
+                    {
+                      name: '重点实验审批',
+                      path: '/projects/auth/lab/keyProjects',
+                      component: './agreement/lab/key-projects',
                       icon: 'team'
                     },
                     {
@@ -566,7 +586,7 @@ export default {
   },
   chainWebpack: webpackPlugin,
   
-  proxy: {
+  proxy/*: {
     '/anon': {
       target: 'http://47.107.61.232:8666',
       changeOrigin: true,
@@ -577,11 +597,11 @@ export default {
       changeOrigin: true,
       //pathRewrite: { '^/server': '' },
     },
-    '/project': {
+    '/project/createApply': {
       target: 'http://47.107.61.232:8666',
       changeOrigin: true,
       //pathRewrite: { '^/server': '' },
     },
-  },
+  },*/
   
 };
