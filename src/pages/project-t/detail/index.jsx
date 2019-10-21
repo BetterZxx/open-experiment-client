@@ -21,6 +21,8 @@ import classNames from 'classnames';
 import { connect } from 'dva';
 import Achievement from './components/achievement'
 import styles from './style.less';
+import moment from 'moment';
+import { json } from 'body-parser';
 
 const { Step } = Steps;
 const { TabPane } = Tabs;
@@ -41,6 +43,35 @@ const mobileMenu = (
     <Menu.Item key="">选项三</Menu.Item>
   </Menu>
 );
+const projectType = ['科研','科技活动','自选课题','计算机应用','人文素质']
+const suggestGroupType = ['A组-石工地勘','B组-化工材料','C组-机械力学','E组-软件与数学','F组-经管法艺体人文']
+const major = ['软件工程','网络工程','物联网工程']
+const status = ['申请项目','立项审核','中期检查','结题','已驳回','已终止']
+const operationType = ['同意','拒绝','上报','修改']
+const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
+function getHeaderStatus(num){
+  if(num===-2){
+    return '已驳回'
+  }else if(num===-3){
+    return '已终止'
+  }else if(num>=0&&num<=5){
+    return '立项审核中'
+  }else if(num===6){
+    return '中期检查'
+  }else{
+    return '项目结题'
+  }
+}
+function getContentStatus(num){
+  if(num<=5){
+    return 1
+  }else if(num===6){
+    return 2
+  }else{
+    return 3
+  }
+}
+
 // const action = (
 //   <RouteContext.Consumer>
 //     {({ isMobile }) => {
@@ -74,64 +105,12 @@ const mobileMenu = (
 //     }}
 //   </RouteContext.Consumer>
 // );
-const extra = (
-  <div className={styles.moreInfo}>
-    <Statistic style={{textAlign:"left"}} title="状态" value="立项审核中" />
-    <Statistic title="参与人数" value={8}/>
-  </div>
-);
-const description = (
-  <RouteContext.Consumer>
-    {({ isMobile }) => (
-      <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-        <Descriptions.Item label="创建人">XX老师</Descriptions.Item>
-        <Descriptions.Item label="开放实验室">明理楼XX实验室</Descriptions.Item>
-        <Descriptions.Item label="地点">石油大学XX教师</Descriptions.Item>
-        <Descriptions.Item label="实验类型">
-          科技活动
-        </Descriptions.Item>
-        <Descriptions.Item label="实验时间">2017-07-07 ~ 2017-08-08</Descriptions.Item>
-        <Descriptions.Item label="项目级别">重点</Descriptions.Item>
-        <Descriptions.Item label="建议审分组">E组-软件与数学</Descriptions.Item>
-        <Descriptions.Item label="适应专业">软件工程、网络工程</Descriptions.Item>
-        <Descriptions.Item label="适宜学生数">10</Descriptions.Item>
-        <Descriptions.Item label="成果及考核方式">项目审查</Descriptions.Item>
-        <Descriptions.Item label="计划实验小时">153</Descriptions.Item>
-        <Descriptions.Item label="开放实验条件">无条件</Descriptions.Item>
-       
-      </Descriptions>
-    )}
-  </RouteContext.Consumer>
-);
+
+
 const desc1 = (
   <div className={classNames(styles.textSecondary, styles.stepDescription)}>
-    <Fragment>
-      曲丽丽
-      <Icon
-        type="dingding-o"
-        style={{
-          marginLeft: 8,
-        }}
-      />
-    </Fragment>
+    
     <div>2016-12-12 12:32</div>
-  </div>
-);
-const desc2 = (
-  <div className={styles.stepDescription}>
-    <Fragment>
-      周毛毛
-      <Icon
-        type="dingding-o"
-        style={{
-          color: '#00A0E9',
-          marginLeft: 8,
-        }}
-      />
-    </Fragment>
-    <div>
-      <a href="">催一下</a>
-    </div>
   </div>
 );
 const popoverContent = (
@@ -185,41 +164,36 @@ const customDot = (dot, { status }) => {
 const columns = [
   {
     title: '操作类型',
-    dataIndex: 'type',
-    key: 'type',
+    dataIndex: 'operationType',
+    render:(type)=>{
+      return operationType[type-1]
+    }
   },
   {
-    title: '操作人',
-    dataIndex: 'name',
-    key: 'name',
-  },
-  {
-    title: '执行结果',
-    dataIndex: 'status',
-    key: 'status',
-    render: text => {
-      if (text === 'agree') {
-        return <Badge status="success" text="成功" />;
-      }
-
-      return <Badge status="error" text="驳回" />;
-    },
+    title: '操作单位',
+    dataIndex: 'operationUnit',
+    render:(unit)=>{
+      return operationUnit[unit]
+    }
   },
   {
     title: '操作时间',
-    dataIndex: 'updatedAt',
-    key: 'updatedAt',
+    dataIndex: 'operationTime',
+    render:(time)=>{
+      return moment(time).format('YYYY-MM-DD HH:MM')
+    }
   },
   {
     title: '备注',
-    dataIndex: 'memo',
-    key: 'memo',
+    dataIndex: 'reason',
   },
 ];
 
-@connect(({ profileAdvanced, loading }) => ({
+@connect(({ profileAdvanced, loading,tprojects }) => ({
   profileAdvanced,
+  detail:tprojects.detail,
   loading: loading.effects['profileAdvanced/fetchAdvanced'],
+  process:tprojects.process
 }))
 class Advanced extends Component {
   state = {
@@ -248,13 +222,97 @@ class Advanced extends Component {
 
   render() {
     const { operationKey, tabActiveKey } = this.state;
-    const { profileAdvanced, loading } = this.props;
+    const { profileAdvanced, loading,detail,process } = this.props;
     const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
-    
+    const extra = (
+      <div className={styles.moreInfo}>
+        <Statistic style={{textAlign:"left"}} title="状态" value={getHeaderStatus(detail.status)} />
+        <Statistic title="参与人数" value={detail.stuMembers.length}/>
+      </div>
+    );
+    console.log(process)
+    const description = (
+      <RouteContext.Consumer>
+        {({ isMobile }) => (
+          <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
+            <Descriptions.Item label="创建人">{detail.creatorName}</Descriptions.Item>
+            <Descriptions.Item label="开放实验室">{detail.labName}</Descriptions.Item>
+            <Descriptions.Item label="地点">{detail.address}</Descriptions.Item>
+            <Descriptions.Item label="实验类型">
+              {
+                projectType[detail.projectType-1]
+              }
+            </Descriptions.Item>
+            <Descriptions.Item label="实验时间">{`${moment(detail.startTime).format('YYYY-MM-DD')}~${moment(detail.startTime).format('YYYY-MM-DD')}`}</Descriptions.Item>
+            <Descriptions.Item label="项目级别">{detail.experimentType===1?'普通':'重点'}</Descriptions.Item>
+            <Descriptions.Item label="建议审分组">
+              {
+                suggestGroupType[detail.suggestGroupType-1]
+              }
+            </Descriptions.Item>
+            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item-1]).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="适宜学生数">{detail.fitPeopleNum}</Descriptions.Item>
+            <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
+            <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
+            <Descriptions.Item label="开放实验条件">{detail.experimentCondition}</Descriptions.Item>
+           
+          </Descriptions>
+        )}
+      </RouteContext.Consumer>
+    );
+    const tDescriptions = detail.guideTeachers.map(item=>{
+        return <div>
+            <Descriptions
+              style={{
+                marginBottom: 16,
+              }}
+            >
+              <Descriptions.Item label='姓名'>{item.realName}</Descriptions.Item>
+              <Descriptions.Item label="电话">{item.mobilePhone}</Descriptions.Item>
+              <Descriptions.Item label="QQ">{item.qqNum}</Descriptions.Item>
+              <Descriptions.Item label="所属学院">{item.major}</Descriptions.Item>
+              <Descriptions.Item label="员工号">
+                {item.code}
+              </Descriptions.Item>
+              <Descriptions.Item label="职称">
+                {item.realName}
+              </Descriptions.Item>
+            </Descriptions>
+            <Divider
+              style={{
+                margin: '16px 0',
+              }}
+            />
+        </div>
+      })
+      const sDecriptions = detail.stuMembers.map(item=>{
+        return <div>
+          <Descriptions
+                  style={{
+                    marginBottom: 16,
+                  }}
+                
+                >
+                  <Descriptions.Item label="姓名">{item.name}</Descriptions.Item>
+                  <Descriptions.Item label="电话">{item.phone}</Descriptions.Item>
+                  <Descriptions.Item label="email">{item.qq}</Descriptions.Item>
+                  <Descriptions.Item label="所属学院">{item.dept}</Descriptions.Item>
+                  <Descriptions.Item label="描述">
+                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
+                  </Descriptions.Item>
+                </Descriptions>
+                <Divider
+                  style={{
+                    margin: '16px 0',
+                  }}
+                />
+        </div>
+      })
+      
+   
     return (
       <PageHeaderWrapper
-        title="项目名称：XXX实验"
-        
+        title={`项目名称：${detail.projectName}`}
         className={styles.pageHeader}
         content={description}
         extraContent={extra}
@@ -291,11 +349,11 @@ class Advanced extends Component {
                 {({ isMobile }) => (
                   <Steps
                     direction={isMobile ? 'vertical' : 'horizontal'}
-                    progressDot={customDot}
-                    current={1}
+                    processDot={customDot}
+                    current={getContentStatus(detail.status)}
                   >
                     <Step title="申请项目" description={desc1} />
-                    <Step title="立项审核" description={desc2} />
+                    <Step title="立项审核" description={desc1} />
                     <Step title="中期检查" />
                     <Step title="结题" />
                   </Steps>
@@ -308,7 +366,7 @@ class Advanced extends Component {
                 marginBottom: 24,
               }}
             >
-              很长一段的主要内容。。。。。。。。。。。。。。。。。。。。。。。。。。。
+              {detail.mainContent}
               
             </Card>
             <Card
@@ -318,84 +376,13 @@ class Advanced extends Component {
               }}
               bordered={false}
             >
-              
-             
-              {/* <h4
-                style={{
-                  marginBottom: 16,
-                }}
-              >
-                信息组
-              </h4> */}
               <Card style={{marginBottom:20}} type="inner" title="指导老师" bordered={false}>
-                <Descriptions
-                  style={{
-                    marginBottom: 16,
-                  }}
                 
-                >
-                  <Descriptions.Item label="姓名">林东东</Descriptions.Item>
-                  <Descriptions.Item label="电话">1234567</Descriptions.Item>
-                  <Descriptions.Item label="email">XX@Xx.com</Descriptions.Item>
-                  <Descriptions.Item label="所属学院">计算机科学学院</Descriptions.Item>
-                  <Descriptions.Item label="描述">
-                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
-                  </Descriptions.Item>
-                </Descriptions>
-                <Divider
-                  style={{
-                    margin: '16px 0',
-                  }}
-                />
-                <Descriptions
-                  style={{
-                    marginBottom: 16,
-                  }}
-                
-                >
-                  <Descriptions.Item label="姓名">林东东</Descriptions.Item>
-                  <Descriptions.Item label="电话">1234567</Descriptions.Item>
-                  <Descriptions.Item label="email">XX@Xx.com</Descriptions.Item>
-                  <Descriptions.Item label="所属学院">计算机科学学院</Descriptions.Item>
-                  <Descriptions.Item label="描述">
-                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
-                  </Descriptions.Item>
-                </Descriptions>
+                {tDescriptions}
               </Card>
-              <Card type="inner" title="学生/助教" bordered={false}>
-                <Descriptions
-                  style={{
-                    marginBottom: 16,
-                  }}
+              <Card type="inner" title="学生" bordered={false}>
                 
-                >
-                  <Descriptions.Item label="姓名">林东东</Descriptions.Item>
-                  <Descriptions.Item label="电话">1234567</Descriptions.Item>
-                  <Descriptions.Item label="email">XX@Xx.com</Descriptions.Item>
-                  <Descriptions.Item label="所属学院">计算机科学学院</Descriptions.Item>
-                  <Descriptions.Item label="描述">
-                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
-                  </Descriptions.Item>
-                </Descriptions>
-                <Divider
-                  style={{
-                    margin: '16px 0',
-                  }}
-                />
-                <Descriptions
-                  style={{
-                    marginBottom: 16,
-                  }}
-                
-                >
-                  <Descriptions.Item label="姓名">林东东</Descriptions.Item>
-                  <Descriptions.Item label="电话">1234567</Descriptions.Item>
-                  <Descriptions.Item label="email">XX@Xx.com</Descriptions.Item>
-                  <Descriptions.Item label="所属学院">计算机科学学院</Descriptions.Item>
-                  <Descriptions.Item label="描述">
-                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
-                  </Descriptions.Item>
-                </Descriptions>
+                {sDecriptions}
               </Card>
             </Card>
            
@@ -408,7 +395,7 @@ class Advanced extends Component {
               }}
               bordered={false}
               >
-              1111111111
+              {process[0]&&process[0].operationType==='1'?process[0].reason:<Empty/>}
               </Card>
               <Card
               style={{
@@ -417,7 +404,7 @@ class Advanced extends Component {
               bordered={false}
               title="二级单位审核意见"
               >
-              222222222222222
+              {process[2]&&process[2].operationType==='1'?process[2].reason:<Empty/>}
               </Card>
               <Card         
               style={{
@@ -426,7 +413,7 @@ class Advanced extends Component {
               bordered={false}  
               title="职能部门审核意见"
               >
-              <Empty/>
+              {process[4]&&process[4].operationType==='1'?process[4].reason:<Empty/>}
               </Card>
    
             <Card
@@ -437,7 +424,8 @@ class Advanced extends Component {
               <Table
                 pagination={false}
                 loading={loading}
-                dataSource={advancedOperation1}
+                rowKey='operationTime'
+                dataSource={process}
                 columns={columns}
               />
             </Card>

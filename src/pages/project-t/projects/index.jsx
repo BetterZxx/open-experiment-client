@@ -36,12 +36,16 @@ const getValue = obj =>
     .join(',');
 
 const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['终止', '审核', '立项', '驳回'];
+const status = ['已终止', '审核中', '已立项', '已驳回','待确认'];
+const operationType = ['同意','拒绝','上报','修改']
+const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
+@connect(({ listTableList, loading,tprojects }) => ({
   listTableList,
-  loading: loading.models.listTableList,
+  loading: loading.models.tprojects,
+  projects:tprojects.projects,
+  process:tprojects.process
 }))
 class TableList extends Component {
   state = {
@@ -56,75 +60,95 @@ class TableList extends Component {
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
     },
     {
       title: '实验室',
-      dataIndex: 'desc',
+      dataIndex:'labName',
     },
     {
       title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
+      dataIndex:'experimentType',
+      render:(type)=>{
+        return type===1?'普通':'重点'
+      }
     },
     {
       title: '已选学生数',
-      dataIndex: 'status1',
+      render:()=>('12')
+    },
+    {
+      title: '限选',
+      dataIndex: 'fitPeopleNum',
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
+      dataIndex: 'projectType',
+      render:(type)=>{
+        switch (type){
+          case 1 :
+            return '科研'
+          case 2 :
+            return '科技活动'
+          case 3 :
+            return '自选课题'
+          case 4 :
+            return '计算机应用'
+          case 5 :
+            return '计算机应用'
+          default :
+            return ' '
+        }
+      }
     },
     {
       title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
-
-      render:(val) => {
+      render:(project) => {
+        let val = 0
+        if(project.status>=0&&project.status<=4){
+          val = 1
+        }else if(project.status>4){
+          val = 2
+        }else if(project.status===-3){
+          val = 0
+        }else if(project.status===-2){
+          val = 3
+        }
         return <span>
           <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
+          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.projectGroupId)} href="javasctipt:">详情</a>
         </span>;
       },
     },
     {
       title: '计划实验时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      dataIndex:'projectGroupId',
+      render: (id) => (
         <Fragment>
           <a onClick={() => this.editWarning()}>编辑</a>
           
           <Divider type="vertical" />
-          <a onClick={()=>{this.props.history.push('/tproject/manage/detail')}}>查看详情</a>
+          <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
     },
   ];
+  handleDetailClick = (id)=>{
+    const {history,dispatch} = this.props
+    dispatch({
+      type:'tprojects/fetchDetail',
+      payload:id
+    })
+    dispatch({
+      type:'tprojects/fetchProcess',
+      payload:id
+    })
+   // history.push('/tproject/manage/detail',id)}
+  }
   editWarning = ()=>{
     Modal.warning({
       title: '提醒',
@@ -137,7 +161,8 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'tprojects/fetch',
+      payload:{}
     });
   }
 
@@ -329,7 +354,12 @@ class TableList extends Component {
       modalVisible:false
     })
   }
-  showModal = ()=>{
+  showProcessModal = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'tprojects/fetchProcess',
+      payload:id
+    })
     this.setState({
       modalVisible:true
     })
@@ -339,7 +369,10 @@ class TableList extends Component {
     const {
       listTableList: { data },
       loading,
+      projects,
+      process
     } = this.props;
+    console.log('projects',projects)
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
@@ -355,6 +388,33 @@ class TableList extends Component {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
+    console.log(process)
+    const timeLines = process.map(item=>{
+      switch(item.operationType){
+        case '1':
+          return <Timeline.Item color="green">
+          <p>{`${operationUnit[item.operationUnit]}审核通过  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
+        </Timeline.Item>
+        case '2':
+            return <Timeline.Item color='red'>
+            <p>{`${operationUnit[item.operationUnit]}已驳回  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
+            <p>驳回原因：{item.reason}</p>
+          </Timeline.Item>
+        case '3':
+            return <Timeline.Item color="green">
+            <p>{`${operationUnit[item.operationUnit]}上报  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
+          </Timeline.Item>
+        case '4':
+            return <Timeline.Item>
+            <p>{`${operationUnit[item.operationUnit]}已修改，请确认  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
+            <p>备注： {item.reason}</p>
+          </Timeline.Item>
+        default: return ''
+      }
+    
+
+       
+    })
     return (
       <PageHeaderWrapper>
         <Card bordered={false}>
@@ -378,7 +438,8 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={projects}
+              rowKey='projectGroupId'
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
@@ -390,8 +451,10 @@ class TableList extends Component {
             footer={<Button type='primary'>确认修改</Button>}
             
           >
+            {/*01 实验室 23二级单位 45职能部门*/}
             <Timeline>
-              <Timeline.Item color="green">申请立项 2015-09-01</Timeline.Item>
+              {timeLines}
+              {/* <Timeline.Item color="green">申请立项 2015-09-01</Timeline.Item>
               <Timeline.Item color="green">
                 <p>实验室审核通过,对外公示 2017-08-23</p>
                 <p>实验室以上报二级单位 2017-09-12</p>
@@ -409,7 +472,7 @@ class TableList extends Component {
               </Timeline.Item>
               <Timeline.Item color="gray">
                 <p>职能部门待审核</p>
-              </Timeline.Item>
+              </Timeline.Item> */}
             </Timeline>,
 
           </Modal>

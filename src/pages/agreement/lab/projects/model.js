@@ -1,7 +1,7 @@
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
 
 const Model = {
-  namespace: 'applyedProject1',
+  namespace: 'labProjects',
   state: {
     data: {
       list: [],
@@ -9,8 +9,8 @@ const Model = {
     },
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+    *fetchProjects({ payload }, { call, put }) {
+      const response = yield call(reqLabProjects, payload);
       yield put({
         type: 'save',
         payload: response,

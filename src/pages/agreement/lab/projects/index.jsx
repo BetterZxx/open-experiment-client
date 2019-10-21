@@ -361,6 +361,7 @@ class TableList extends Component {
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
+      extra="计算机科学学院"
       tabList={[
         {
           key: 'auth',
