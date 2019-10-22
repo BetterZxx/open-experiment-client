@@ -24,6 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
+import {experimentType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -39,9 +40,9 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
-  listTableList,
-  loading: loading.models.listTableList,
+@connect(({ lab, loading }) => ({
+  labProjects:lab.labProjects,
+  loading: loading.models.lab,
 }))
 class TableList extends Component {
   state = {
@@ -57,75 +58,93 @@ class TableList extends Component {
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
+    },
+    {
+      title: '指导老师',
+      dataIndex: 'guidanceTeachers',
+      render:(t)=>{
+        return t.map(item=>item.userName).join('、')
+      }
     },
     {
       title: '实验室',
-      dataIndex: 'desc',
+      dataIndex: 'labName',
     },
     {
       title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
-    },
-    {
-      title: '已选学生数',
-      dataIndex: 'status1',
+      dataIndex: 'experimentType',
+      render:(type)=>type===1?'重点':'普通'
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
+      dataIndex: 'projectType',
+      render:(type)=>experimentType[type]
 
-      render:(val) => {
-        return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
-        </span>;
-      },
     },
+    // {
+    //   title: '状态',
+    //   dataIndex: 'status',
+    //   filters: [
+    //     {
+    //       text: status[0],
+    //       value: '0',
+    //     },
+    //     {
+    //       text: status[1],
+    //       value: '1',
+    //     },
+    //     {
+    //       text: status[2],
+    //       value: '2',
+    //     },
+    //     {
+    //       text: status[3],
+    //       value: '3',
+    //     },
+    //   ],
+
+    //   render:(val) => {
+    //     return <span>
+    //       <Badge status={statusMap[val]} text={status[val]} />
+    //       <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
+    //     </span>;
+    //   },
+    // },
     {
       title: '计划实验时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      dataIndex:'projectGroupId',
+      render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
           
           <Divider type="vertical" /> */}
-          <a onClick={()=>{this.props.history.push('/projects/auth/lab/projects/detail')}}>查看详情</a>
+          <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
     },
   ];
+  handleDetailClick = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:2
+      }
+    })
+    dispatch({
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:2
+      }
+    })
+  }
   editWarning = ()=>{
     Modal.warning({
       title: '提醒',
@@ -138,8 +157,10 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
-    });
+      type:'lab/fetchProjects'
+
+    })
+    
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -343,8 +364,9 @@ class TableList extends Component {
 
   render() {
     const {
-      listTableList: { data },
+     
       loading,
+      labProjects
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey } = this.state;
    
@@ -402,10 +424,11 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={labProjects}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
+              rowKey='projectGroupId'
             />
           </div>
           <Modal

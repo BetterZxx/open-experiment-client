@@ -53,6 +53,10 @@ const Model = {
         })
         router.push('/tproject/manage/detail');
       }else{
+        yield put({
+          type: 'saveDetail',
+          payload:{}
+        })
         message.error('请求项目详情出错')
       }
     }
@@ -93,6 +97,10 @@ const Model = {
     },
     saveDetail(state,{payload}){
       return {...state,detail:payload}
+    },
+    //1学生，2指导老师，3职能部门
+    saveRole(state,{payload}){
+      return {...state,role:payload}
     }
   },
 };

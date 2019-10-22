@@ -161,7 +161,7 @@ export default {
                 {
                   name: '项目详情',
                   path: '/tproject/manage/detail',
-                  component: './project-t/detail',
+                  component: './common/detail',
                   hideInMenu:true,
                   icon: 'file-add'
                 },
@@ -226,24 +226,24 @@ export default {
             //   routes: [
                 {
                   name: '实验室审批',
-                  path: '/projects/auth/lab',
+                  path: '/auth/lab',
                   routes:[
                     {
                       name: '立项审批',
-                      path: '/projects/auth/lab/projects',
+                      path: '/auth/lab/projects',
                       component: './agreement/lab/projects',
                       icon: 'team'
                     },
                     {
                       name: '重点实验审批',
-                      path: '/projects/auth/lab/keyProjects',
+                      path: '/auth/lab/keyProjects',
                       component: './agreement/lab/key-projects',
                       icon: 'team'
                     },
                     {
                       name: '项目详情',
-                      path: '/projects/auth/lab/projects/detail',
-                      component: './agreement/lab/detail',
+                      path: '/auth/lab/projects/detail',
+                      component: './common/detail',
                       hideInMenu:true,
                       icon: 'team'
                     },

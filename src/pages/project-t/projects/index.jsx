@@ -41,11 +41,11 @@ const operationType = ['同意','拒绝','上报','修改']
 const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading,tprojects }) => ({
+@connect(({ listTableList, loading,detail,tprojects }) => ({
   listTableList,
-  loading: loading.models.tprojects,
+  loading: loading.models.detail,
   projects:tprojects.projects,
-  process:tprojects.process
+  process:detail.process
 }))
 class TableList extends Component {
   state = {
@@ -140,12 +140,18 @@ class TableList extends Component {
   handleDetailClick = (id)=>{
     const {history,dispatch} = this.props
     dispatch({
-      type:'tprojects/fetchDetail',
-      payload:id
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:1
+      }
     })
     dispatch({
-      type:'tprojects/fetchProcess',
-      payload:id
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:1
+      }
     })
    // history.push('/tproject/manage/detail',id)}
   }
@@ -161,9 +167,8 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'tprojects/fetch',
-      payload:{}
-    });
+      type:'tprojects/fetch'
+    })
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -357,7 +362,7 @@ class TableList extends Component {
   showProcessModal = (id)=>{
     const {dispatch} = this.props
     dispatch({
-      type:'tprojects/fetchProcess',
+      type:'detail/fetchProcess',
       payload:id
     })
     this.setState({

@@ -13,7 +13,9 @@ import {
   Table,
   Tooltip,
   Empty,
-  Tabs
+  Tabs,
+  Modal,
+  Input
 } from 'antd';
 import { GridContent, PageHeaderWrapper, RouteContext } from '@ant-design/pro-layout';
 import React, { Component, Fragment } from 'react';
@@ -27,6 +29,7 @@ import { json } from 'body-parser';
 const { Step } = Steps;
 const { TabPane } = Tabs;
 const ButtonGroup = Button.Group;
+const {TextArea} = Input
 const menu = (
   <Menu>
     <Menu.Item key="1">选项一</Menu.Item>
@@ -189,16 +192,21 @@ const columns = [
   },
 ];
 
-@connect(({ profileAdvanced, loading,tprojects }) => ({
+@connect(({ profileAdvanced, loading,detail }) => ({
   profileAdvanced,
-  detail:tprojects.detail,
+  detail:detail.baseInfo,
+  role:detail.role,
   loading: loading.effects['profileAdvanced/fetchAdvanced'],
-  process:tprojects.process
+  process:detail.process,
+  text:''
 }))
 class Advanced extends Component {
   state = {
     operationKey: 'tab1',
     tabActiveKey: 'detail',
+    mVisible:false,
+    projectId:'',
+    approvalType:1
   };
 
   componentDidMount() {
@@ -206,6 +214,28 @@ class Advanced extends Component {
     dispatch({
       type: 'profileAdvanced/fetchAdvanced',
     });
+  }
+  handleModalOk = ()=>{
+    const {dispatch,role} = this.props
+    const {approvalType,projectId} = this.state
+    this.setState({
+      mVisible:false
+    })
+    dispatch({
+      type:'approval/nomal',
+      payload:{
+        unit:role,
+        data:[],
+        type:approvalType,
+        isDetail:true
+
+      }
+    })
+  }
+  handleModalCancel = ()=>{
+    this.setState({
+      mVisible:false
+    })
   }
 
   onOperationTabChange = key => {
@@ -219,10 +249,25 @@ class Advanced extends Component {
       tabActiveKey,
     });
   };
+  handlePassClick = (id,type)=>{
+    this.setState({
+      mVisible:true,
+      projectId:id,
+      approvalType:type
+    })
+    
+  }
+  onTextChange = (e)=>{
+    console.log(e)
+    this.setState({
+      text:e.target.value
+    })
 
+  }
   render() {
-    const { operationKey, tabActiveKey } = this.state;
+    const { operationKey, tabActiveKey,mVisible,projectId,approvalType,text } = this.state;
     const { profileAdvanced, loading,detail,process } = this.props;
+    console.log(detail)
     const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
     const extra = (
       <div className={styles.moreInfo}>
@@ -230,6 +275,11 @@ class Advanced extends Component {
         <Statistic title="参与人数" value={detail.stuMembers.length}/>
       </div>
     );
+    const action = (<div>
+      <Button type='primary'style={{marginRight:15}} onClick={()=>this.handlePassClick(detail.projectGroupId,1)}>审批通过</Button>
+      <Button style={{marginRight:15}} onClick={()=>this.handlePassClick(detail.projectGroupId,0)}>驳回</Button>
+      <Button onClick={()=>this.props.history.goBack()}>返回</Button>
+    </div>)
     console.log(process)
     const description = (
       <RouteContext.Consumer>
@@ -262,6 +312,7 @@ class Advanced extends Component {
     );
     const tDescriptions = detail.guideTeachers.map(item=>{
         return <div>
+          
             <Descriptions
               style={{
                 marginBottom: 16,
@@ -287,6 +338,7 @@ class Advanced extends Component {
       })
       const sDecriptions = detail.stuMembers.map(item=>{
         return <div>
+         
           <Descriptions
                   style={{
                     marginBottom: 16,
@@ -313,6 +365,7 @@ class Advanced extends Component {
     return (
       <PageHeaderWrapper
         title={`项目名称：${detail.projectName}`}
+        extra={action}
         className={styles.pageHeader}
         content={description}
         extraContent={extra}
@@ -329,6 +382,20 @@ class Advanced extends Component {
           },
         ]}
       >
+         <Modal
+            visible={mVisible}
+            title={approvalType===0?'驳回原因':'审核意见'}
+            onOk={this.handleModalOk}
+            onCancel={this.handleModalCancel}
+            
+          >
+            <TextArea 
+            placeholder={approvalType===0?'驳回理由':'审核意见'}
+            style={{height:200}}
+            value={text}
+            onChange={this.onTextChange}
+            ></TextArea>
+          </Modal>
         {tabActiveKey==='achievement'?<Achievement/>:<>
         <TabPane key='detail'>
         detail

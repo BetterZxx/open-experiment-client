@@ -1,20 +1,23 @@
 import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
+import { message } from 'antd';
 
 const Model = {
-  namespace: 'labProjects',
+  namespace: 'lab',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    labProjects:[]
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
       const response = yield call(reqLabProjects, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
+      if(response.code===0){
+        yield put({
+          type: 'save',
+          payload: response.data.list,
+        });
+      }else{
+        message.error('请求审批项目出错')
+      }
+      
     },
 
     *add({ payload, callback }, { call, put }) {
@@ -45,8 +48,8 @@ const Model = {
     },
   },
   reducers: {
-    save(state, action) {
-      return { ...state, data: action.payload };
+    save(state, {payload}) {
+      return { ...state, labProjects: payload };
     },
   },
 };
