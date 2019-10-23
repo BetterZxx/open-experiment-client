@@ -1,7 +1,8 @@
 import {reqOwnProjects,reqProjectProcess,reqProjectDetail } from '../services/detail';
 import { message } from 'antd';
 import router from 'umi/router';
-const roleURL =  ['','/tproject/manage/detail','/auth/lab/projects/detail','']
+const roleURL =  ['/auth/lab/projects/detail','/auth/second/projects/detail','/tproject/manage/detail','']
+const approveUrl = ['/project/approveProjectApplyByLabAdministrator','/project/approveProjectApplyBySecondaryUnit','']
 const Model = {
   namespace: 'detail',
   state: {

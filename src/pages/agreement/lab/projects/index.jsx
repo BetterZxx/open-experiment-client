@@ -30,6 +30,7 @@ import styles from './style.less';
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const {TextArea} = Input
 
 const getValue = obj =>
   Object.keys(obj)
@@ -52,7 +53,9 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'auth'
+    tabActiveKey:'auth',
+    approvalType:1,
+    mVisible:false
   };
 
   columns = [
@@ -134,14 +137,14 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:2
+        role:0
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:2
+        role:0
       }
     })
   }
@@ -227,6 +230,7 @@ class TableList extends Component {
   };
 
   handleSelectRows = rows => {
+    console.log(rows)
     this.setState({
       selectedRows: rows,
     });
@@ -346,29 +350,74 @@ class TableList extends Component {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
-  hideModal = ()=>{
-    this.setState({
-      modalVisible:false
-    })
-  }
-  showModal = ()=>{
-    this.setState({
-      modalVisible:true
-    })
-  }
+
   onTabChange = tabActiveKey => {
     this.setState({
       tabActiveKey,
     });
   };
-
+  hideModal = ()=>{
+    this.setState({
+      mVisible:false
+    })
+  }
+  showModal = ()=>{
+    this.setState({
+      mVisible:true
+    })
+  }
+  handleModalCancel = ()=>{
+    this.setState({
+      mVisible:false
+    })
+  }
+  handleModalOk = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch} = this.props
+    const data = selectedRows.map(item=>{
+      return {
+        reason:text,
+        projectId:item.projectGroupId
+      }
+    })
+    let payload={
+      unit:0,
+      data,
+      type:approvalType,
+      isDetail:true
+    }
+    console.log(payload)
+    dispatch({
+      type:'approval/normal',
+      payload:{
+        unit:0,
+        data,
+        type:approvalType,
+        isDetail:false
+      }
+    })
+    this.setState({mVisible:false,
+    text:''
+    })
+  }
+  showApprovalModal = (type)=>{
+    this.setState({
+      approvalType:type,
+      mVisible:true
+    })
+  }
+  handleInputChange = (e)=>{
+    this.setState({
+      text:e.target.value
+    })
+  }
   render() {
     const {
      
       loading,
       labProjects
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey,approvalType,mVisible,text } = this.state;
    
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -403,23 +452,32 @@ class TableList extends Component {
         },
       ]}
       >
+        <Modal
+        visible={mVisible}
+        onOk={this.handleModalOk}
+        onCancel={this.handleModalCancel}
+        title={approvalType===0?'驳回理由':'审核意见'}
+        >
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+
+        </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             {tabActiveKey!=='reported'&&tabActiveKey!=='reject'&&<div className={styles.tableListOperator}>
              
-              {tabActiveKey==='auth'&&<Button type="primary" disabled={btnDisable} onClick={()=>{}}>
+              {tabActiveKey==='auth'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准
               </Button>}
               {tabActiveKey==='report'&&<span> 
-                <Button disabled={btnDisable} type="primary" onClick={()=>{}}>
+                <Button disabled={btnDisable} type="primary" onClick={()=>{this.handleReportClick()}}>
                   上报
                 </Button>
                 <Button disabled={btnDisable} onClick={()=>{}}>
                   修改审批意见
                 </Button>
               </span>}
-              <Button disabled={btnDisable}>驳回</Button> 
+              <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
             </div>}
             <StandardTable
               selectedRows={selectedRows}

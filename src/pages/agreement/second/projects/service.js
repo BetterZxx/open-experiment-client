@@ -23,3 +23,6 @@ export async function updateRule(params) {
     data: { ...params, method: 'update' },
   });
 }
+export async function reqSecondProjects() {
+  return request('/project/getPendingApprovalProjectBySecondaryUnit')
+}

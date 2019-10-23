@@ -1,11 +1,9 @@
 import { queryAdvancedProfile } from './service';
 
 const Model = {
-  namespace: 'Advanced12',
+  namespace: 'second11',
   state: {
-    advancedOperation1: [],
-    advancedOperation2: [],
-    advancedOperation3: [],
+    secondProjects:[]
   },
   effects: {
     *fetchAdvanced(_, { call, put }) {

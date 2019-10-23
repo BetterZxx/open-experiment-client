@@ -25,6 +25,7 @@ import Achievement from './components/achievement'
 import styles from './style.less';
 import moment from 'moment';
 import { json } from 'body-parser';
+import {statusType} from '@/utils/constant'
 
 const { Step } = Steps;
 const { TabPane } = Tabs;
@@ -216,19 +217,48 @@ class Advanced extends Component {
     });
   }
   handleModalOk = ()=>{
-    const {dispatch,role} = this.props
-    const {approvalType,projectId} = this.state
+    const {dispatch,role,detail:{projectGroupId}} = this.props
+    const {approvalType} = this.state
+    console.log(role,approvalType)
     this.setState({
       mVisible:false
     })
     dispatch({
-      type:'approval/nomal',
+      type:'approval/normal',
       payload:{
-        unit:role,
-        data:[],
+        unit:0,
+        data:[
+          {
+            projectId:projectGroupId,
+            reason:this.state.text
+          }
+        ],
         type:approvalType,
         isDetail:true
 
+      }
+    })
+  }
+  handleApprovalClick = (type)=>{
+    this.setState({
+      mVisible:true,
+      approvalType:type
+    })
+    
+  }
+  handleReportClick = ()=>{
+    const {dispatch,role,detail} = this.props
+    const {approvalType,projectId} = this.state
+    console.log(role,approvalType)
+    dispatch({
+      type:'approval/normal',
+      payload:{
+        unit:0,
+        data:[
+            detail.projectGroupId,
+        ],
+        type:2,
+        isDetail:true
       }
     })
   }
@@ -249,14 +279,7 @@ class Advanced extends Component {
       tabActiveKey,
     });
   };
-  handlePassClick = (id,type)=>{
-    this.setState({
-      mVisible:true,
-      projectId:id,
-      approvalType:type
-    })
-    
-  }
+  
   onTextChange = (e)=>{
     console.log(e)
     this.setState({
@@ -271,13 +294,14 @@ class Advanced extends Component {
     const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
     const extra = (
       <div className={styles.moreInfo}>
-        <Statistic style={{textAlign:"left"}} title="状态" value={getHeaderStatus(detail.status)} />
+        <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />
         <Statistic title="参与人数" value={detail.stuMembers.length}/>
       </div>
     );
     const action = (<div>
-      <Button type='primary'style={{marginRight:15}} onClick={()=>this.handlePassClick(detail.projectGroupId,1)}>审批通过</Button>
-      <Button style={{marginRight:15}} onClick={()=>this.handlePassClick(detail.projectGroupId,0)}>驳回</Button>
+      <Button type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(1)}>审批通过</Button>
+      <Button style={{marginRight:15}} onClick={()=>this.handleReportClick()}>上报</Button>
+      <Button style={{marginRight:15}} onClick={()=>this.handleApprovalClick(0)}>驳回</Button>
       <Button onClick={()=>this.props.history.goBack()}>返回</Button>
     </div>)
     console.log(process)
@@ -310,8 +334,8 @@ class Advanced extends Component {
         )}
       </RouteContext.Consumer>
     );
-    const tDescriptions = detail.guideTeachers.map(item=>{
-        return <div>
+    const tDescriptions = detail.guideTeachers.map((item,key)=>{
+        return <div key={key}>
           
             <Descriptions
               style={{
@@ -336,8 +360,8 @@ class Advanced extends Component {
             />
         </div>
       })
-      const sDecriptions = detail.stuMembers.map(item=>{
-        return <div>
+      const sDecriptions = detail.stuMembers.map((item,key)=>{
+        return <div key={key}>
          
           <Descriptions
                   style={{
@@ -416,7 +440,7 @@ class Advanced extends Component {
                 {({ isMobile }) => (
                   <Steps
                     direction={isMobile ? 'vertical' : 'horizontal'}
-                    processDot={customDot}
+                   
                     current={getContentStatus(detail.status)}
                   >
                     <Step title="申请项目" description={desc1} />

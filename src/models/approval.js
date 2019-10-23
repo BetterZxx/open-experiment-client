@@ -4,11 +4,11 @@ import { message } from 'antd';
 import router from 'umi/router';
 const roleURL =  ['','/tproject/manage/detail','/auth/lab/projects/detail','']
 const approvalUrl = [
-  ['/project/rejectProjectApplyByLabAdministrator','/project/approveProjectApplyByLabAdministrator'],
-  ['/project/rejectProjectApplyBySecondaryUnit','/project/approveProjectApplyBySecondaryUnit'],
+  ['/project/rejectProjectApplyByLabAdministrator','/project/approveProjectApplyByLabAdministrator','/project/reportToCollegeLeader'],
+  ['/project/rejectProjectApplyBySecondaryUnit','/project/approveProjectApplyBySecondaryUnit','/project/reportToFunctionalDepartment'],
   ['/project/rejectProjectApplyByFunctionalDepartment','/project/agreeEstablish']
 ]
-const approvalType = ['','','']
+const approvalType = ['lab/fetchProjects','second/fetchProjects','']
 const Model = {
   namespace: 'approval',
   state: {
@@ -37,6 +37,7 @@ const Model = {
     },
     *normal({payload},{call,put}){
       const {data,type,unit,isDetail} = payload
+      console.log(payload)
       const res = yield call(reqApproval,approvalUrl[unit][type],data)
       if(res.code===0){
         message.success('操作成功！')

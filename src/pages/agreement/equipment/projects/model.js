@@ -1,52 +1,28 @@
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import { reqSecondProjects} from './service';
+import { message } from 'antd';
 
 const Model = {
-  namespace: 'applyedProject123',
+  namespace: 'equipment',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    secondProjects:[]
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *fetchProjects({ payload }, { call, put }) {
+      const response = yield call(reqSecondProjects, payload);
+      if(response.code===0){
+        yield put({
+          type: 'save',
+          payload: response.data,
+        });
+      }else{
+        message.error('请求审批项目出错')
+      }
+      
     },
   },
   reducers: {
-    save(state, action) {
-      return { ...state, data: action.payload };
+    save(state, {payload}) {
+      return { ...state, secondProjects: payload };
     },
   },
 };

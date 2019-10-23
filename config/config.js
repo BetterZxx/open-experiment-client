@@ -252,18 +252,18 @@ export default {
                 },
                 {
                   name: '二级单位审批',
-                  path: '/projects/auth/second',
+                  path: '/auth/second',
                   routes:[
                     {
                       name: '立项审批',
-                      path: '/projects/auth/second/projects',
+                      path: '/auth/second/projects',
                       component: './agreement/second/projects',
                       icon: 'team'
                     },
                     {
                       name: '项目详情',
-                      path: '/projects/auth/second/projects/detail',
-                      component: './agreement/second/detail',
+                      path: '/auth/second/projects/detail',
+                      component: './common/detail',
                       hideInMenu:true,
                       icon: 'team'
                     },
