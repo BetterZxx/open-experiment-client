@@ -1,7 +1,7 @@
 import { addRule, queryRule, removeRule, updateRule } from './service';
 
 const Model = {
-  namespace: 'applyedProject12123',
+  namespace: 'listTableListasas',
   state: {
     data: {
       list: [],

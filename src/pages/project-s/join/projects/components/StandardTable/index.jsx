@@ -140,7 +140,7 @@ class StandardTable extends Component {
         </div> */}
         <Table
           rowKey={rowKey || 'key'}
-         
+          
           dataSource={list}
           pagination={paginationProps}
           onChange={this.handleTableChange}

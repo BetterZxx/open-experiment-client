@@ -45,7 +45,8 @@ const status = ['待审核', '待上报', '已上报', '已驳回'];
 /* eslint react/no-multi-comp:0 */
 @connect(({  loading,second }) => ({
   loading: loading.models.second,
-  projects:second.secondProjects
+  projects:second.secondProjects,
+  tabActiveKey:second.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -53,9 +54,10 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'auth',
     approvalType:1,
     mVisible:false,
+    fundsModalVisible:false,
+    funds:5000,
     text:''
   };
 
@@ -77,7 +79,7 @@ class TableList extends Component {
     {
       title: '已选学生数',
       dataIndex: 'memberStudents',
-      render:(students)=>students.length
+      render:(students)=>students?students.length:0
     },
     {
       title: '实验类型',
@@ -140,6 +142,9 @@ class TableList extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'second/fetchProjects',
+      payload:{
+        status:'0'
+      }
     });
   }
 
@@ -230,9 +235,17 @@ class TableList extends Component {
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
   onTabChange = tabActiveKey => {
-    this.setState({
-      tabActiveKey,
-    });
+    const {dispatch} = this.props
+    dispatch({
+      type:'second/fetchProjects',
+      payload:{
+        status:tabActiveKey
+      }
+    })
+    dispatch({
+      type:'second/changeTabActiveKey',
+      payload:tabActiveKey
+    })
   };
   handleModalCancel = ()=>{
     this.setState({
@@ -241,7 +254,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch} = this.props
+    const {dispatch,tabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {
         reason:text,
@@ -249,7 +262,7 @@ class TableList extends Component {
       }
     })
     let payload={
-      unit:0,
+      unit:1,
       data,
       type:approvalType,
       isDetail:true
@@ -261,7 +274,8 @@ class TableList extends Component {
         unit:1,
         data,
         type:approvalType,
-        isDetail:false
+        isDetail:false,
+        status:tabActiveKey
       }
     })
     this.setState({mVisible:false,
@@ -279,6 +293,62 @@ class TableList extends Component {
       text:e.target.value
     })
   }
+  handleReportClick = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch,tabActiveKey} = this.props
+    const data = selectedRows.map(item=>item.projectGroupId)
+    dispatch({
+      type:'approval/normal',
+      payload:{
+        unit:1,
+        data,
+        type:2,
+        isDetail:false,
+        status:tabActiveKey
+      }
+    })
+
+  }
+  showModifyFundsModal = ()=>{
+    this.setState({
+      fundsModalVisible:true
+    })
+  }
+  onFundsChange = (e)=>{
+    this.setState({
+      funds:e
+    })
+
+  }
+  handleModifyOk = ()=>{
+    const {dispatch,tabActiveKey} = this.props
+    const {selectedRows,funds} = this.state
+    console.log(selectedRows)
+    const projectIdList = selectedRows.map(item=>item.projectGroupId)
+    dispatch({
+      type:'second/updateFunds',
+      payload:{
+        data:{
+          fundsMount:funds,
+          projectIdList
+        },
+        status:tabActiveKey
+      }
+    })
+    this.setState({
+      fundsModalVisible:false
+    })
+  }
+  handleModifyCancel = ()=>{
+    this.setState({
+      fundsModalVisible:false
+    })
+  }
+  showModifyFundsModal = ()=>{
+    this.setState({
+      fundsModalVisible:true
+    })
+  }
   render() {
     const action = (
       <div>
@@ -290,10 +360,11 @@ class TableList extends Component {
     );
     const {
       loading,
-      projects
+      projects,
+      tabActiveKey
     } = this.props;
-    console.log(projects)
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey ,approvalType,mVisible,text} = this.state;
+    console.log(111,tabActiveKey)
+    const { selectedRows, modalVisible,fundsModalVisible,funds, updateModalVisible, stepFormValues ,approvalType,mVisible,text} = this.state;
     const btnDisable = selectedRows.length===0
     const content =<RouteContext.Consumer>
     {({ isMobile }) => (
@@ -327,23 +398,36 @@ class TableList extends Component {
       onTabChange={this.onTabChange}
       tabList={[
         {
-          key: 'auth',
+          key: '0',
           tab: '待审批',
         },
         {
-          key: 'report',
+          key: '1',
           tab: '待上报',
         },
         {
-          key: 'reported',
+          key: '2',
           tab: '已上报',
         },
         {
-          key: 'reject',
+          key: '3',
           tab: '已驳回',
         },
       ]}
       >
+        <Modal
+        visible={fundsModalVisible}
+        onOk={this.handleModifyOk}
+        onCancel={this.handleModifyCancel}
+        width={400}
+        >
+          <Select style={{width:"80%"}} value={funds} onChange={this.onFundsChange}>
+            <Option value={5000}>5000元</Option>
+            <Option value={3000}>3000元</Option>
+            <Option value={2500}>2500元</Option>
+          </Select>
+
+        </Modal>
         <Modal
         visible={mVisible}
         onOk={this.handleModalOk}
@@ -356,12 +440,12 @@ class TableList extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            {tabActiveKey!=='reported'&&tabActiveKey!=='reject'&&<div className={styles.tableListOperator}>
+            {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
-              {tabActiveKey==='auth'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
+              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准
               </Button>}
-              {tabActiveKey==='report'&&<span> 
+              {tabActiveKey==='1'&&<span> 
                 <Button disabled={btnDisable} type="primary" onClick={()=>{this.handleReportClick()}}>
                   上报
                 </Button>
@@ -370,6 +454,7 @@ class TableList extends Component {
                 </Button>
               </span>}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
+              <Button disabled={btnDisable} onClick={()=>this.showModifyFundsModal()}>修改金额</Button>
             </div>}
             <StandardTable
               selectedRows={selectedRows}

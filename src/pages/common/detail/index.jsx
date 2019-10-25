@@ -226,7 +226,7 @@ class Advanced extends Component {
     dispatch({
       type:'approval/normal',
       payload:{
-        unit:0,
+        unit:role,
         data:[
           {
             projectId:projectGroupId,
@@ -253,7 +253,7 @@ class Advanced extends Component {
     dispatch({
       type:'approval/normal',
       payload:{
-        unit:0,
+        unit:role,
         data:[
             detail.projectGroupId,
         ],
@@ -281,7 +281,7 @@ class Advanced extends Component {
   };
   
   onTextChange = (e)=>{
-    console.log(e)
+    
     this.setState({
       text:e.target.value
     })
@@ -295,7 +295,7 @@ class Advanced extends Component {
     const extra = (
       <div className={styles.moreInfo}>
         <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />
-        <Statistic title="参与人数" value={detail.stuMembers.length}/>
+        <Statistic title="参与人数" value={detail.stuMembers?detail.stuMembers.length:0}/>
       </div>
     );
     const action = (<div>
@@ -515,7 +515,7 @@ class Advanced extends Component {
               <Table
                 pagination={false}
                 loading={loading}
-                rowKey='operationTime'
+                rowKey={(history)=>history.operationType+history.operationUnit}
                 dataSource={process}
                 columns={columns}
               />

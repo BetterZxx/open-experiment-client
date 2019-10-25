@@ -1,14 +1,14 @@
-import { reqSecondProjects} from './service';
+import { reqEquipmentProjects} from './service';
 import { message } from 'antd';
 
 const Model = {
   namespace: 'equipment',
   state: {
-    secondProjects:[]
+    projects:[]
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
-      const response = yield call(reqSecondProjects, payload);
+      const response = yield call(reqEquipmentProjects, payload);
       if(response.code===0){
         yield put({
           type: 'save',
@@ -22,7 +22,7 @@ const Model = {
   },
   reducers: {
     save(state, {payload}) {
-      return { ...state, secondProjects: payload };
+      return { ...state, projects: payload };
     },
   },
 };

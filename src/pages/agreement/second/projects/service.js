@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-
+const projectsUrl = ['/project/getPendingApprovalProjectBySecondaryUnit','/project/getToBeReportedProjectBySecondaryUnit','/project/getPendingApprovalProjectByLabAdministrator','/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader']
 export async function queryRule(params) {
   return request('/api/rule', {
     params,
@@ -23,6 +23,12 @@ export async function updateRule(params) {
     data: { ...params, method: 'update' },
   });
 }
-export async function reqSecondProjects() {
-  return request('/project/getPendingApprovalProjectBySecondaryUnit')
+export async function reqSecondProjects(payload) {
+  return request(projectsUrl[payload.status])
+}
+export async function reqUpdateFunds(params) {
+  return request('/funds/updateProjectApplyFundsBySecondaryUnit', {
+    method: 'POST',
+    data: params,
+  });
 }

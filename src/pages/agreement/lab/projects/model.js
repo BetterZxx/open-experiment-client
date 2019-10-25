@@ -4,10 +4,12 @@ import { message } from 'antd';
 const Model = {
   namespace: 'lab',
   state: {
-    labProjects:[]
+    labProjects:[],
+    tabActiveKey:'0'
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
+      console.log(payload)
       const response = yield call(reqLabProjects, payload);
       if(response.code===0){
         yield put({
@@ -24,6 +26,9 @@ const Model = {
     save(state, {payload}) {
       return { ...state, labProjects: payload };
     },
+    changeTabActiveKey(state,{payload}){
+      return {...state,tabActiveKey:payload}
+    }
   },
 };
 export default Model;

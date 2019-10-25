@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-
+const projectsUrl = ['/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader']
 export async function queryRule(params) {
   return request('/api/rule', {
     params,
@@ -24,6 +24,6 @@ export async function updateRule(params) {
   });
 }
 
-export async function reqLabProjects() {
-  return request('/project/getPendingApprovalProjectByLabAdministrator')
+export async function reqLabProjects(payload) {
+  return request(projectsUrl[payload.status])
 }

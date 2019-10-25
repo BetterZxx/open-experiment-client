@@ -17,6 +17,8 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import styles from './style.less';
+import { projectType, suggestGroupType, major } from '@/utils/constant';
+import moment from 'moment'
 
 const FormItem = Form.Item;
 const { Option } = Select;
@@ -71,7 +73,7 @@ class BasicForm extends Component {
   };
 
   render() {
-    const { submitting } = this.props;
+    const { submitting,detail } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
     } = this.props;
@@ -157,21 +159,21 @@ class BasicForm extends Component {
       <RouteContext.Consumer>
         {({ isMobile }) => (
           <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-            <Descriptions.Item label="项目名称">XX项目</Descriptions.Item>
-            <Descriptions.Item label="指导老师">XX老师</Descriptions.Item>
-            <Descriptions.Item label="开放实验室">明理楼XX实验室</Descriptions.Item>
-            <Descriptions.Item label="地点">明理楼XX</Descriptions.Item>
+            <Descriptions.Item label="项目名称">{detail.projectName}</Descriptions.Item>
+            <Descriptions.Item label="指导老师">{detail.guideTeachers.map(item=>item.realName).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="开放实验室">{detail.labName}</Descriptions.Item>
+            <Descriptions.Item label="地点">{detail.address}</Descriptions.Item>
             <Descriptions.Item label="实验类型">
-              科技活动
+              {projectType[detail.projectType]}
             </Descriptions.Item>
-            <Descriptions.Item label="实验时间">2017-07-07 ~ 2017-08-08</Descriptions.Item>
-            <Descriptions.Item label="项目级别">重点</Descriptions.Item>
-            <Descriptions.Item label="建议审分组">E组-软件与数学</Descriptions.Item>
-            <Descriptions.Item label="适应专业">软件工程、网络工程</Descriptions.Item>
-            <Descriptions.Item label="适宜学生数">10</Descriptions.Item>
-            <Descriptions.Item label="成果及考核方式">项目审查</Descriptions.Item>
-            <Descriptions.Item label="计划实验小时">153</Descriptions.Item>
-            <Descriptions.Item label="开放实验条件">无条件</Descriptions.Item>
+            <Descriptions.Item label="实验时间">{moment(detail.startTime).format('YYYY-MM-DD')+'~'+moment(detail.endTime).format('YYYY-MM-DD')}</Descriptions.Item>
+            <Descriptions.Item label="项目级别">{detail.experimentType===1?"重点":"普通"}</Descriptions.Item>
+            <Descriptions.Item label="建议审分组">{suggestGroupType[detail.suggestGroupType]}</Descriptions.Item>
+            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item]).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="适宜学生数">{detail.fitPeopleNum}</Descriptions.Item>
+            <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
+            <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
+            <Descriptions.Item label="开放实验条件">{detail.experimentCondition}</Descriptions.Item>
            
           </Descriptions>
         )}
@@ -189,7 +191,7 @@ class BasicForm extends Component {
           marginBottom:25
         }}
         >
-          项目主要内容
+          {detail.mainContent}
 
         </Card>
         <Card 
@@ -552,7 +554,8 @@ class BasicForm extends Component {
 }
 
 export default Form.create()(
-  connect(({ loading }) => ({
+  connect(({ loading,detail }) => ({
     submitting: loading.effects['formBasicForm/submitRegularForm'],
+    detail:detail.baseInfo
   }))(BasicForm),
 );

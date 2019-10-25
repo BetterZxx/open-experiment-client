@@ -36,8 +36,8 @@ const Model = {
       }
     },
     *normal({payload},{call,put}){
-      const {data,type,unit,isDetail} = payload
-      console.log(payload)
+      const {data,type,unit,isDetail,status} = payload
+      console.log('normal',payload)
       const res = yield call(reqApproval,approvalUrl[unit][type],data)
       if(res.code===0){
         message.success('操作成功！')
@@ -45,7 +45,7 @@ const Model = {
           yield put({
             type:'detail/fetchDetail',
             payload:{
-              projectGroupId:data[0].projectId,
+              projectGroupId:typeof data[0]==='object'?data[0].projectId:data[0],
               role:unit
             }
           })
@@ -59,7 +59,9 @@ const Model = {
         }else{
           yield put({
             type:approvalType[unit],
-           // payload
+            payload:{
+              status
+            }
           })
 
         }

@@ -25,6 +25,7 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
+import {projectType} from '@/utils/constant'
 import UpdateForm from './components/UpdateForm';
 import styles from './style.less';
 
@@ -42,9 +43,10 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
+@connect(({ listTableList, loading ,equipment}) => ({
   listTableList,
   loading: loading.models.listTableList,
+  projects:equipment.projects
 }))
 class TableList extends Component {
   state = {
@@ -60,35 +62,38 @@ class TableList extends Component {
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
     },
     {
       title: '指导老师',
-      dataIndex: 'desc',
+      dataIndex: 'guidanceTeachers',
+      render:(t)=>{
+        return t.map(item=>item.userName).join('、')
+      }
     },
     {
       title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
+      dataIndex: 'experimentType',
+      render:(type)=>type===1?'重点':'普通'
     },
     {
       title: '已选学生数',
-      dataIndex: 'status1',
+      dataIndex: 'memberStudents',
+      render:(students)=>students.length
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
+      dataIndex: 'projectType',
+      render:(type)=>projectType[type]
+
     },
     {
       title: '预申请金额',
-      
+      dataIndex:'fundsApplyAmount',
       render:(funds)=> {
         return (
           <div>
-            <span>5000</span>
+            <span>{funds}</span>
             <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a>
           </div>
           
@@ -96,52 +101,39 @@ class TableList extends Component {
       }
     },
     {
-      title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
-
-      render:(val) => {
-        return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
-        </span>;
-      },
-    },
-    {
       title: '计划实验时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      dataIndex:'projectGroupId',
+      render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
           
           <Divider type="vertical" /> */}
-          <a onClick={()=>{this.props.history.push('/projects/auth/equipment/projects/detail')}}>查看详情</a>
+          <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
     },
   ];
+  handleDetailClick = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:2
+      }
+    })
+    dispatch({
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:2
+      }
+    })
+  }
   editWarning = ()=>{
     Modal.warning({
       title: '提醒',
@@ -154,35 +146,11 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'equipment/fetchProjects',
     });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
-    });
-  };
-
+  
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
@@ -193,32 +161,6 @@ class TableList extends Component {
       type: 'listTableList/fetch',
       payload: {},
     });
-  };
-
-  
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listTableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
   };
 
   handleSelectRows = rows => {
@@ -516,9 +458,10 @@ class TableList extends Component {
     const {
       listTableList: { data },
       loading,
+      projects
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey } = this.state;
-   
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey, } = this.state;
+   console.log(projects)
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -596,7 +539,8 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={projects}
+              rowKey='projectGroupId'
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

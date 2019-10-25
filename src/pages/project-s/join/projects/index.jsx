@@ -12,25 +12,22 @@ import {
   InputNumber,
   Menu,
   Row,
-  Modal,
-  Timeline,
   Select,
   message,
-  TreeSelect
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import CreateForm from './components/CreateForm';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
+import {projectType} from '@/utils/constant'
+import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const {TreeNode} = TreeSelect
 
 const getValue = obj =>
   Object.keys(obj)
@@ -38,12 +35,13 @@ const getValue = obj =>
     .join(',');
 
 const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['终止', '审核', '立项', '驳回'];
+const status = ['关闭', '运行中', '已上线', '异常'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
+@connect(({ listTableList, loading,openProjects }) => ({
   listTableList,
   loading: loading.models.listTableList,
+  projects:openProjects.projects
 }))
 class TableList extends Component {
   state = {
@@ -58,97 +56,90 @@ class TableList extends Component {
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
     },
     {
-      title: '指导老师',
-      dataIndex: 'name1',
-    },
-    {
-      title: '实验室',
-      dataIndex: 'desc',
-    },
-    {
-      title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
-    },
-    {
-      title: '已选学生数',
-      dataIndex: 'status1',
+      title: '开放学院',
+      dataIndex: 'openCollege',
+      render:()=>'计科院'
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
+      dataIndex: 'projectType',
+      render:(type)=>{
+        return projectType[type]
+      }
     },
     {
-      title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
-
-      render:(val) => {
-        return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
-        </span>;
-      },
+      title: '指导老师',
+      dataIndex: 'guidanceTeachers',
+      render:(t)=>'XX老师'//t[0].userName
+    },
+    {
+      title: '项目级别',
+      dataIndex: 'experimentType',
+      render: val => val===0?'普通':'重点'
+    },
+    {
+      title: '已选学生数',
+      dataIndex: 'memberStudents',
+      render:(students)=>students?students.length:0
     },
     {
       title: '计划实验时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      dataIndex:'id',
+      render: (id) => (
         <Fragment>
-          <a onClick={()=>this.props.history.push('/sproject/join/all/apply')}>申请参与</a>
+          <a onClick={() => this.handleApply(id)}>申请</a>
           
           <Divider type="vertical" />
-          <a onClick={()=>{this.props.history.push('/tproject/manage/detail')}}>查看详情</a>
+          <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
     },
   ];
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
+  handleApply = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:4
+      }
+    })
+
+  }
+  handleDetailClick = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:6
+      }
+    })
+    dispatch({
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:6
+      }
+    })
   }
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'openProjects/fetchProjects',
     });
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
+    const { dispatch,projects } = this.props;
     const { formValues } = this.state;
     const filters = Object.keys(filtersArg).reduce((obj, key) => {
       const newObj = { ...obj };
@@ -184,7 +175,13 @@ class TableList extends Component {
     });
   };
 
-  
+  toggleForm = () => {
+    const { expandForm } = this.state;
+    this.setState({
+      expandForm: !expandForm,
+    });
+  };
+
   handleMenuClick = e => {
     const { dispatch } = this.props;
     const { selectedRows } = this.state;
@@ -235,6 +232,18 @@ class TableList extends Component {
     });
   };
 
+  handleModalVisible = flag => {
+    this.setState({
+      modalVisible: !!flag,
+    });
+  };
+
+  handleUpdateModalVisible = (flag, record) => {
+    this.setState({
+      updateModalVisible: !!flag,
+      stepFormValues: record || {},
+    });
+  };
 
   handleAdd = fields => {
     const { dispatch } = this.props;
@@ -246,12 +255,6 @@ class TableList extends Component {
     });
     message.success('添加成功');
     this.handleModalVisible();
-  };
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
   };
 
   handleUpdate = fields => {
@@ -267,6 +270,59 @@ class TableList extends Component {
     message.success('配置成功');
     this.handleUpdateModalVisible();
   };
+
+  renderSimpleForm() {
+    const { form } = this.props;
+    const { getFieldDecorator } = form;
+    return (
+      <Form onSubmit={this.handleSearch} layout="inline">
+        <Row
+          gutter={{
+            md: 8,
+            lg: 24,
+            xl: 48,
+          }}
+        >
+          <Col md={8} sm={24}>
+            <FormItem label="项目名称">
+              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="指导老师">
+              {getFieldDecorator('status')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <span className={styles.submitButtons}>
+              <Button type="primary" htmlType="submit">
+                查询
+              </Button>
+              <Button
+                style={{
+                  marginLeft: 8,
+                }}
+                onClick={this.handleFormReset}
+              >
+                重置
+              </Button>
+              <a
+                style={{
+                  marginLeft: 8,
+                }}
+                onClick={this.toggleForm}
+              >
+                展开 <Icon type="down" />
+              </a>
+            </span>
+          </Col>
+        </Row>
+      </Form>
+    );
+  }
+
   renderAdvancedForm() {
     const {
       form: { getFieldDecorator },
@@ -281,52 +337,31 @@ class TableList extends Component {
           }}
         >
           <Col md={8} sm={24}>
-            <FormItem label="开放学院">
-              {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">计科院</Option>
-                  <Option value="1">电信院</Option>
-                  <Option value="2">石工院</Option>
-                  <Option value="3">材料院</Option>
-                  <Option value="4">艺术院</Option>
-                  <Option value="5">化工院</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="适应专业">
-              {getFieldDecorator('status')(
-                <TreeSelect              
-                value={this.state.value}               
-                placeholder="请选择适应专业"
-                allowClear
-                multiple={true}
-                onChange={this.onChange}
-              >             
-                <TreeNode value="0" title="计科院" key="0-1-1" selectable={false}>
-                  <TreeNode value="0-1" title="软件工程" key="random"/>
-                  <TreeNode value="0-2" title="网络工程" key="random1" />
-                  <TreeNode value="0-3" title="物联网工程" key="random2" />
-                  <TreeNode value="0-4" title="计算机科学与技术" key="random4" />
-                </TreeNode>
-                <TreeNode value="1" title="石工院" key="0-1-2" selectable={false}>
-                  <TreeNode value="1-1" title="石油工程" key="random5" />
-                  <TreeNode value="1-2" title="石油与天然气工程" key="random6" />
-                  <TreeNode value="1-3" title="油气储运工程" key="random7" />
-                </TreeNode>
-              </TreeSelect>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
             <FormItem label="项目名称">
               {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="指导老师">
+              {getFieldDecorator('status')(
+                <Input placeholder="请输入" />
+                
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="开放学院">
+              {getFieldDecorator('number')(
+                <Select
+                placeholder="请选择"
+                style={{
+                  width: '100%',
+                }}
+              >
+                <Option value="0">关闭</Option>
+                <Option value="1">运行中</Option>
+              </Select>,
+              )}
             </FormItem>
           </Col>
         </Row>
@@ -338,7 +373,7 @@ class TableList extends Component {
           }}
         >
           <Col md={8} sm={24}>
-            <FormItem label="实验日期">
+            <FormItem label="计划实验时间">
               {getFieldDecorator('date')(
                 <RangePicker
                   
@@ -351,7 +386,7 @@ class TableList extends Component {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="项目类型">
+            <FormItem label="限选专业">
               {getFieldDecorator('status3')(
                 <Select
                   placeholder="请选择"
@@ -359,17 +394,52 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  <Option value="0">科研</Option>
-                  <Option value="1">科技活动</Option>
-                  <Option value="2">自选课题</Option>
-                  <Option value="3">计算机应用</Option>
-                  <Option value="4">人文素质</Option>
+                  <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option>
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="项目级别">
+            <FormItem label="限选学院">
+              {getFieldDecorator('status4')(
+                <Select
+                  placeholder="请选择"
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option>
+                </Select>,
+              )}
+            </FormItem>
+          </Col>
+        </Row>
+        <Row
+          gutter={{
+            md: 8,
+            lg: 24,
+            xl: 48,
+          }}
+        >
+          <Col md={8} sm={24}>
+            <FormItem label="限选年级">
+              {getFieldDecorator('date')(
+                <Select
+                placeholder="请选择"
+                style={{
+                  width: '100%',
+                }}
+              >
+                <Option value="0">关闭</Option>
+                <Option value="1">运行中</Option>
+              </Select>,
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="实验类型">
               {getFieldDecorator('status3')(
                 <Select
                   placeholder="请选择"
@@ -377,18 +447,30 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  <Option value="0">普通</Option>
-                  <Option value="1">重点</Option>
-                  
+                  <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option>
                 </Select>,
               )}
             </FormItem>
           </Col>
-          
+          <Col md={8} sm={24}>
+            <FormItem label="普通/重点项目">
+              {getFieldDecorator('status4')(
+                <Select
+                  placeholder="请选择"
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  <Option value="0">关闭</Option>
+                  <Option value="1">运行中</Option>
+                </Select>,
+              )}
+            </FormItem>
+          </Col>
         </Row>
         <div
           style={{
-            float:'right',
             overflow: 'hidden',
           }}
         >
@@ -423,109 +505,16 @@ class TableList extends Component {
     );
   }
 
-  renderSimpleForm() {
-    const { form } = this.props;
-    const { getFieldDecorator } = form;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="开放学院">
-              {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">计科院</Option>
-                  <Option value="1">电信院</Option>
-                  <Option value="2">石工院</Option>
-                  <Option value="3">材料院</Option>
-                  <Option value="4">艺术院</Option>
-                  <Option value="5">化工院</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="适应专业">
-              {getFieldDecorator('status')(
-                <TreeSelect              
-                value={this.state.value}               
-                placeholder="请选择适应专业"
-                allowClear
-                multiple={true}
-                onChange={this.onChange}
-              >             
-                <TreeNode value="0" title="计科院" key="0-1-1" selectable={false}>
-                  <TreeNode value="0-1" title="软件工程" key="random"/>
-                  <TreeNode value="0-2" title="网络工程" key="random1" />
-                  <TreeNode value="0-3" title="物联网工程" key="random2" />
-                  <TreeNode value="0-4" title="计算机科学与技术" key="random4" />
-                </TreeNode>
-                <TreeNode value="1" title="石工院" key="0-1-2" selectable={false}>
-                  <TreeNode value="1-1" title="石油工程" key="random5" />
-                  <TreeNode value="1-2" title="石油与天然气工程" key="random6" />
-                  <TreeNode value="1-3" title="油气储运工程" key="random7" />
-                </TreeNode>
-              </TreeSelect>
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
-                查询
-              </Button>
-              <Button
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.handleFormReset}
-              >
-                重置
-              </Button>
-              <a
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.toggleForm}
-              >
-                展开 <Icon type="down" />
-              </a>
-            </span>
-          </Col>
-        </Row>
-      </Form>
-    );
-  }
-
   renderForm() {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
-  }
-  hideModal = ()=>{
-    this.setState({
-      modalVisible:false
-    })
-  }
-  showModal = ()=>{
-    this.setState({
-      modalVisible:true
-    })
   }
 
   render() {
     const {
       listTableList: { data },
       loading,
+      projects
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const menu = (
@@ -542,64 +531,47 @@ class TableList extends Component {
       handleUpdateModalVisible: this.handleUpdateModalVisible,
       handleUpdate: this.handleUpdate,
     };
-
     return (
-      <PageHeaderWrapper
-      >
-        <Card bordered={false}>
+      <PageHeaderWrapper>
+        <Card bordered={false} title='所有项目'>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            <div className={styles.tableListOperator}>
-              
-            </div>
+            {/* <div className={styles.tableListOperator}>
+              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+                新建
+              </Button>
+              {selectedRows.length > 0 && (
+                <span>
+                  <Button>批量操作</Button>
+                  <Dropdown overlay={menu}>
+                    <Button>
+                      更多操作 <Icon type="down" />
+                    </Button>
+                  </Dropdown>
+                </span>
+              )}
+            </div> */}
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={projects}
+              rowKey='id'
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
           </div>
-          <Modal
-            visible={modalVisible}
-            onCancel={this.hideModal}
-            footer={<Button type='primary'>确认修改</Button>}
-            
-          >
-            <Timeline>
-              <Timeline.Item color="green">申请立项 2015-09-01</Timeline.Item>
-              <Timeline.Item color="green">
-                <p>实验室审核通过,对外公示 2017-08-23</p>
-                <p>实验室以上报二级单位 2017-09-12</p>
-              </Timeline.Item>
-              <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }}/>}>
-                <p>正在二级单位审核</p>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <p>二级单位已驳回 2017-08-23</p>
-                <p>驳回原因：未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求</p>
-              </Timeline.Item>
-              <Timeline.Item>
-                <p>职能部门修改申请表待确认 2017-09-12</p>
-                <p>备注：信息不符合规定，已修改，确认后立项</p>
-              </Timeline.Item>
-              <Timeline.Item color="gray">
-                <p>职能部门待审核</p>
-              </Timeline.Item>
-            </Timeline>,
-
-          </Modal>
-          {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
+          <CreateForm {...parentMethods} modalVisible={modalVisible} />
           {stepFormValues && Object.keys(stepFormValues).length ? (
             <UpdateForm
               {...updateMethods}
               updateModalVisible={updateModalVisible}
               values={stepFormValues}
             />
-          ) : null} */}
+          ) : null}
         </Card>
       </PageHeaderWrapper>
+        
     );
   }
 }

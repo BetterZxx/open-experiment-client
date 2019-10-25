@@ -9,8 +9,8 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://10.20.0.67:8083' 
-const proxyKeys = ['/anon','user/getMyInfo','/project/']
+const proxyURL = 'http://192.168.8.101:8083' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds']
 const proxyOptions = {
   target: proxyURL,
   changeOrigin: true,
@@ -141,6 +141,13 @@ export default {
               component:'./home'
             },
             {
+              path: '/openProjects/detail',
+              name: '详情',
+              icon: 'home',
+              component:'./common/detail',
+              hideInMenu:true
+            },
+            {
               path: '/tproject',
               name: '项目管理t',
               icon: 'project',
@@ -212,6 +219,13 @@ export default {
                   hideInMenu:true
                 },
                 {
+                  name: '项目详情',
+                  path: '/sproject/join/all/detail',
+                  component: './common/detail',
+                  hideInMenu:true,
+                  icon: 'file-add'
+                },
+                {
                   name: '证书申领',
                   path: '/sproject/certificate',
                   component: './project-s/certificate',
@@ -272,18 +286,18 @@ export default {
                 },
                 {
                   name: '职能部门审批',
-                  path: '/projects/auth/equipment',
+                  path: 'auth/equipment',
                   routes:[
                     {
                       name: '立项审批',
-                      path: '/projects/auth/equipment/projects',
+                      path: '/auth/equipment/projects',
                       component: './agreement/equipment/projects',
                       icon: 'team'
                     },
                     {
                       name: '项目详情',
-                      path: '/projects/auth/equipment/projects/detail',
-                      component: './agreement/equipment/detail',
+                      path: '/auth/equipment/projects/detail',
+                      component: './common/detail',
                       hideInMenu:true,
                       icon: 'team'
                     },

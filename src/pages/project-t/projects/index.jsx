@@ -143,14 +143,14 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:1
+        role:5
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:1
+        role:5
       }
     })
    // history.push('/tproject/manage/detail',id)}
