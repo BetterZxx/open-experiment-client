@@ -25,6 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
+import {projectType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -36,13 +37,15 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['待审核', '审核中', '已通过','已拒绝'];
+const statusMap = ['default', 'success', 'error'];
+const status = ['待审核','已通过','已拒绝'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
+@connect(({ listTableList, loading,applyStudents,tprojects }) => ({
   listTableList,
   loading: loading.models.listTableList,
+  students:applyStudents.data,
+  projects:tprojects.projects
 }))
 class TableList extends Component {
   state = {
@@ -52,64 +55,51 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    detailModalVisible:false
+    detailModalVisible:false,
   };
 
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
     },
     {
       title: '申请人',
-      dataIndex: 'desc',
+      dataIndex: 'realName',
     },
     {
       title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
+      dataIndex:'experimentType',
+      render:(type)=>{
+        return type===1?'普通':'重点'
+      }
     },
     {
       title: '专业',
-      dataIndex: 'status1',
+      dataIndex: 'major',
     },
     {
       title: '年级',
-      dataIndex: 'status4',
+      dataIndex: 'grade',
+      render:(val)=>{
+        return val+'级'
+
+      }
     },
     {
       title: '项目角色',
-      dataIndex: 'status2',
+      dataIndex: 'stat',
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
+      dataIndex: 'projectType',
+      render:(type)=>projectType[type]
+
     },
     {
       title: '状态',
       dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
-
+      
       render:(val) => {
         return <span>
           <Badge status={statusMap[val]} text={status[val]} />
@@ -145,168 +135,12 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
+      type: 'applyStudents/fetch',
     });
-  }
-  renderAdvancedForm() {
-    const {
-      form: { getFieldDecorator },
-    } = this.props;
-    return (
-      <Form onSubmit={this.handleSearch} layout="inline">
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="项目名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="学院">
-              {getFieldDecorator('status')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="建议审分组">
-              {getFieldDecorator('status4')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">A组-石工勘探</Option>
-                  <Option value="1">B组-化工材料</Option>
-                  <Option value="2">C组-机械力学</Option>
-                  <Option value="3">D组-电气及制作</Option>
-                  <Option value="4">E组-软件与数学</Option>
-                  <Option value="5">F组-经管法艺体人文</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-        </Row>
-        <Row
-          gutter={{
-            md: 8,
-            lg: 24,
-            xl: 48,
-          }}
-        >
-          <Col md={8} sm={24}>
-            <FormItem label="申报日期">
-              {getFieldDecorator('date')(
-                <RangePicker
-                  
-                  style={{
-                    width: '100%',
-                  }}
-                  
-                />
-              )}
-            </FormItem>
-          </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="预申请资金">
-              {getFieldDecorator('status3')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">500</Option>
-                  <Option value="1">2500</Option>
-                  <Option value="2">3000</Option>
-                  <Option value="3">5000</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
-          
-        </Row>
-        <div
-          style={{
-            float:'right',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              float: 'right',
-              marginBottom: 24,
-            }}
-          >
-            <Button type="primary" htmlType="submit">
-              查询
-            </Button>
-            <Button
-              style={{
-                marginLeft: 8,
-              }}
-              onClick={this.handleFormReset}
-            >
-              重置
-            </Button>
-            <a
-              style={{
-                marginLeft: 8,
-              }}
-              onClick={this.toggleForm}
-            >
-              收起 <Icon type="up" />
-            </a>
-          </div>
-        </div>
-      </Form>
-    );
-  }
-  toggleForm = () => {
-    const { expandForm } = this.state;
-    this.setState({
-      expandForm: !expandForm,
-    });
-  };
-
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
     dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
-    });
-  };
+      type:'tprojects/fetch'
+    })
+  }
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
@@ -319,33 +153,6 @@ class TableList extends Component {
       payload: {},
     });
   };
-
-  
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listTableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
-  };
-
   handleSelectRows = rows => {
     this.setState({
       selectedRows: rows,
@@ -357,6 +164,7 @@ class TableList extends Component {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
+      console.log(fieldsValue)
       const values = {
         ...fieldsValue,
         updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
@@ -372,16 +180,22 @@ class TableList extends Component {
   };
 
 
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
+  handleAdd = () => {
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+      console.log(fieldsValue)
+      const values = {
+        ...fieldsValue,
+      };
+      this.setState({
+        formValues: values,
+      });
+      dispatch({
+        type: 'applyStudents/add',
+        payload: values,
+      });
     });
-    message.success('添加成功');
-    this.handleModalVisible();
   };
 
   handleUpdate = fields => {
@@ -399,7 +213,7 @@ class TableList extends Component {
   };
 
   renderSimpleForm() {
-    const { form } = this.props;
+    const { form,projects } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -412,28 +226,33 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('projectId')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">XXX项目</Option>
-                  <Option value="1">XXX项目</Option>
+                  {projects.map((item,index)=>{
+                    return <Option key={index} value={item.projectGroupId}>{item.projectName}</Option>
+
+                  })}
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="状态">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('status',{
+                initialValue:'0'
+              })(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
+                  <Option value="3">全部</Option>
                   <Option value="0">待审核</Option>
                   <Option value="1">已通过</Option>
                   <Option value="2">已拒绝</Option>
@@ -454,14 +273,6 @@ class TableList extends Component {
               >
                 重置
               </Button>
-              <a
-                style={{
-                  marginLeft: 8,
-                }}
-                onClick={this.toggleForm}
-              >
-                展开 <Icon type="down" />
-              </a>
             </span>
           </Col>
         </Row>
@@ -470,8 +281,7 @@ class TableList extends Component {
   }
 
   renderForm() {
-    const { expandForm } = this.state;
-    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+    return  this.renderSimpleForm();
   }
   hideModal = ()=>{
     this.setState({
@@ -493,26 +303,84 @@ class TableList extends Component {
       detailModalVisible:false
     })
   }
+  handleAgree = ()=>{
+    const {dispatch} = this.props
+    const {selectedRows} = this.state
+    let payload = selectedRows.map(item=>{
+      return {
+        projectGroupId:item.projectGroupId,
+        reason:'',
+        userId:item.code
+      }
+    })
+    dispatch({
+      type:'applyStudents/agree',
+      payload
+    })
+  }
+  handleReject = ()=>{
+    const {dispatch} = this.props
+    const {selectedRows} = this.state
+    let payload = selectedRows.map(item=>{
+      return {
+        projectGroupId:item.projectGroupId,
+        reason:'',
+        userId:item.code
+      }
+    })
+    dispatch({
+      type:'applyStudents/reject',
+      payload
+    })
+  }
+  handleRemove = ()=>{
+    const {selectedRows} = this.state
+    if(selectedRows.length>1)
+    message.warning('不能设置批量移除')
+    const {dispatch} = this.props
+    
+    let payload = {
+        projectGroupId:selectedRows[0].projectGroupId,
+        reason:'',
+        userId:selectedRows[0].code
+    }
+    dispatch({
+      type:'applyStudents/remove',
+      payload
+    })
+  }
+  handleSetLeader = ()=>{
+    const {selectedRows} = this.state
+    if(selectedRows.length>1)
+    message.warning('不能设置多个项目组长')
+    const {dispatch} = this.props
+    
+    let payload = {
+        projectGroupId:selectedRows[0].projectGroupId,
+        reason:'',
+        userId:selectedRows[0].code
+    }
+    dispatch({
+      type:'applyStudents/setLeader',
+      payload
+    })
+  }
   render() {
     const {
       listTableList: { data },
       loading,
+      students,
+      form,
+      projects
     } = this.props;
+    const {getFieldDecorator} = form
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">设为组长</Menu.Item>
-        <Menu.Item key="approval">删除成员</Menu.Item>
+        <Menu.Item key="remove" onClick={this.handleSetLeader}>设为组长</Menu.Item>
+        <Menu.Item key="approval" onClick={this.handleRemove} >删除成员</Menu.Item>
       </Menu>
     );
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
     return (
       <PageHeaderWrapper>
         <Card 
@@ -521,13 +389,13 @@ class TableList extends Component {
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
+              <Button icon="plus" type="primary" onClick={this.showModal}>
                 增添成员
               </Button>
               {selectedRows.length > 0 && (
                 <span>
-                  <Button type='primary'>通过</Button>
-                  <Button>拒绝</Button>
+                  <Button type='primary' onClick={this.handleAgree}>通过</Button>
+                  <Button onClick={this.handleReject}>拒绝</Button>
                   <Dropdown overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
@@ -539,40 +407,42 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={students}
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
           </div>
           <Modal
+          title="添加项目成员"
             visible={modalVisible}
             onCancel={this.hideModal}
-            footer={<Button type='primary'>确认修改</Button>}
+            onOk={this.handleAdd}
             
           >
-            <Timeline>
-              <Timeline.Item color="green">申请立项 2015-09-01</Timeline.Item>
-              <Timeline.Item color="green">
-                <p>实验室审核通过,对外公示 2017-08-23</p>
-                <p>实验室以上报二级单位 2017-09-12</p>
-              </Timeline.Item>
-              <Timeline.Item dot={<Icon type="clock-circle-o" style={{ fontSize: '16px' }}/>}>
-                <p>正在二级单位审核</p>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <p>二级单位已驳回 2017-08-23</p>
-                <p>驳回原因：未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求</p>
-              </Timeline.Item>
-              <Timeline.Item>
-                <p>职能部门修改申请表待确认 2017-09-12</p>
-                <p>备注：信息不符合规定，已修改，确认后立项</p>
-              </Timeline.Item>
-              <Timeline.Item color="gray">
-                <p>职能部门待审核</p>
-              </Timeline.Item>
-            </Timeline>,
+            <Form>
+            <FormItem label="项目名称">
+              {getFieldDecorator('projectGroupId')(
+                <Select
+                  placeholder="请选择"
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  {projects.map((item,index)=>{
+                    return <Option key={index} value={item.projectGroupId}>{item.projectName}</Option>
 
+                  })}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem label="学生学号">
+              {getFieldDecorator('userId')(
+                <Input></Input>
+              )}
+            </FormItem>
+            </Form>  
           </Modal>
           <Modal
           visible={detailModalVisible}
@@ -626,10 +496,10 @@ class TableList extends Component {
                   </Descriptions.Item>
                 </Descriptions>
               </Descriptions.Item>
-              <Descriptions.Item span={3} label='个人特长'>
+              <Descriptions.Item span={2} label='个人特长'>
                 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
               </Descriptions.Item>
-              <Descriptions.Item span={3} label='已修课程及具备知识'>
+              <Descriptions.Item span={2} label='已修课程及具备知识'>
                 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
               </Descriptions.Item>
               

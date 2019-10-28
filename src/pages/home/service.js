@@ -6,3 +6,10 @@ export async function fakeChartData() {
 export async function reqCanApplyProjects(){
   return request('/project/getAllOpenTopicByStudent')
 }
+export async function reqfilterProjects(params){
+  return request('/project/conditionallyQueryOfCheckedProjectByFunctionalDepartment',{
+    method:'post',
+    data:params
+  })
+
+}

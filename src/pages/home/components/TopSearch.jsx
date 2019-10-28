@@ -5,17 +5,18 @@ import { MiniArea } from './Charts';
 import NumberInfo from './NumberInfo';
 import Trend from './Trend';
 import styles from '../style.less';
+import moment from 'moment';
 
-const data = [
-  'Racing car sprays burning fuel into crowd.',
-  'Japanese princess to wed commoner.',
-  'Australian walks 100km after outback crash.',
-  'Man charged over missing wedding girl.',
-  'Los Angeles battles huge wildfires.',
-];
+// const data = [
+//   'Racing car sprays burning fuel into crowd.',
+//   'Japanese princess to wed commoner.',
+//   'Australian walks 100km after outback crash.',
+//   'Man charged over missing wedding girl.',
+//   'Los Angeles battles huge wildfires.',
+// ];
 
-const TopSearch = ({ loading, visitData2, searchData, dropdownGroup }) => (
-  <Card
+const TopSearch = ({ loading,data, dropdownGroup,handleView }) => (
+ <Card
     loading={loading}
     bordered={false}
     title="公告栏"
@@ -29,13 +30,20 @@ const TopSearch = ({ loading, visitData2, searchData, dropdownGroup }) => (
         <List.Item>
           <div style={{width:'100%'}}>
             <Icon style={{marginRight:15}} type='right'></Icon>
-            <span className={styles.announceListSpan}>{item}</span>
-            <span style={{float:'right'}}>12-05</span>
+            <span onClick={()=>handleView(item.announcementId)} className={styles.announceListSpan}>{item.title}</span>
+            <span style={{float:'right'}}>{moment(item.publishTime).format('YYYY-MM-DD')}</span>
           </div>
         </List.Item>
       )}
       dataSource={data}
-      footer={<Pagination style={{float:'right'}} size='small' defaultCurrent={1} total={50} />}
+      pagination={{
+        onChange: page => {
+          console.log(page);
+        },
+        size:'small'
+        ,
+        pageSize: 6,
+      }}
     
     >
 

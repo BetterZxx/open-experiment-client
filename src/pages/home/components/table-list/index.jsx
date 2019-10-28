@@ -21,7 +21,7 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType} from '@/utils/constant'
+import {projectType,major,college,grade,suggestGroupType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -230,6 +230,25 @@ class TableList extends Component {
       });
     });
   };
+  handleFilter = ()=>{
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      const values = {
+        ...fieldsValue,startTime:fieldsValue.date[0].format('x'),endTime:fieldsValue.date[1].format('x')
+      };
+      console.log(values)
+      this.setState({
+        formValues: values,
+      });
+      dispatch({
+        type:'openProjects/filter',
+        payload:values
+      })
+    });
+
+  }
 
   handleModalVisible = flag => {
     this.setState({
@@ -244,31 +263,7 @@ class TableList extends Component {
     });
   };
 
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
 
   renderSimpleForm() {
     const { form } = this.props;
@@ -296,7 +291,7 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={this.handleFilter}>
                 查询
               </Button>
               <Button
@@ -337,12 +332,12 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="指导老师">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('teacherName')(
                 <Input placeholder="请输入" />
                 
               )}
@@ -350,15 +345,19 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="开放学院">
-              {getFieldDecorator('number')(
+              {getFieldDecorator('college')(
                 <Select
                 placeholder="请选择"
                 style={{
                   width: '100%',
                 }}
               >
-                <Option value="0">关闭</Option>
-                <Option value="1">运行中</Option>
+                {
+                    college.map((item,index)=>{
+                    return item?<Option key={index} value={index}>{item}</Option>:''
+                  })
+                }
+                
               </Select>,
               )}
             </FormItem>
@@ -386,30 +385,38 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="限选专业">
-              {getFieldDecorator('status3')(
+              {getFieldDecorator('limitMajor')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
+                  mode="multiple"
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  {
+                    major.map((item,index)=>{
+                    return item?<Option key={index} value={index}>{item}</Option>:''
+                  })
+                  }
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="限选学院">
-              {getFieldDecorator('status4')(
+              {getFieldDecorator('limitCollege')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
+                  mode="multiple"
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  {
+                    college.map((item,index)=>{
+                    return item?<Option key={index} value={index}>{item}</Option>:''
+                  })
+                  }
                 </Select>,
               )}
             </FormItem>
@@ -424,45 +431,50 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="限选年级">
-              {getFieldDecorator('date')(
+              {getFieldDecorator('limitGrade')(
                 <Select
                 placeholder="请选择"
                 style={{
                   width: '100%',
                 }}
+                mode="multiple"
               >
-                <Option value="0">关闭</Option>
-                <Option value="1">运行中</Option>
+                {grade.map((item,index)=>{
+                  return <Option key={index} value={item}>{item+'级'}</Option>
+                })}
               </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="实验类型">
-              {getFieldDecorator('status3')(
+              {getFieldDecorator('projectType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  {
+                    projectType.map((item,index)=>{
+                      return item?<Option key={index} value={index}>{item}</Option>:''
+                    })
+                  }
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="普通/重点项目">
-              {getFieldDecorator('status4')(
+              {getFieldDecorator('experimentType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  <Option value="1">普通</Option>
+                  <Option value="2">重点</Option>
                 </Select>,
               )}
             </FormItem>
@@ -479,7 +491,7 @@ class TableList extends Component {
               marginBottom: 24,
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" onClick={this.handleFilter}>
               查询
             </Button>
             <Button

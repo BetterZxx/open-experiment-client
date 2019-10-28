@@ -1,25 +1,41 @@
 import request from '@/utils/request';
 
-export async function queryRule(params) {
-  return request('/api/rule', {
+
+export async function reqApplyStudents(params) {
+  return request('/project/getApplyingJoinInfo', {
+    method: 'get',
     params,
   });
 }
-export async function removeRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'delete' },
+export async function reqSetProjectLeader(params) {
+  return request('/project/aimMemberLeader', {
+    method: 'post',
+    data:params,
   });
 }
-export async function addRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'post' },
+export async function reqRejectStudent(params) {
+  return request('/project/rejectJoin', {
+    method: 'post',
+    data:params,
   });
 }
-export async function updateRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'update' },
+export async function reqAgreeStudent(params) {
+  return request('/project/agreeJoin', {
+    method: 'post',
+    data:params,
   });
 }
+export async function reqRemoveStudent(params) {
+  return request('/project/removeStudentFromProject', {
+    method: 'post',
+    data:params,
+  });
+}
+export async function reqAddStudent(params) {
+  return request('/project/addStudentToProject', {
+    method: 'post',
+    data:params,
+  });
+}
+
+

@@ -71,7 +71,19 @@ class BasicForm extends Component {
       keys: nextKeys,
     });
   };
+  handleApply = ()=>{
+    const { dispatch,detail, form } = this.props;
+    form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        values.projectGroupId = detail.projectGroupId
+        dispatch({
+          type: 'studentProjects/join',
+          payload: values,
+        });
+      }
+    });
 
+  }
   render() {
     const { submitting,detail } = this.props;
     const {
@@ -128,33 +140,33 @@ class BasicForm extends Component {
     };
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
-    const formItems = keys.map((k, index) => (
-      <Form.Item
-        {...formItemLayout}
-        label={index === 0 ? `学期${index+1}` : `学期${index+1}`}
-        required={false}
-        key={k}
-      >
-        {getFieldDecorator(`names[${k}]`, {
-          validateTrigger: ['onChange', 'onBlur'],
-          rules: [
-            {
-              required: true,
-              whitespace: true,
-              message: "请输入成绩或者删除该项",
-            },
-          ],
-        })(<Input placeholder="学分绩点" style={{width:'80%',marginRight:8}} />)}
-        {keys.length > 1 ? (
-          <Icon
-            className={styles.dynamicDeleteButton}
-            type="minus-circle-o"
-            onClick={() => this.remove(k)}
-          />
-        ) : null}
-      </Form.Item>
+    // const formItems = keys.map((k, index) => (
+    //   <Form.Item
+    //     {...formItemLayout}
+    //     label={index === 0 ? `学期${index+1}` : `学期${index+1}`}
+    //     required={false}
+    //     key={k}
+    //   >
+    //     {getFieldDecorator(`names[${k}]`, {
+    //       validateTrigger: ['onChange', 'onBlur'],
+    //       rules: [
+    //         {
+    //           required: true,
+    //           whitespace: true,
+    //           message: "请输入成绩或者删除该项",
+    //         },
+    //       ],
+    //     })(<Input placeholder="学分绩点" style={{width:'80%',marginRight:8}} />)}
+    //     {keys.length > 1 ? (
+    //       <Icon
+    //         className={styles.dynamicDeleteButton}
+    //         type="minus-circle-o"
+    //         onClick={() => this.remove(k)}
+    //       />
+    //     ) : null}
+    //   </Form.Item>
       
-    ));
+    // ));
     const content = (
       <RouteContext.Consumer>
         {({ isMobile }) => (
@@ -206,7 +218,7 @@ class BasicForm extends Component {
             }}
           >
             
-            <FormItem {...formItemLayout} label="姓名">
+            {/* <FormItem {...formItemLayout} label="姓名">
               {getFieldDecorator('projectName', {
                 rules: [
                   {
@@ -279,10 +291,10 @@ class BasicForm extends Component {
                   },
                 ],
               })(<Input placeholder="请输入联系电话" />)}
-            </FormItem>
+            </FormItem> */}
             
             <FormItem {...formItemLayout} label="个人特长">
-              {getFieldDecorator('experimentCondition', {
+              {getFieldDecorator('personalJudge', {
                 rules: [
                   {
                     required: true,
@@ -301,7 +313,7 @@ class BasicForm extends Component {
             </FormItem>
             
             <FormItem {...formItemLayout} label="已修课程及具备知识">
-              {getFieldDecorator('experimentConditio', {
+              {getFieldDecorator('technicalRole', {
                 rules: [
                   {
                     required: true,
@@ -520,7 +532,7 @@ class BasicForm extends Component {
               <span className="ant-form-text">%</span>
             </FormItem> */}
             
-            <FormItem
+            {/* <FormItem
             {...formItemLayout}
             label="已修课程成绩"
             >
@@ -528,14 +540,14 @@ class BasicForm extends Component {
               <Button type="dashed" onClick={this.add} style={{ width: '60%' }}>
                 <Icon type="plus" /> 添加
               </Button>
-            </FormItem>
+            </FormItem> */}
             <FormItem
               {...submitFormLayout}
               style={{
                 marginTop: 32,
               }}
             >
-              <Button type="primary" htmlType="submit" loading={submitting}>
+              <Button type="primary" onClick={this.handleApply} loading={submitting}>
                 提交
               </Button>
               <Button

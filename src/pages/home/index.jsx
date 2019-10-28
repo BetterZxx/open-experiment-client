@@ -34,10 +34,11 @@ const salePieData = [
     y:66
   },
 ]
-@connect(({ dashboardAnalysis, loading ,openProjects}) => ({
+@connect(({ dashboardAnalysis, loading ,openProjects,announcement}) => ({
   dashboardAnalysis,
   loading: loading.effects['dashboardAnalysis/fetch'],
- // projects:openProjects.projects
+  projects:openProjects.projects,
+  announcements:announcement.data
 }))
 class Analysis extends Component {
   state = {
@@ -60,6 +61,9 @@ class Analysis extends Component {
     dispatch({
       type: 'openProjects/fetchProjects',
     });
+    dispatch({
+      type:'announcement/fetch'
+    })
   }
 
   componentWillUnmount() {
@@ -102,7 +106,18 @@ class Analysis extends Component {
       type: 'dashboardAnalysis/fetchSalesData',
     });
   };
+  handleView = (id)=>{
+    console.log(id)
+    const {dispatch} = this.props
+    dispatch({
+      type:'announcement/getDetail',
+      payload:{
+        announcementId:id
+      }
+    })
+    this.props.history.push('/announcement/detail')
 
+  }
   isActive = type => {
     const { rangePickerValue } = this.state;
     const value = getTimeDistance(type);
@@ -123,7 +138,7 @@ class Analysis extends Component {
 
   render() {
     const { rangePickerValue, salesType, currentTabKey } = this.state;
-    const { dashboardAnalysis, loading ,projects} = this.props;
+    const { dashboardAnalysis, loading ,projects,announcements} = this.props;
     console.log(projects)
     const {
       visitData,
@@ -135,9 +150,14 @@ class Analysis extends Component {
       salesTypeData,
       salesTypeDataOnline,
       salesTypeDataOffline,
+      
     } = dashboardAnalysis;
     let salesPieData;
-
+    let announcementsData = announcements.filter(item=>{
+      return item.status === 1
+    }).sort((a,b)=>{
+      return b.publishTime - a.publishTime 
+    })
     if (salesType === 'all') {
       salesPieData = salesTypeData;
     } else {
@@ -185,9 +205,9 @@ class Analysis extends Component {
               <Suspense fallback={null}>
                 <TopSearch
                   loading={loading}
-                  visitData2={visitData2}
-                  searchData={searchData}
+                  data={announcementsData}
                   dropdownGroup={dropdownGroup}
+                  handleView={this.handleView}
                 />
               </Suspense>
             </Col>

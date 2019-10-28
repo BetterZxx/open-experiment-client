@@ -1,38 +1,74 @@
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import { reqApplyStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent } from './service';
+import { message } from 'antd';
 
 const Model = {
-  namespace: 'applyedProject12347',
+  namespace: 'applyStudents',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    data:[]
   },
   effects: {
     *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+      const response = yield call(reqApplyStudents, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response.data,
       });
     },
-
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *reject({payload},{call,put}){
+      const res = yield call(reqRejectStudent,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'fetch',
+        })
+      }else{
+        message.error('操作失败')
+      }
     },
-
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *remove({payload},{call,put}){
+      const res = yield call(reqRmoveStudent,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'fetch',
+        })
+      }else{
+        message.error('操作失败')
+      }
+    }
+    ,
+    *agree({payload},{call,put}){
+      const res = yield call(reqAgreeStudent,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'fetch',
+        })
+      }else{
+        message.error('操作失败')
+      }
+    },
+    *setLeader({payload},{call,put}){
+      const res = yield call(reqSetProjectLeader,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'fetch',
+        })
+      }else{
+        message.error('操作失败')
+      }
+    },
+    *add({payload},{call,put}){
+      const res = yield call(reqAddStudent,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'fetch',
+        })
+      }else{
+        message.error('操作失败')
+      }
     },
 
     *update({ payload, callback }, { call, put }) {
@@ -46,7 +82,14 @@ const Model = {
   },
   reducers: {
     save(state, action) {
-      return { ...state, data: action.payload };
+      let data = action.payload.map(item=>{
+        let data = {
+          ...item,...item.userDetailVO,projectGroupId:item.id
+        }
+        delete data.userDetailVO
+        return data
+      })
+      return { ...state, data };
     },
   },
 };

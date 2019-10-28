@@ -27,9 +27,10 @@ import 'react-quill/dist/quill.snow.css'; // ES6
 const FormItem = Form.Item;
 const {TextArea} = Input
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
+@connect(({ listTableList, loading,announcement }) => ({
   listTableList,
   loading: loading.models.listTableList,
+  detail:announcement.detail
 }))
 class TableList extends Component {
   state = {
@@ -48,17 +49,17 @@ class TableList extends Component {
     this.setState({ text: value })
   }
   render() {
-    const { form } = this.props;
+    const { form,detail } = this.props;
     const { getFieldDecorator } = form;
     
     const title = <div>
-      <span>XXX公告</span>
+      <span>{detail.title}</span>
     </div>
     const extra = <div>
       <Button type='primary' onClick={()=>{this.props.history.goBack()}}>返回</Button>
     </div>
     const cardExtra = <span>
-      发布日期 : 2017-09-05
+      发布日期 : {moment(detail.publishTime).format('YYYY-MM-DD HH:mm')}
     </span>
     return (
       <PageHeaderWrapper
@@ -69,7 +70,10 @@ class TableList extends Component {
           title={title}
           extra={cardExtra}
         >
-          正文XXXXXXX
+          <div dangerouslySetInnerHTML={{__html:detail.content}}>
+
+          </div>
+          
           
         </Card>
         

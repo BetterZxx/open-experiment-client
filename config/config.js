@@ -9,8 +9,8 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://192.168.8.101:8083' 
-const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds']
+const proxyURL = 'http://10.20.0.55:8083' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcement']
 const proxyOptions = {
   target: proxyURL,
   changeOrigin: true,
@@ -148,6 +148,13 @@ export default {
               hideInMenu:true
             },
             {
+              path: '/announcement/detail',
+              name: '公告详情',
+              icon: 'home',
+              component:'./settings/announcement/detail',
+              hideInMenu:true
+            },
+            {
               path: '/tproject',
               name: '项目管理t',
               icon: 'project',
@@ -221,6 +228,13 @@ export default {
                 {
                   name: '项目详情',
                   path: '/sproject/join/all/detail',
+                  component: './common/detail',
+                  hideInMenu:true,
+                  icon: 'file-add'
+                },
+                {
+                  name: '项目详情',
+                  path: '/sproject/manage/detail',
                   component: './common/detail',
                   hideInMenu:true,
                   icon: 'file-add'

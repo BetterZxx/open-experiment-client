@@ -1,21 +1,28 @@
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import { reqJoin,reqProjects} from './service';
+import { message } from 'antd';
 
 const Model = {
-  namespace: 'listTableListasas',
+  namespace: 'studentProjects12',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    projects:[]
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
+    *fetchProjects({ payload }, { call, put }) {
+      const response = yield call(reqProjects, payload);
       yield put({
         type: 'save',
-        payload: response,
+        payload: response.data,
       });
     },
+    *join({payload},{call,put}){
+      const res = yield call(reqJoin,payload)
+      if(res.code===0){
+        message.success('申请成功')
+      }else{
+        message.error('申请失败')
+      }
+    }
+    ,
 
     *add({ payload, callback }, { call, put }) {
       const response = yield call(addRule, payload);
@@ -46,7 +53,7 @@ const Model = {
   },
   reducers: {
     save(state, action) {
-      return { ...state, data: action.payload };
+      return { ...state, projects: action.payload };
     },
   },
 };
