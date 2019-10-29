@@ -1,4 +1,4 @@
-import { reqApplyStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent } from './service';
+import { reqApplyStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent, reqFilterStudent } from './service';
 import { message } from 'antd';
 
 const Model = {
@@ -14,6 +14,18 @@ const Model = {
         payload: response.data,
       });
     },
+    *filter({payload},{call,put}){
+      const res = yield call(reqFilterStudent,payload)
+      if(res.code===0){
+        yield put({
+          type: 'save',
+          payload: res.data,
+        });
+      }else{
+        message.error('筛选失败')
+      }
+    }
+    ,
     *reject({payload},{call,put}){
       const res = yield call(reqRejectStudent,payload)
       if(res.code===0){

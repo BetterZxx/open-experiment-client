@@ -37,5 +37,11 @@ export async function reqAddStudent(params) {
     data:params,
   });
 }
+export async function reqFilterStudent(params) {
+  return request('/project/getApplyingJoinInfoByCondition', {
+    method: 'post',
+    data:params,
+  });
+}
 
 

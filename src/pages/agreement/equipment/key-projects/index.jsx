@@ -124,13 +124,15 @@ class TableList extends Component {
       payload:{
         projectGroupId:id,
         role:2,
+        projectType:2
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:2
+        role:2,
+        projectType:2
       }
     })
   }

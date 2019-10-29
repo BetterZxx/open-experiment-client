@@ -8,7 +8,14 @@ const approvalUrl = [
   ['/project/rejectProjectApplyBySecondaryUnit','/project/approveProjectApplyBySecondaryUnit','/project/reportToFunctionalDepartment'],
   ['/project/rejectProjectApplyByFunctionalDepartment','/project/agreeEstablish']
 ]
+const keyApprovalUrl = [
+  ['/project/rejectKeyProjectByLabAdministrator','/project/agreeKeyProjectByLabAdministrator','/project/reportKeyProjectByLabAdministrator'],
+  ['/project/rejectKeyProjectBySecondaryUnit','/project/agreeKeyProjectBySecondaryUnit','/project/reportKeyProjectBySecondaryUnit'],
+  ['/project/rejectKeyProjectByFunctionalDepartment','/project/agreeKeyProjectByFunctionalDepartment',],
+  ['/project/rejectKeyProjectByGuideTeacher','/project/agreeKeyProjectByGuideTeacher']
+]
 const approvalType = ['lab/fetchProjects','second/fetchProjects','']
+const keyApprovalType = ['lab/fetchProjects','second/fetchProjects','']
 const Model = {
   namespace: 'approval',
   state: {
@@ -69,6 +76,44 @@ const Model = {
         message.success('操作失败！')
       }
 
+    }
+    ,
+    *key({payload},{call,put}){
+      //data：参数；type:(同意，拒绝，上报)；unit：操作单位； isDetail：是否详情页面调用； status：；
+      const {data,type,unit,isDetail,status} = payload
+      console.log('normal',payload)
+      const res = yield call(reqApproval,keyApprovalUrl[unit][type],data)
+      if(res.code===0){
+        message.success('操作成功！')
+        if(isDetail){
+          yield put({
+            type:'detail/fetchDetail',
+            payload:{
+              projectGroupId:typeof data[0]==='object'?data[0].projectId:data[0],
+              role:unit,
+              projectType:2
+            }
+          })
+          yield put({
+            type:'detail/fetchProcess',
+            payload:{
+              projectId:data[0].projectId,
+              role:unit,
+              projectType:2
+            }
+          })        
+        }else{
+          yield put({
+            type:approvalType[unit],
+            payload:{
+              status
+            }
+          })
+
+        }
+      }else{
+        message.success('操作失败！')
+      }
     }
 
     ,

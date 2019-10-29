@@ -12,6 +12,16 @@ const roleURL = [
   '/sproject/join/all/detail',
   '/sproject/manage/detail'
 ];
+const keyRoleURL = [
+  '/auth/lab/key-projects/detail',
+  '/auth/second/key-projects/detail',
+  '/auth/equipment/key-projects/detail',
+  '/openProjects/key-detail',
+  '/sproject/join/all/apply',
+  '/tproject/manage/detail',
+  '/sproject/join/all/detail',
+  '/sproject/manage/detail'
+];
 const approveUrl = [
   '/project/approveProjectApplyByLabAdministrator',
   '/project/approveProjectApplyBySecondaryUnit',
@@ -22,10 +32,12 @@ const Model = {
   state: {
     baseInfo: {},
     process: [],
+    projectType:1
   },
   effects: {
     *fetchProcess({ payload }, { call, put }) {
       console.log('fetchProcess', payload);
+      const {projectType} = payload
       const res = yield call(reqProjectProcess, { projectId: payload.projectId });
       if (res.code === 0) {
         yield put({
@@ -36,6 +48,12 @@ const Model = {
           type: 'saveRole',
           payload: payload.role,
         });
+        if(projectType){
+          yield put({
+            type: 'saveProjectType',
+            payload: projectType,
+          });
+        }
       } else {
         yield put({
           type: 'saveProcess',
@@ -48,11 +66,13 @@ const Model = {
     /**
      * payload:{
      *  projectGroupId:string,
-     *  role:string
+     *  role:string,
+     *  projectType:number 
      * }
      */
     *fetchDetail({ payload }, { call, put }) {
       console.log('fetchDetail', payload);
+      const {projectType} = payload
       const res = yield call(reqProjectDetail, { projectGroupId: payload.projectGroupId });
       if (res.code === 0) {
         yield put({
@@ -63,11 +83,17 @@ const Model = {
           type: 'saveRole',
           payload: payload.role,
         });
+        if(projectType){
+          yield put({
+            type: 'saveProjectType',
+            payload: projectType,
+          });
+        }
         console.log(router);
         if (window.location.pathname === roleURL[payload.role]) {
-          router.replace(roleURL[payload.role]);
+          router.replace((projectType===2?keyRoleURL:roleURL)[payload.role]);
         } else {
-          router.push(roleURL[payload.role]);
+          router.push((projectType===2?keyRoleURL:roleURL)[payload.role]);
         }
       } else {
         yield put({
@@ -89,6 +115,9 @@ const Model = {
     saveRole(state, { payload }) {
       return { ...state, role: payload };
     },
+    saveProjectType(state,{payload}) {
+      return {...state, projectType:payload}
+    }
   },
 };
 export default Model;

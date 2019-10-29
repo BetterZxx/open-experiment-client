@@ -16,22 +16,24 @@ import {
   Timeline,
   Select,
   message,
+  Statistic,
+  Descriptions
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 import CreateForm from './components/CreateForm';
-import { PageHeaderWrapper } from '@ant-design/pro-layout';
+import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
+import {saveAs} from 'file-saver'
 import styles from './style.less';
 
 const FormItem = Form.Item;
+const {TextArea} = Input
 const { Option } = Select;
 const { RangePicker } = DatePicker;
-const {TextArea} = Input
 
 const getValue = obj =>
   Object.keys(obj)
@@ -40,27 +42,24 @@ const getValue = obj =>
 
 const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
-const pType = projectType.slice(1)
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ lab, loading }) => ({
-  labProjects:lab.labProjects,
-  loading: loading.models.lab,
-  tabActiveKey:lab.tabActiveKey
+@connect(({  loading,second }) => ({
+  loading: loading.models.second,
+  projects:second.secondProjects,
+  tabActiveKey:second.tabActiveKey
 }))
 class TableList extends Component {
   state = {
-    modalVisible: false,
-    updateModalVisible: false,
     expandForm: false,
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'0',
     approvalType:1,
     mVisible:false,
-    experimentType:undefined,
-    projectType:undefined
+    fundsModalVisible:false,
+    funds:5000,
+    text:''
   };
 
   columns = [
@@ -71,26 +70,39 @@ class TableList extends Component {
     {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
-      render:(t)=>{
-        return t.map(item=>item.userName).join('、')
-      }
-    },
-    {
-      title: '实验室',
-      dataIndex: 'labName',
+      render:(t)=>t[0].userName
     },
     {
       title: '项目级别',
       dataIndex: 'experimentType',
-      render:(type)=>type===1?'重点':'普通'
+      render: val => val===0?'普通':'重点'
+    },
+    {
+      title: '已选学生数',
+      dataIndex: 'memberStudents',
+      render:(students)=>students?students.length:0
     },
     {
       title: '实验类型',
       dataIndex: 'projectType',
-      render:(type)=>experimentType[type]
-
+      render:(type)=>{
+        return projectType[type]
+      }
     },
- 
+    {
+      title: '预申请金额',
+      dataIndex:'fundsApplyAmount',
+      render:(funds)=> {
+        return (
+          <div>
+            <span>{funds}</span>
+            <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a>
+          </div>
+          
+        );
+      }
+    },
+   
     {
       title: '计划实验时间',
       render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
@@ -114,63 +126,32 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:0
+        role:1,
+        projectType:2
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:0
+        role:1,
+        projectType:2
       }
     })
   }
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
-  }
+  
 
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type:'lab/fetchProjects',
+      type: 'second/fetchProjects',
       payload:{
-        status:0
+        status:'0'
       }
-
-    })
-    
+    });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
-    });
-  };
-
+  
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
@@ -182,71 +163,14 @@ class TableList extends Component {
       payload: {},
     });
   };
-
-  
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listTableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
-  };
-
   handleSelectRows = rows => {
-    console.log(rows)
     this.setState({
       selectedRows: rows,
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listTableList/fetch',
-        payload: values,
-      });
-    });
-  };
-
-  handleSearchClick = ()=>{
-    const {form} = this.props
-    console.log(form.getFieldsValue())
-    this.setState({
-      formValues:form.getFieldsValue()
-    })
-  }
-
   renderSimpleForm() {
     const { form } = this.props;
-    const {experimentType} = this.state
-    const {projectType} = this.state
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -259,40 +183,39 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目级别">
-              {getFieldDecorator('experimentType')(
+              {getFieldDecorator('status')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
-                  
                 >
-                  <Option value={0}>普通</Option>
-                  <Option value={1}>重点</Option>
+                  <Option value="0">普通</Option>
+                  <Option value="1">重点</Option>
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="实验类型">
-              {getFieldDecorator('projectType')(
+            <FormItem label="预申请金额">
+              {getFieldDecorator('status')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
-                  
                 >
-                  {pType.map((item,index)=>{
-                    return <Option key={index} value={index+1}>{item}</Option>
-                  })}
+                  <Option value="0">5000</Option>
+                  <Option value="1">2500</Option>
+                  <Option value="2">3000</Option>
+                  <Option value="3">500</Option>
                 </Select>,
-              )} 
+              )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" onClick={this.handleSearchClick}>
+              <Button type="primary" htmlType="submit">
                 查询
               </Button>
               <Button
@@ -314,31 +237,19 @@ class TableList extends Component {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
-
   onTabChange = tabActiveKey => {
     const {dispatch} = this.props
     dispatch({
-      type:'lab/fetchProjects',
+      type:'second/fetchProjects',
       payload:{
         status:tabActiveKey
       }
-      
     })
     dispatch({
-      type:'lab/changeTabActiveKey',
+      type:'second/changeTabActiveKey',
       payload:tabActiveKey
     })
   };
-  hideModal = ()=>{
-    this.setState({
-      mVisible:false
-    })
-  }
-  showModal = ()=>{
-    this.setState({
-      mVisible:true
-    })
-  }
   handleModalCancel = ()=>{
     this.setState({
       mVisible:false
@@ -346,7 +257,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch} = this.props
+    const {dispatch,tabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {
         reason:text,
@@ -354,7 +265,7 @@ class TableList extends Component {
       }
     })
     let payload={
-      unit:0,
+      unit:1,
       data,
       type:approvalType,
       isDetail:true
@@ -363,31 +274,16 @@ class TableList extends Component {
     dispatch({
       type:'approval/key',
       payload:{
-        unit:0,
+        unit:1,
         data,
         type:approvalType,
-        isDetail:false
+        isDetail:false,
+        status:tabActiveKey
       }
     })
     this.setState({mVisible:false,
     text:''
     })
-  }
-  handleReportClick = ()=>{
-    const {selectedRows,text,approvalType} = this.state
-    const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.projectGroupId)
-    dispatch({
-      type:'approval/key',
-      payload:{
-        unit:0,
-        data,
-        type:2,
-        isDetail:false,
-        status:tabActiveKey
-      }
-    })
-
   }
   showApprovalModal = (type)=>{
     this.setState({
@@ -400,34 +296,115 @@ class TableList extends Component {
       text:e.target.value
     })
   }
+  handleReportClick = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch,tabActiveKey} = this.props
+    const data = selectedRows.map(item=>item.projectGroupId)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:1,
+        data,
+        type:2,
+        isDetail:false,
+        status:tabActiveKey
+      }
+    })
 
+  }
+  showModifyFundsModal = ()=>{
+    this.setState({
+      fundsModalVisible:true
+    })
+  }
+  onFundsChange = (e)=>{
+    this.setState({
+      funds:e
+    })
+
+  }
+  handleModifyOk = ()=>{
+    const {dispatch,tabActiveKey} = this.props
+    const {selectedRows,funds} = this.state
+    console.log(selectedRows)
+    const projectIdList = selectedRows.map(item=>item.projectGroupId)
+    dispatch({
+      type:'second/updateFunds',
+      payload:{
+        data:{
+          fundsMount:funds,
+          projectIdList
+        },
+        status:tabActiveKey
+      }
+    })
+    this.setState({
+      fundsModalVisible:false
+    })
+  }
+  handleModifyCancel = ()=>{
+    this.setState({
+      fundsModalVisible:false
+    })
+  }
+  showModifyFundsModal = ()=>{
+    this.setState({
+      fundsModalVisible:true
+    })
+  }
+  handleExportExcel = ()=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'second/export'
+    })
+  }
   render() {
+    const action = (
+      <div>
+        <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span>
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={this.handleExportExcel}>导出立项一览表</Button>
+        <Button >关闭/开启学院审核</Button>
+      </div>
+      
+    );
     const {
-     
       loading,
-      labProjects,
+      projects,
       tabActiveKey
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,approvalType,mVisible,text,formValues } = this.state;
-   let projects = labProjects.filter(item=>{
-     return formValues.projectType?item.projectType===formValues.projectType:true
-   }).filter(item=>{
-    return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
-   })
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
+    console.log(111,tabActiveKey)
+    const { selectedRows, modalVisible,fundsModalVisible,funds, updateModalVisible, stepFormValues ,approvalType,mVisible,text} = this.state;
     const btnDisable = selectedRows.length===0
+    const content =<RouteContext.Consumer>
+    {({ isMobile }) => (
+      <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
+        <Descriptions.Item label="实验室待审批数">56</Descriptions.Item>
+        <Descriptions.Item label="重点项目待审批数">45</Descriptions.Item>
+        <Descriptions.Item label="重点项目特殊资助项目数">
+          <Statistic value={8} suffix="/ 24" />
+        </Descriptions.Item>
+        <Descriptions.Item label="普通项目待审批数">
+          35
+        </Descriptions.Item>
+       
+      </Descriptions>
+    )}
+  </RouteContext.Consumer>
+    const extraContent = <div className={styles.extraContent}>
+    <div className={styles.statItem}>
+      <Statistic title="重点项目已通过人数" value={30} suffix='/53' />
+    </div>
+    <div className={styles.statItem}>
+      <Statistic title="普通项目通过人数" value={8} suffix="/ 24" />
+    </div>
+  </div>
     return (
       <PageHeaderWrapper
+      extra={action}
+      content={content}
+      extraContent={extraContent}
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
-      extra="计算机科学学院"
       tabList={[
         {
           key: '0',
@@ -447,6 +424,19 @@ class TableList extends Component {
         },
       ]}
       >
+        <Modal
+        visible={fundsModalVisible}
+        onOk={this.handleModifyOk}
+        onCancel={this.handleModifyCancel}
+        width={400}
+        >
+          <Select style={{width:"80%"}} value={funds} onChange={this.onFundsChange}>
+            <Option value={5000}>5000元</Option>
+            <Option value={3000}>3000元</Option>
+            <Option value={2500}>2500元</Option>
+          </Select>
+
+        </Modal>
         <Modal
         visible={mVisible}
         onOk={this.handleModalOk}
@@ -473,25 +463,19 @@ class TableList extends Component {
                 </Button>
               </span>}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
+              <Button disabled={btnDisable} onClick={()=>this.showModifyFundsModal()}>修改金额</Button>
             </div>}
             <StandardTable
               selectedRows={selectedRows}
-              loading={loading}
+             
               dataSource={projects}
+              rowKey = 'projectGroupId' 
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              rowKey='projectGroupId'
             />
           </div>
-          {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
-          {stepFormValues && Object.keys(stepFormValues).length ? (
-            <UpdateForm
-              {...updateMethods}
-              updateModalVisible={updateModalVisible}
-              values={stepFormValues}
-            />
-          ) : null} */}
+         
         </Card>
       </PageHeaderWrapper>
     );

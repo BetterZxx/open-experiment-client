@@ -1,53 +1,34 @@
-import { addRule, queryRule, removeRule, updateRule } from './service';
+import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
+import { message } from 'antd';
 
 const Model = {
-  namespace: 'applyedProject1123123',
+  namespace: 'lab1',
   state: {
-    data: {
-      list: [],
-      pagination: {},
-    },
+    labProjects:[],
+    tabActiveKey:'0'
   },
   effects: {
-    *fetch({ payload }, { call, put }) {
-      const response = yield call(queryRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-    },
-
-    *add({ payload, callback }, { call, put }) {
-      const response = yield call(addRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-
-    *remove({ payload, callback }, { call, put }) {
-      const response = yield call(removeRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
-
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
+    *fetchProjects({ payload }, { call, put }) {
+      console.log(payload)
+      const response = yield call(reqLabProjects, payload);
+      if(response.code===0){
+        yield put({
+          type: 'save',
+          payload: response.data,
+        });
+      }else{
+        message.error('请求审批项目出错')
+      }
+      
     },
   },
   reducers: {
-    save(state, action) {
-      return { ...state, data: action.payload };
+    save(state, {payload}) {
+      return { ...state, labProjects: payload };
     },
+    changeTabActiveKey(state,{payload}){
+      return {...state,tabActiveKey:payload}
+    }
   },
 };
 export default Model;

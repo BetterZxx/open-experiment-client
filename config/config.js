@@ -9,8 +9,8 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://10.20.0.55:8083' 
-const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcement']
+const proxyURL = 'http://10.20.0.51:8083' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file']
 const proxyOptions = {
   target: proxyURL,
   changeOrigin: true,
@@ -264,7 +264,7 @@ export default {
                     },
                     {
                       name: '重点实验审批',
-                      path: '/auth/lab/keyProjects',
+                      path: '/auth/lab/key-projects',
                       component: './agreement/lab/key-projects',
                       icon: 'team'
                     },
@@ -272,6 +272,13 @@ export default {
                       name: '项目详情',
                       path: '/auth/lab/projects/detail',
                       component: './common/detail',
+                      hideInMenu:true,
+                      icon: 'team'
+                    },
+                    {
+                      name: '重点项目详情',
+                      path: '/auth/lab/key-projects/detail',
+                      component: './common/key-detail',
                       hideInMenu:true,
                       icon: 'team'
                     },
@@ -289,9 +296,22 @@ export default {
                       icon: 'team'
                     },
                     {
+                      name: '重点项目审批',
+                      path: '/auth/second/key-projects',
+                      component: './agreement/second/key-projects',
+                      icon: 'team'
+                    },
+                    {
                       name: '项目详情',
                       path: '/auth/second/projects/detail',
                       component: './common/detail',
+                      hideInMenu:true,
+                      icon: 'team'
+                    },
+                    {
+                      name: '重点项目详情',
+                      path: '/auth/second/key-projects/detail',
+                      component: './common/key-detail',
                       hideInMenu:true,
                       icon: 'team'
                     },
@@ -309,9 +329,22 @@ export default {
                       icon: 'team'
                     },
                     {
+                      name: '重点项目审批',
+                      path: '/auth/equipment/key-projects',
+                      component: './agreement/equipment/key-projects',
+                      icon: 'team'
+                    },
+                    {
                       name: '项目详情',
                       path: '/auth/equipment/projects/detail',
                       component: './common/detail',
+                      hideInMenu:true,
+                      icon: 'team'
+                    },
+                    {
+                      name: '重点项目详情',
+                      path: '/auth/equipment/key-projects/detail',
+                      component: './common/key-detail',
                       hideInMenu:true,
                       icon: 'team'
                     },

@@ -4,6 +4,7 @@ export const suggestGroupType = [,'A组-石工地勘','B组-化工材料','C组-
 export const operationType = ['同意','拒绝','上报','修改']
 export const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
 export const grade = [2016,2017,2018,2019]
+export const memberRole = ['指导老师','项目组长','普通成员']
 export const statusType = {
   '-3':'项目已被终止',
   '-2':'驳回修改',

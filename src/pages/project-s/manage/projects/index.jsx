@@ -65,9 +65,9 @@ class TableList extends Component {
     },
     {
       title: '指导老师',
-      dataIndex: 'guidanceTeachers',
-      render:(t=[])=>{
-        return t.map(item=>item.userName).join('、')
+      dataIndex: 'projectDetails',
+      render:(detail)=>{
+        return detail.creator.userName
       }
     },
     {

@@ -27,6 +27,7 @@ import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
 import {projectType} from '@/utils/constant'
+import {saveAs} from 'file-saver'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -349,11 +350,17 @@ class TableList extends Component {
       fundsModalVisible:true
     })
   }
+  handleExportExcel = ()=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'second/export'
+    })
+  }
   render() {
     const action = (
       <div>
         <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span>
-        <Button icon='export' type='primary' style={{marginRight:15}}>导出立项一览表</Button>
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={this.handleExportExcel}>导出立项一览表</Button>
         <Button >关闭/开启学院审核</Button>
       </div>
       
@@ -458,7 +465,7 @@ class TableList extends Component {
             </div>}
             <StandardTable
               selectedRows={selectedRows}
-              loading={loading}
+             
               dataSource={projects}
               rowKey = 'projectGroupId' 
               columns={this.columns}

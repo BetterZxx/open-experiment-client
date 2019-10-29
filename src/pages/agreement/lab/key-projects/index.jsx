@@ -24,11 +24,14 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
+import {experimentType} from '@/utils/constant'
+import {projectType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const {TextArea} = Input
 
 const getValue = obj =>
   Object.keys(obj)
@@ -37,11 +40,13 @@ const getValue = obj =>
 
 const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
+const pType = projectType.slice(1)
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading }) => ({
-  listTableList,
-  loading: loading.models.listTableList,
+@connect(({ lab, loading }) => ({
+  labProjects:lab.labProjects,
+  loading: loading.models.lab,
+  tabActiveKey:lab.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -51,81 +56,77 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'auth'
+    tabActiveKey:'0',
+    approvalType:1,
+    mVisible:false,
+    experimentType:undefined,
+    projectType:undefined
   };
 
   columns = [
     {
       title: '项目名称',
-      dataIndex: 'name',
+      dataIndex: 'projectName',
+    },
+    {
+      title: '指导老师',
+      dataIndex: 'guidanceTeachers',
+      render:(t)=>{
+        return t.map(item=>item.userName).join('、')
+      }
     },
     {
       title: '实验室',
-      dataIndex: 'desc',
+      dataIndex: 'labName',
     },
     {
       title: '项目级别',
-      dataIndex: 'callNo',
-      align: 'right',
-      render: val => `${val} 万`,
-      // mark to display a total number
-      needTotal: true,
-    },
-    {
-      title: '已选学生数',
-      dataIndex: 'status1',
+      dataIndex: 'experimentType',
+      render:(type)=>type===1?'重点':'普通'
     },
     {
       title: '实验类型',
-      dataIndex: 'status2',
-    },
-    {
-      title: '状态',
-      dataIndex: 'status',
-      filters: [
-        {
-          text: status[0],
-          value: '0',
-        },
-        {
-          text: status[1],
-          value: '1',
-        },
-        {
-          text: status[2],
-          value: '2',
-        },
-        {
-          text: status[3],
-          value: '3',
-        },
-      ],
+      dataIndex: 'projectType',
+      render:(type)=>experimentType[type]
 
-      render:(val) => {
-        return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">详情</a>
-        </span>;
-      },
     },
+ 
     {
       title: '计划实验时间',
-      dataIndex: 'updatedAt',
-      sorter: true,
-      render: val => <span>{moment(val).format('YYYY-MM-DD HH:mm:ss')}</span>,
+      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      dataIndex:'projectGroupId',
+      render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
           
           <Divider type="vertical" /> */}
-          <a onClick={()=>{this.props.history.push('/projects/auth/lab/projects/detail')}}>查看详情</a>
+          <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
     },
   ];
+  handleDetailClick = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:0,
+        projectType:2
+      }
+    })
+    dispatch({
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:0,
+        projectType:2
+      }
+    })
+  }
   editWarning = ()=>{
     Modal.warning({
       title: '提醒',
@@ -138,8 +139,13 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'listTableList/fetch',
-    });
+      type:'lab/fetchProjects',
+      payload:{
+        status:0
+      }
+
+    })
+    
   }
 
   handleStandardTableChange = (pagination, filtersArg, sorter) => {
@@ -173,92 +179,27 @@ class TableList extends Component {
     this.setState({
       formValues: {},
     });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
-    });
-  };
-
-  
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listTableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
   };
 
   handleSelectRows = rows => {
+    console.log(rows)
     this.setState({
       selectedRows: rows,
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listTableList/fetch',
-        payload: values,
-      });
-    });
-  };
-
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
+  handleSearchClick = ()=>{
+    const {form} = this.props
+    console.log(form.getFieldsValue())
+    this.setState({
+      formValues:form.getFieldsValue()
+    })
+  }
 
   renderSimpleForm() {
     const { form } = this.props;
+    const {experimentType} = this.state
+    const {projectType} = this.state
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleSearch} layout="inline">
@@ -271,39 +212,40 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目级别">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('experimentType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
+                  
                 >
-                  <Option value="0">普通</Option>
-                  <Option value="1">重点</Option>
+                  <Option value={0}>普通</Option>
+                  <Option value={1}>重点</Option>
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="限选专业">
-              {getFieldDecorator('status')(
+            <FormItem label="实验类型">
+              {getFieldDecorator('projectType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
+                  
                 >
-                  <Option value="0">软件工程</Option>
-                  <Option value="1">网络工程</Option>
-                  <Option value="2">物联网工程</Option>
-                  <Option value="3">XXX</Option>
+                  {pType.map((item,index)=>{
+                    return <Option key={index} value={index+1}>{item}</Option>
+                  })}
                 </Select>,
-              )}
+              )} 
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={this.handleSearchClick}>
                 查询
               </Button>
               <Button
@@ -325,29 +267,106 @@ class TableList extends Component {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
+
+  onTabChange = tabActiveKey => {
+    const {dispatch} = this.props
+    dispatch({
+      type:'lab/fetchProjects',
+      payload:{
+        status:tabActiveKey
+      }
+      
+    })
+    dispatch({
+      type:'lab/changeTabActiveKey',
+      payload:tabActiveKey
+    })
+  };
   hideModal = ()=>{
     this.setState({
-      modalVisible:false
+      mVisible:false
     })
   }
   showModal = ()=>{
     this.setState({
-      modalVisible:true
+      mVisible:true
     })
   }
-  onTabChange = tabActiveKey => {
+  handleModalCancel = ()=>{
     this.setState({
-      tabActiveKey,
-    });
-  };
+      mVisible:false
+    })
+  }
+  handleModalOk = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch} = this.props
+    const data = selectedRows.map(item=>{
+      return {
+        reason:text,
+        projectId:item.projectGroupId
+      }
+    })
+    let payload={
+      unit:0,
+      data,
+      type:approvalType,
+      isDetail:true
+    }
+    console.log(payload)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:0,
+        data,
+        type:approvalType,
+        isDetail:false
+      }
+    })
+    this.setState({mVisible:false,
+    text:''
+    })
+  }
+  handleReportClick = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch,tabActiveKey} = this.props
+    const data = selectedRows.map(item=>item.projectGroupId)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:0,
+        data,
+        type:2,
+        isDetail:false,
+        status:tabActiveKey
+      }
+    })
+
+  }
+  showApprovalModal = (type)=>{
+    this.setState({
+      approvalType:type,
+      mVisible:true
+    })
+  }
+  handleInputChange = (e)=>{
+    this.setState({
+      text:e.target.value
+    })
+  }
 
   render() {
     const {
-      listTableList: { data },
+     
       loading,
+      labProjects,
+      tabActiveKey
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey } = this.state;
-   
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,approvalType,mVisible,text,formValues } = this.state;
+   let projects = labProjects.filter(item=>{
+     return formValues.projectType?item.projectType===formValues.projectType:true
+   }).filter(item=>{
+    return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
+   })
     const parentMethods = {
       handleAdd: this.handleAdd,
       handleModalVisible: this.handleModalVisible,
@@ -361,77 +380,63 @@ class TableList extends Component {
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
+      extra="计算机科学学院"
       tabList={[
         {
-          key: 'auth',
+          key: '0',
           tab: '待审批',
         },
         {
-          key: 'report',
+          key: '1',
           tab: '待上报',
         },
         {
-          key: 'reported',
+          key: '2',
           tab: '已上报',
         },
         {
-          key: 'reject',
+          key: '3',
           tab: '已驳回',
         },
       ]}
       >
+        <Modal
+        visible={mVisible}
+        onOk={this.handleModalOk}
+        onCancel={this.handleModalCancel}
+        title={approvalType===0?'驳回理由':'审核意见'}
+        >
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+
+        </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            {tabActiveKey!=='reported'&&tabActiveKey!=='reject'&&<div className={styles.tableListOperator}>
+            {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
-              {tabActiveKey==='auth'&&<Button type="primary" disabled={btnDisable} onClick={()=>{}}>
+              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准
               </Button>}
-              {tabActiveKey==='report'&&<span> 
-                <Button disabled={btnDisable} type="primary" onClick={()=>{}}>
+              {tabActiveKey==='1'&&<span> 
+                <Button disabled={btnDisable} type="primary" onClick={()=>{this.handleReportClick()}}>
                   上报
                 </Button>
                 <Button disabled={btnDisable} onClick={()=>{}}>
                   修改审批意见
                 </Button>
               </span>}
-              <Button disabled={btnDisable}>驳回</Button> 
+              <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
             </div>}
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              data={data}
+              dataSource={projects}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
+              rowKey='projectGroupId'
             />
           </div>
-          <Modal
-            visible={modalVisible}
-            onCancel={this.hideModal}
-            footer={<Button type='primary'>确认修改</Button>}
-            
-          >
-            <Timeline>
-              <Timeline.Item color="green">
-                <p>实验室已上报 2017-08-23</p>
-                <p>审核意见：符合要求审核通过。。。。</p>
-              </Timeline.Item>
-              <Timeline.Item color="red">
-                <p>实验室已驳回，操作人：XXX 2017-08-23</p>
-                <p>驳回原因：未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求未达到要求</p>
-              </Timeline.Item>
-              <Timeline.Item>
-                <p>实验室待上报 2017-09-12</p>
-                <p>审核意见：符合要求审核通过。。。。</p>
-              </Timeline.Item>
-              <Timeline.Item color="gray">
-                <p>实验室待待审核</p>
-              </Timeline.Item>
-            </Timeline>,
-
-          </Modal>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
           {stepFormValues && Object.keys(stepFormValues).length ? (
             <UpdateForm

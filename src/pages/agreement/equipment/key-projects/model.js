@@ -3,7 +3,7 @@ import { message } from 'antd';
 import {saveAs} from 'file-saver'
 
 const Model = {
-  namespace: 'equipment',
+  namespace: 'equipment1',
   state: {
     projects:[]
   },

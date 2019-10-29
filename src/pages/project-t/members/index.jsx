@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType} from '@/utils/constant'
+import {projectType,memberRole} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -56,6 +56,7 @@ class TableList extends Component {
     formValues: {},
     stepFormValues: {},
     detailModalVisible:false,
+    apply:{}
   };
 
   columns = [
@@ -88,7 +89,10 @@ class TableList extends Component {
     },
     {
       title: '项目角色',
-      dataIndex: 'stat',
+      dataIndex: 'memberRole',
+      render:(val)=>{
+        return memberRole[val-1]
+      }
     },
     {
       title: '实验类型',
@@ -102,21 +106,21 @@ class TableList extends Component {
       
       render:(val) => {
         return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
+          <Badge status={statusMap[val-1]} text={status[val-1]} />
         </span>;
       },
     },
     {
       title: '申请时间',
-      dataIndex: 'updatedAt',
+      dataIndex: 'applyTime',
       sorter: true,
       render: val => <span>{moment(val).format('YYYY-MM-DD')}</span>,
     },
     {
       title: '操作',
-      render: (text, record) => (
+      render: (val) => (
         <Fragment>
-          <a onClick={this.showDetailModal}>详情</a>
+          <a onClick={()=>this.showDetailModal(val)}>详情</a>
           {/* <Divider type="vertical" /> */}
           
         </Fragment>
@@ -160,20 +164,18 @@ class TableList extends Component {
   };
 
   handleSearch = e => {
-    e.preventDefault();
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
       console.log(fieldsValue)
       const values = {
         ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
       };
       this.setState({
         formValues: values,
       });
       dispatch({
-        type: 'listTableList/fetch',
+        type: 'applyStudents/filter',
         payload: values,
       });
     });
@@ -226,7 +228,7 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('projectId')(
+              {getFieldDecorator('id')(
                 <Select
                   placeholder="请选择"
                   style={{
@@ -244,7 +246,7 @@ class TableList extends Component {
           <Col md={8} sm={24}>
             <FormItem label="状态">
               {getFieldDecorator('status',{
-                initialValue:'0'
+                initialValue:'1'
               })(
                 <Select
                   placeholder="请选择"
@@ -252,17 +254,17 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  <Option value="3">全部</Option>
-                  <Option value="0">待审核</Option>
-                  <Option value="1">已通过</Option>
-                  <Option value="2">已拒绝</Option>
+                  <Option value="">全部</Option>
+                  <Option value="1">待审核</Option>
+                  <Option value="2">已通过</Option>
+                  <Option value="3">已拒绝</Option>
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={this.handleSearch}>
                 查询
               </Button>
               <Button
@@ -293,9 +295,10 @@ class TableList extends Component {
       modalVisible:true
     })
   }
-  showDetailModal = ()=>{
+  showDetailModal = (apply)=>{
     this.setState({
-      detailModalVisible:true
+      detailModalVisible:true,
+      apply
     })
   }
   hideDetailModal = ()=>{
@@ -374,7 +377,7 @@ class TableList extends Component {
       projects
     } = this.props;
     const {getFieldDecorator} = form
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible,apply } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove" onClick={this.handleSetLeader}>设为组长</Menu.Item>
@@ -419,9 +422,17 @@ class TableList extends Component {
             visible={modalVisible}
             onCancel={this.hideModal}
             onOk={this.handleAdd}
+            width={450}
             
           >
-            <Form>
+            <Form
+            labelCol={{
+              span:4
+            }}
+            wrapperCol={{
+              span:20
+            }}
+            >
             <FormItem label="项目名称">
               {getFieldDecorator('projectGroupId')(
                 <Select
@@ -451,28 +462,28 @@ class TableList extends Component {
           >
             <Descriptions column={2} >
               <Descriptions.Item label='姓名'>
-                XXX
+                {apply.realName}
               </Descriptions.Item>
               <Descriptions.Item label='学号'>
-                2017XXX  
+                {apply.code}
               </Descriptions.Item>
               <Descriptions.Item label='申请项目'>
-                XXX项目
+                {apply.projectName}
               </Descriptions.Item>
               <Descriptions.Item label='项目层次'>
-                重点
+                {apply.projectType===1?'普通':'重点'}
               </Descriptions.Item>
               <Descriptions.Item label='QQ'>
-                X1111112
+                {apply.qqNum}
               </Descriptions.Item>
               <Descriptions.Item label='联系电话'>
-                18222222XXX
+                {apply.mobilePhone}
               </Descriptions.Item>
               <Descriptions.Item label='专业'>
-                软件工程
+                {apply.major}
               </Descriptions.Item>
               <Descriptions.Item label='年级'>
-                2017级
+                {apply.grade+'级'}
               </Descriptions.Item>
               <Descriptions.Item span={2} label='学习绩点'>
                 <Descriptions bordered>
@@ -497,10 +508,10 @@ class TableList extends Component {
                 </Descriptions>
               </Descriptions.Item>
               <Descriptions.Item span={2} label='个人特长'>
-                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
+                {apply.personJudge} 
               </Descriptions.Item>
               <Descriptions.Item span={2} label='已修课程及具备知识'>
-                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX 
+                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX{apply.technicalRole} 
               </Descriptions.Item>
               
             </Descriptions>
