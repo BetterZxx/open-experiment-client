@@ -14,6 +14,7 @@ import {
   Row,
   Select,
   message,
+  TreeSelect
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -21,12 +22,13 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,major,college,grade,suggestGroupType} from '@/utils/constant'
+import {projectType,major,college,grade,suggestGroupType, experimentType, majorCollege} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const {TreeNode} = TreeSelect
 
 const getValue = obj =>
   Object.keys(obj)
@@ -64,9 +66,9 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
+      dataIndex: 'experimentType',
       render:(type)=>{
-        return projectType[type]
+        return experimentType[type]
       }
     },
     {
@@ -76,8 +78,8 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
-      render: val => val===0?'普通':'重点'
+      dataIndex: 'projectType',
+      render: val => val===1?'普通':'重点'
     },
     {
       title: '已选学生数',
@@ -131,46 +133,14 @@ class TableList extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/fetch',
-    });
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch,projects } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
-    });
-  };
-
+  
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
-    });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
     });
   };
 
@@ -181,30 +151,7 @@ class TableList extends Component {
     });
   };
 
-  handleMenuClick = e => {
-    const { dispatch } = this.props;
-    const { selectedRows } = this.state;
-    if (!selectedRows) return;
-
-    switch (e.key) {
-      case 'remove':
-        dispatch({
-          type: 'listTableList/remove',
-          payload: {
-            key: selectedRows.map(row => row.key),
-          },
-          callback: () => {
-            this.setState({
-              selectedRows: [],
-            });
-          },
-        });
-        break;
-
-      default:
-        break;
-    }
-  };
+ 
 
   handleSelectRows = rows => {
     this.setState({
@@ -212,32 +159,18 @@ class TableList extends Component {
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listTableList/fetch',
-        payload: values,
-      });
-    });
-  };
   handleFilter = ()=>{
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
 
       const values = {
-        ...fieldsValue,startTime:fieldsValue.date[0].format('x'),endTime:fieldsValue.date[1].format('x')
+        ...fieldsValue
       };
+      if(fieldsValue.date){
+        values.startTime = fieldsValue.date[0].format('x')
+        values.endTime = fieldsValue.date[1].format('x')
+      }
       console.log(values)
       this.setState({
         formValues: values,
@@ -279,12 +212,12 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="指导老师">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('teacher')(
                 <Input placeholder="请输入" />
               )}
             </FormItem>
@@ -353,8 +286,8 @@ class TableList extends Component {
                 }}
               >
                 {
-                    college.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    majorCollege.map((item)=>{
+                    return item?<Option key={item.cId} value={item.cId}>{item.cName}</Option>:''
                   })
                 }
                 
@@ -386,19 +319,14 @@ class TableList extends Component {
           <Col md={8} sm={24}>
             <FormItem label="限选专业">
               {getFieldDecorator('limitMajor')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                  mode="multiple"
-                >
-                  {
-                    major.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
-                  })
-                  }
-                </Select>,
+                <TreeSelect                     
+                placeholder="请选择适应专业"
+                allowClear
+                multiple={true}
+                onChange={this.onChange}
+              >             
+                {this.renderTreeNode(majorCollege)}
+              </TreeSelect>
               )}
             </FormItem>
           </Col>
@@ -413,8 +341,8 @@ class TableList extends Component {
                   mode="multiple"
                 >
                   {
-                    college.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    majorCollege.map((item)=>{
+                    return item?<Option key={item.cId} value={item.cId}>{item.cName}</Option>:''
                   })
                   }
                 </Select>,
@@ -448,7 +376,7 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="实验类型">
-              {getFieldDecorator('projectType')(
+              {getFieldDecorator('experimentType')(
                 <Select
                   placeholder="请选择"
                   style={{
@@ -456,8 +384,8 @@ class TableList extends Component {
                   }}
                 >
                   {
-                    projectType.map((item,index)=>{
-                      return item?<Option key={index} value={index}>{item}</Option>:''
+                    Object.keys(experimentType).map((item)=>{
+                      return item?<Option key={item} value={item}>{experimentType[item]}</Option>:''
                     })
                   }
                 </Select>,
@@ -520,7 +448,18 @@ class TableList extends Component {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
-
+  renderTreeNode = (majorCollege)=>{
+    return majorCollege.map(item=>{
+      return <TreeNode value={item.cId+'c'} title={item.cName} key={item.cId+'c'} selectable={false}>
+        {
+          item.majors.map(element=>{
+            return <TreeNode value={element.mId} key={element.mId} title={element.mName}>
+            </TreeNode>
+          })
+        }
+      </TreeNode>
+    })
+  }
   render() {
     const {
       listTableList: { data },
@@ -565,7 +504,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey='id'
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

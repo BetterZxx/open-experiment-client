@@ -1,15 +1,16 @@
-import { reqEquipmentProjects,reqExportConclusionExcel} from './service';
+import { reqEquipmentKeyProjects,reqExportConclusionExcel,reqRejectedKeyProjects} from './service';
 import { message } from 'antd';
 import {saveAs} from 'file-saver'
 
 const Model = {
-  namespace: 'equipment1',
+  namespace: 'equipmentKeyProjects',
   state: {
-    projects:[]
+    projects:[],
+    tabActiveKey:'0'
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
-      const response = yield call(reqEquipmentProjects, payload);
+      const response = payload.status==='0'?yield call(reqEquipmentKeyProjects, payload.data):yield call(reqRejectedKeyProjects,payload.data);
       if(response.code===0){
         yield put({
           type: 'save',
@@ -30,6 +31,9 @@ const Model = {
     save(state, {payload}) {
       return { ...state, projects: payload };
     },
+    changeTabActiveKey(state,{payload}){
+      return {...state,tabActiveKey:payload}
+    }
   },
 };
 export default Model;

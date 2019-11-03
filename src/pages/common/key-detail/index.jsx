@@ -15,7 +15,9 @@ import {
   Empty,
   Tabs,
   Modal,
-  Input
+  Input,
+  Upload,
+  message
 } from 'antd';
 import { GridContent, PageHeaderWrapper, RouteContext } from '@ant-design/pro-layout';
 import React, { Component, Fragment } from 'react';
@@ -26,6 +28,32 @@ import styles from './style.less';
 import moment from 'moment';
 import { json } from 'body-parser';
 import {statusType} from '@/utils/constant'
+import { Document, Page, Text, View, StyleSheet,PDFViewer  } from '@react-pdf/renderer';
+
+// Create styles
+const styles1 = StyleSheet.create({
+  page: {
+    flexDirection: 'row',
+    backgroundColor: '#E4E4E4'
+  },
+  section: {
+    margin: 10,
+    padding: 10,
+    flexGrow: 1
+  }
+});
+
+// Create Document Component
+// const MyDocument = () => (
+//   <Document
+//   file={'http://47.107.61.232:8081/sign/100%E9%A2%98%E7%B3%BB%E5%88%97by_July.pdf'}//文档地址
+//   loading=""
+//   >
+//     <Page size="A4" style={styles1.page}>
+     
+//     </Page>
+//   </Document>
+// );
 
 const { Step } = Steps;
 const { TabPane } = Tabs;
@@ -284,18 +312,47 @@ class Advanced extends Component {
     })
 
   }
+  handleKeyProjectApply = ()=>{
+    const {dispatch,detail} = this.props
+    dispatch({
+      type:'approval/apply',
+      payload:{
+        projectId:detail.projectGroupId
+      }
+    })
+  }
+  
+  onDocumentLoadSuccess = ({ numPages }) => {//numPages是总页数
+    message.success('success')
+  this.setState({ numPages });
+  };
   render() {
     const { operationKey, tabActiveKey,mVisible,projectId,approvalType,text } = this.state;
     const { profileAdvanced, loading,detail,process } = this.props;
     console.log(detail)
     const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
+    const MyDocument = <Document
+    file={this.state.pdfContent}//文档地址
+    loading=""
+    onLoadSuccess={this.onDocumentLoadSuccess}
+    >
+      <Page 
+          key={this.state.currentPage} 
+          pageNumber={this.state.currentPage} //当前页页码
+          width={850}
+      />
+    </Document>
     const extra = (
       <div className={styles.moreInfo}>
+        
+    
+      <Statistic style={{textAlign:"left",marginRight:30}} title="状态" value={'未提交'} />
         <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />
         <Statistic title="参与人数" value={detail.stuMembers?detail.stuMembers.length:0}/>
       </div>
     );
     const action = (<div>
+      <Button type='primary'style={{marginRight:15}} onClick={()=>this.handleKeyProjectApply()}>提交重点申请</Button>
       <Button type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(1)}>审批通过</Button>
       <Button style={{marginRight:15}} onClick={()=>this.handleReportClick()}>上报</Button>
       <Button style={{marginRight:15}} onClick={()=>this.handleApprovalClick(0)}>驳回</Button>
@@ -331,7 +388,7 @@ class Advanced extends Component {
         )}
       </RouteContext.Consumer>
     );
-    const tDescriptions = detail.guideTeachers.map((item,key)=>{
+    const tDescriptions = detail.list.filter(item=>item.memberRole===1).map((item,key)=>{
         return <div key={key}>
           
             <Descriptions
@@ -357,7 +414,24 @@ class Advanced extends Component {
             />
         </div>
       })
-      const sDecriptions = detail.stuMembers.map((item,key)=>{
+      const props = {
+        action: 'https://www.mocky.io/v2/5cc8019d300000980a055e76',
+        onChange({ file, fileList }) {
+          if (file.status !== 'uploading') {
+            console.log(file, fileList);
+          }
+        },
+        defaultFileList: [
+          {
+            uid: '1',
+            name: 'xxx.png',
+            status: 'done',
+            response: 'Server Error 500', // custom error message to show
+            url: 'http://www.baidu.com/xxx.png',
+          }
+        ],
+      };
+      const sDecriptions = detail.list.filter(item=>item.memberRole!==1).map((item,key)=>{
         return <div key={key}>
          
           <Descriptions
@@ -366,10 +440,10 @@ class Advanced extends Component {
                   }}
                 
                 >
-                  <Descriptions.Item label="姓名">{item.name}</Descriptions.Item>
-                  <Descriptions.Item label="电话">{item.phone}</Descriptions.Item>
-                  <Descriptions.Item label="email">{item.qq}</Descriptions.Item>
-                  <Descriptions.Item label="所属学院">{item.dept}</Descriptions.Item>
+                  <Descriptions.Item label="姓名">{item.realName}</Descriptions.Item>
+                  <Descriptions.Item label="电话">{item.mobilePhone}</Descriptions.Item>
+                  <Descriptions.Item label="email">{item.qqNum}</Descriptions.Item>
+                  <Descriptions.Item label="所属学院">{item.major}</Descriptions.Item>
                   <Descriptions.Item label="描述">
                     这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
                   </Descriptions.Item>
@@ -381,7 +455,7 @@ class Advanced extends Component {
                 />
         </div>
       })
-      
+ 
    
     return (
       <PageHeaderWrapper
@@ -452,9 +526,28 @@ class Advanced extends Component {
               title="项目主要内容"
               style={{
                 marginBottom: 24,
+                height:1000
               }}
             >
+              <PDFViewer style={{width:1000}}>
+                {MyDocument}
+              </PDFViewer>
+              <div style={{width:'50%',float:'left'}}>
+                <Upload {...props} style={{width:'200',float:'left'}}>
+                  <Button>
+                    <Icon type="upload" /> 重新上传
+                  </Button>
+                  
+                </Upload>
+              </div>
+              
+              <Button>预览</Button>
+              {/* <embed src="http://47.107.61.232:8081/sign/100%E9%A2%98%E7%B3%BB%E5%88%97by_July.pdf" type="application/pdf" width="100%" height="100%"/> */}
+              <div style={{height:500}}>
               {detail.mainContent}
+              <iframe style={{width:'100%'}} src="https://docs.google.com/gview?url=http://118.24.95.11:3000/download?filename=sybg.docx&embedded=true" frameborder="0"></iframe>
+              
+              </div>
               
             </Card>
             <Card

@@ -25,7 +25,7 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
-import {projectType} from '@/utils/constant'
+import {projectType,major,college,grade,suggestGroupType, majorCollege} from '@/utils/constant'
 import UpdateForm from './components/UpdateForm';
 import styles from './style.less';
 
@@ -45,8 +45,9 @@ const status = ['待审核', '待上报', '已上报', '已驳回'];
 /* eslint react/no-multi-comp:0 */
 @connect(({ listTableList, loading ,equipment}) => ({
   listTableList,
-  loading: loading.models.listTableList,
-  projects:equipment.projects
+  loading: loading.models.equipment,
+  projects:equipment.projects,
+  tabActiveKey:equipment.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -56,7 +57,6 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'auth'
   };
 
   columns = [
@@ -68,7 +68,7 @@ class TableList extends Component {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
       render:(t)=>{
-        return t.map(item=>item.userName).join('、')
+        return t?t.map(item=>item.userName).join('、'):''
       }
     },
     {
@@ -78,8 +78,7 @@ class TableList extends Component {
     },
     {
       title: '已选学生数',
-      dataIndex: 'memberStudents',
-      render:(students)=>students.length
+      dataIndex: 'subordinateCollege',
     },
     {
       title: '实验类型',
@@ -94,7 +93,7 @@ class TableList extends Component {
         return (
           <div>
             <span>{funds}</span>
-            <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a>
+            {/* <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a> */}
           </div>
           
         );
@@ -106,7 +105,7 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      dataIndex:'projectGroupId',
+      dataIndex:'id',
       render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
@@ -117,6 +116,29 @@ class TableList extends Component {
       ),
     },
   ];
+  handleFilter = ()=>{
+    const { dispatch, form } = this.props;
+    form.validateFields((err, fieldsValue) => {
+      if (err) return;
+
+      const values = {
+        ...fieldsValue
+      };
+      if(fieldsValue.date.length>0){
+        values.startTime = fieldsValue.date[0].format('x')
+        values.endTime = fieldsValue.date[1].format('x')
+      }
+      console.log(values)
+      this.setState({
+        formValues: values,
+      });
+      dispatch({
+        type:'equipment/filter',
+        payload:values
+      })
+    });
+
+  }
   handleDetailClick = (id)=>{
     const {dispatch} = this.props
     dispatch({
@@ -146,7 +168,11 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'equipment/fetchProjects',
+      type: 'equipment/fetchProjects',  
+      payload:{
+        status:'0',
+        data:{}
+      }
     });
   }
 
@@ -169,51 +195,7 @@ class TableList extends Component {
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listTableList/fetch',
-        payload: values,
-      });
-    });
-  };
 
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
   toggleForm = () => {
     const { expandForm } = this.state;
     this.setState({
@@ -235,39 +217,41 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="学院">
-              {getFieldDecorator('status')(
+          <FormItem label="开放学院">
+              {getFieldDecorator('college')(
                 <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
-                </Select>,
+                placeholder="请选择"
+                style={{
+                  width: '100%',
+                }}
+              >
+                {
+                    college.map((item,index)=>{
+                    return item?<Option key={index} value={index}>{item}</Option>:''
+                  })
+                }
+                
+              </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="建议审分组">
-              {getFieldDecorator('status4')(
+              {getFieldDecorator('suggestGroupType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">A组-石工勘探</Option>
-                  <Option value="1">B组-化工材料</Option>
-                  <Option value="2">C组-机械力学</Option>
-                  <Option value="3">D组-电气及制作</Option>
-                  <Option value="4">E组-软件与数学</Option>
-                  <Option value="5">F组-经管法艺体人文</Option>
+                  {suggestGroupType.map((item,index)=>{
+                    return item?<Option value={index}>{item}</Option>:''
+                  })}
+                 
                 </Select>,
               )}
             </FormItem>
@@ -295,17 +279,16 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="预申请资金">
-              {getFieldDecorator('status3')(
+              {getFieldDecorator('funds')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">500</Option>
-                  <Option value="1">2500</Option>
-                  <Option value="2">3000</Option>
-                  <Option value="3">5000</Option>
+                  <Option value={2500}>2500</Option>
+                  <Option value={3000}>3000</Option>
+                  <Option value={5000}>5000</Option>
                 </Select>,
               )}
             </FormItem>
@@ -324,7 +307,7 @@ class TableList extends Component {
               marginBottom: 24,
             }}
           >
-            <Button type="primary" htmlType="submit">
+            <Button type="primary" onClick={this.handleFilter}>
               查询
             </Button>
             <Button
@@ -361,46 +344,44 @@ class TableList extends Component {
           }}
         >
           <Col md={8} sm={24}>
-            <FormItem label="学院">
-              {getFieldDecorator('status')(
+          <FormItem label="开放学院">
+              {getFieldDecorator('college')(
                 <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="0">计科院</Option>
-                  <Option value="1">电信院</Option>
-                  <Option value="2">石工院</Option>
-                  <Option value="3">材料员</Option>
-                  <Option value='4'>体院</Option>
-                  <Option value="5">经管院</Option>
-                </Select>,
+                placeholder="请选择"
+                style={{
+                  width: '100%',
+                }}
+              >
+                {
+                    majorCollege.map((item)=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
+                  })
+                }
+                
+              </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="建议审分组">
-              {getFieldDecorator('status')(
+          <FormItem label="建议审分组">
+              {getFieldDecorator('suggestGroupType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">A组-石工勘探</Option>
-                  <Option value="1">B组-化工材料</Option>
-                  <Option value="2">C组-机械力学</Option>
-                  <Option value="3">D组-电气及制作</Option>
-                  <Option value="4">E组-软件与数学</Option>
-                  <Option value="5">F组-经管法艺体人文</Option>
+                  {Object.keys(suggestGroupType).map((item)=>{
+                    return <Option key={item} value={item}>{suggestGroupType[item]}</Option>
+                  })}
+                 
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" onClick={this.handleFilter}>
                 查询
               </Button>
               <Button
@@ -444,6 +425,22 @@ class TableList extends Component {
     this.setState({
       tabActiveKey,
     });
+    const {dispatch} = this.props
+    dispatch({
+      type:'equipment/fetchProjects',
+      payload:{
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey==='2'?'3':'2',
+          operationUnit:6
+        }
+      }
+      
+    })
+    dispatch({
+      type:'equipment/changeTabActiveKey',
+      payload:tabActiveKey
+    })
   };
   handleExport = ()=>{
     const {dispatch} = this.props
@@ -461,11 +458,11 @@ class TableList extends Component {
       
     );
     const {
-      listTableList: { data },
       loading,
-      projects
+      projects,
+      tabActiveKey
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey, } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, } = this.state;
    console.log(projects)
     const parentMethods = {
       handleAdd: this.handleAdd,
@@ -510,15 +507,15 @@ class TableList extends Component {
       onTabChange={this.onTabChange}
       tabList={[
         {
-          key: 'auth',
+          key: '0',
           tab: '待审批',
         },
         {
-          key: 'reject',
+          key: '3',
           tab: '已驳回',
         },
         {
-          key: 'aut',
+          key: '2',
           tab: '已审批',
         },
       ]}
@@ -545,7 +542,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey='projectGroupId'
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

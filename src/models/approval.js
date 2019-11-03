@@ -1,49 +1,57 @@
 import {reqOwnProjects,reqProjectProcess,reqProjectDetail } from '../services/detail';
-import {reqApproval } from '../services/approval';
+import {reqApproval,reqKeyApply } from '../services/approval';
 import { message } from 'antd';
 import router from 'umi/router';
 const roleURL =  ['','/tproject/manage/detail','/auth/lab/projects/detail','']
+/**
+ * 普通项目操作接口
+ * 单位unit:0-实验室，1-学院，2-职能部门，3-指导老师
+ * 操作类型type:0-驳回，1-通过，2-上报
+ */
 const approvalUrl = [
   ['/project/rejectProjectApplyByLabAdministrator','/project/approveProjectApplyByLabAdministrator','/project/reportToCollegeLeader'],
   ['/project/rejectProjectApplyBySecondaryUnit','/project/approveProjectApplyBySecondaryUnit','/project/reportToFunctionalDepartment'],
   ['/project/rejectProjectApplyByFunctionalDepartment','/project/agreeEstablish']
 ]
+
+/**
+ * 重点项目操作接口
+ * 单位unit:0-实验室，1-学院，2-职能部门，3-指导老师
+ * 操作类型type:0-驳回，1-通过，2-上报
+ */
 const keyApprovalUrl = [
   ['/project/rejectKeyProjectByLabAdministrator','/project/agreeKeyProjectByLabAdministrator','/project/reportKeyProjectByLabAdministrator'],
   ['/project/rejectKeyProjectBySecondaryUnit','/project/agreeKeyProjectBySecondaryUnit','/project/reportKeyProjectBySecondaryUnit'],
   ['/project/rejectKeyProjectByFunctionalDepartment','/project/agreeKeyProjectByFunctionalDepartment',],
   ['/project/rejectKeyProjectByGuideTeacher','/project/agreeKeyProjectByGuideTeacher']
 ]
-const approvalType = ['lab/fetchProjects','second/fetchProjects','']
-const keyApprovalType = ['lab/fetchProjects','second/fetchProjects','']
+
+/**
+ * 审核操作后调用action重新获取项目列表
+ * approvalType:获取立项列表
+ * keyApprovalType:获取重点申请列表
+ * 0-实验室，1-二级单位，2-职能部门，3-指导老师
+ */
+const approvalType = ['lab/fetchProjects','second/fetchProjects','equipment/fetchProjects','tproject/fetch']
+const keyApprovalType = ['lab/fetchProjects','second/fetchProjects','equipment/fetchProjects','tproject/fetch']
+
 const Model = {
   namespace: 'approval',
   state: {
-    baseInfo:{},
-    process:[]
   },
   effects: {
-    *fetchProcess({payload},{call,put}){
-      const res = yield call(reqProjectProcess,{projectId:payload.projectId});
-      if(res.code===0){
-        yield put({
-          type: 'saveProcess',
-          payload: res.data
-        })
-        yield put({
-          type: 'saveRole',
-          payload: payload.role
-        })
-      }else{
-        yield put({
-          type: 'saveProcess',
-          payload: []
-        })
-        message.error('请求项目进度出错')
-      }
-    },
+    /**
+     * 普通项目的审批操作-批准，上报，驳回
+     * payload:{
+     *  data:object  //传给后端的数据
+     *  unit:string  //操作单位
+     *  type:string  //操作类型0-驳回，1-上报，2-通过
+     *  isDetail:boolean  //是否在详情页进行操作，用来判断操作后请求刷新的接口
+     *  status:string  //操作列表所处状态，0-待审核，1-待上报，2-已驳回，3-已上报
+     * }
+     */
     *normal({payload},{call,put}){
-      const {data,type,unit,isDetail,status} = payload
+      const {data,type,unit,isDetail,status=0} = payload
       console.log('normal',payload)
       const res = yield call(reqApproval,approvalUrl[unit][type],data)
       if(res.code===0){
@@ -78,10 +86,19 @@ const Model = {
 
     }
     ,
+    /**
+     * 重点项目的审批操作-批准，上报，驳回
+     * payload:{
+     *  data:object  //传给后端的数据
+     *  unit:string  //操作单位
+     *  type:string  //操作类型0-驳回，1-上报，2-通过
+     *  isDetail:boolean  //是否在详情页进行操作，用来判断操作后请求刷新的接口
+     *  status:string  //操作列表所处状态，0-待审核，1-待上报，2-已驳回，3-已上报
+     * }
+     */
     *key({payload},{call,put}){
-      //data：参数；type:(同意，拒绝，上报)；unit：操作单位； isDetail：是否详情页面调用； status：；
-      const {data,type,unit,isDetail,status} = payload
-      console.log('normal',payload)
+      const {data,type,unit,isDetail,status=0} = payload
+      console.log('key',payload)
       const res = yield call(reqApproval,keyApprovalUrl[unit][type],data)
       if(res.code===0){
         message.success('操作成功！')
@@ -103,6 +120,7 @@ const Model = {
             }
           })        
         }else{
+          console.log('ssssssss',approvalType[unit])
           yield put({
             type:approvalType[unit],
             payload:{
@@ -115,43 +133,39 @@ const Model = {
         message.success('操作失败！')
       }
     }
-
     ,
-    *fetchDetail({payload},{call,put}){
-      const res = yield call(reqProjectDetail,{projectGroupId:payload.projectGroupId})
-      if(res.code===0){
-        yield put({
-          type: 'saveDetail',
-          payload:res.data
-        })
-        yield put({
-          type: 'saveRole',
-          payload: payload.role
-        })
-        router.push(roleURL[payload.role]);
-      }else{
-        yield put({
-          type: 'saveDetail',
-          payload:{}
-        })
-        message.error('请求项目详情出错')
-      }
-    }
-  
 
-   
-  },
-  reducers: {
-    saveProcess(state,{payload}){
-      return {...state,process:payload}
-    },
-    saveDetail(state,{payload}){
-      return {...state,baseInfo:payload}
-    },
-    //1学生，2指导老师，3职能部门
-    saveRole(state,{payload}){
-      return {...state,role:payload}
-    }
-  },
+    /**
+     * 学生提交重点项目申请接口,提交后重新请求详情刷新页面
+     * payload:{
+     *  projectId:string
+     *  ...
+     * }
+     */
+    *apply({payload},{call,put}){
+      const res = yield call(reqKeyApply,payload)
+      if(res.code===0){
+        message.success('操作成功')
+        yield put({
+          type:'detail/fetchDetail',
+          payload:{
+            projectGroupId:payload.projectId,
+            role:7,
+            projectType:2
+          }
+        })
+        yield put({
+          type:'detail/fetchProcess',
+          payload:{
+            projectId:payload.projectId,
+            role:7,
+            projectType:2
+          }
+        })        
+      }else{
+        message.error('操作失败')
+      }
+    }  
+  },   
 };
 export default Model;

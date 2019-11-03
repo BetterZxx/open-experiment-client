@@ -10,3 +10,20 @@ export async function reqExportConclusionExcel() {
     responseType:'blob'
   });
 }
+export async function reqfilterProjects(params){
+  return request('/project/conditionallyQueryOfCheckedProjectByFunctionalDepartment',{
+    method:'post',
+    data:params
+  })
+
+}
+export async function reqRejectedProjects(params){
+  return request('/project/getHistoricalProjectInfoByUnitAndOperation',{
+    method:'post',
+    data:params
+  })
+
+}
+export async function reqEquipmentKeyProjects(params){
+  return request('/project/getKeyProjectApplyingListByFunctionalDepartment')
+}

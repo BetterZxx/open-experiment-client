@@ -1,8 +1,8 @@
-import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
+import { addRule, queryRule, removeRule, updateRule ,reqLabKeyProjects} from './service';
 import { message } from 'antd';
 
 const Model = {
-  namespace: 'lab1',
+  namespace: 'labKeyProjects',
   state: {
     labProjects:[],
     tabActiveKey:'0'
@@ -10,7 +10,7 @@ const Model = {
   effects: {
     *fetchProjects({ payload }, { call, put }) {
       console.log(payload)
-      const response = yield call(reqLabProjects, payload);
+      const response = yield call(reqLabKeyProjects, payload);
       if(response.code===0){
         yield put({
           type: 'save',

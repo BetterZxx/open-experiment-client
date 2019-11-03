@@ -1,4 +1,4 @@
-import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
+import { addRule, queryRule, removeRule, updateRule ,reqLabProjects,reqLabKeyProjects} from './service';
 import { message } from 'antd';
 
 const Model = {
@@ -10,7 +10,7 @@ const Model = {
   effects: {
     *fetchProjects({ payload }, { call, put }) {
       console.log(payload)
-      const response = yield call(reqLabProjects, payload);
+      const response = payload.projectType===2?yield call(reqLabKeyProjects,payload):yield call(reqLabProjects, payload);
       if(response.code===0){
         yield put({
           type: 'save',

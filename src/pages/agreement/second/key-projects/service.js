@@ -1,28 +1,11 @@
 import request from '@/utils/request';
-const projectsUrl = ['/project/getPendingApprovalProjectBySecondaryUnit','/project/getToBeReportedProjectBySecondaryUnit','/project/getPendingApprovalProjectByLabAdministrator','/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader']
-export async function queryRule(params) {
-  return request('/api/rule', {
-    params,
-  });
+const keyProjectsUrl = {
+  '0':'/project/getKeyProjectApplyingListBySecondaryUnit',
+  '1':'/project/getToBeReportedKeyProjectBySecondaryUnit',
+  '12':'/project/getHistoricalKeyProjectInfo',
+  '13':'/project/getHistoricalKeyProjectInfo'
 }
-export async function removeRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'delete' },
-  });
-}
-export async function addRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'post' },
-  });
-}
-export async function updateRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'update' },
-  });
-}
+
 export async function reqSecondProjects(payload) {
   return request(projectsUrl[payload.status])
 }
@@ -37,4 +20,10 @@ export async function reqExportApplyExcel() {
     method: 'POST',
     responseType:'blob'
   });
+}
+export async function reqSecondKeyProjects(payload) {
+  return request(keyProjectsUrl[payload.status],{
+    method:+payload.status<=1?'get':'post',
+    data:payload.data
+  })
 }

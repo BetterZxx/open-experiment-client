@@ -1,7 +1,7 @@
 import request from '@/utils/request';
 
-export async function fakeSubmitForm(params) {
-  return request('/api/forms', {
+export async function reqUpdateApply(params) {
+  return request('/project/updateApply', {
     method: 'POST',
     data: params,
   });

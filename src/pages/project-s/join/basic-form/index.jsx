@@ -17,7 +17,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import styles from './style.less';
-import { projectType, suggestGroupType, major } from '@/utils/constant';
+import { projectType, suggestGroupType, major, experimentType } from '@/utils/constant';
 import moment from 'moment'
 
 const FormItem = Form.Item;
@@ -172,17 +172,17 @@ class BasicForm extends Component {
         {({ isMobile }) => (
           <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
             <Descriptions.Item label="项目名称">{detail.projectName}</Descriptions.Item>
-            <Descriptions.Item label="指导老师">{detail.guideTeachers.map(item=>item.realName).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="指导老师">{detail.list.find(item=>item.code===detail.creatorId).realName}</Descriptions.Item>
             <Descriptions.Item label="开放实验室">{detail.labName}</Descriptions.Item>
             <Descriptions.Item label="地点">{detail.address}</Descriptions.Item>
             <Descriptions.Item label="实验类型">
-              {projectType[detail.projectType]}
+              {experimentType[detail.experimentType]}
             </Descriptions.Item>
             <Descriptions.Item label="实验时间">{moment(detail.startTime).format('YYYY-MM-DD')+'~'+moment(detail.endTime).format('YYYY-MM-DD')}</Descriptions.Item>
-            <Descriptions.Item label="项目级别">{detail.experimentType===1?"重点":"普通"}</Descriptions.Item>
+            <Descriptions.Item label="项目级别">{detail.projectType===1?"重点":"普通"}</Descriptions.Item>
             <Descriptions.Item label="建议审分组">{suggestGroupType[detail.suggestGroupType]}</Descriptions.Item>
-            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item]).join('、')}</Descriptions.Item>
-            <Descriptions.Item label="适宜学生数">{detail.fitPeopleNum}</Descriptions.Item>
+            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item-1].mName).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="限定人数">{detail.fitPeopleNum}</Descriptions.Item>
             <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
             <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
             <Descriptions.Item label="开放实验条件">{detail.experimentCondition}</Descriptions.Item>

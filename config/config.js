@@ -9,7 +9,7 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://10.20.0.51:8083' 
+const proxyURL = 'http://10.20.0.82:8083' 
 const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file']
 const proxyOptions = {
   target: proxyURL,
@@ -156,7 +156,7 @@ export default {
             },
             {
               path: '/tproject',
-              name: '项目管理t',
+              name: '项目管理(老师)',
               icon: 'project',
               routes: [
                 {
@@ -180,10 +180,25 @@ export default {
                   icon: 'file-add'
                 },
                 {
+                  name: '重点项目申请',
+                  path: '/tproject/manage/key-detail',
+                  component: './common/key-detail',
+                  hideInMenu:true,
+                  icon: 'file-add'
+                },
+                {
                   name: '已报项目',
                   path: '/tproject/manage',
                   component: './project-t/projects',
                   icon: 'file-done',
+                  
+                },
+                {
+                  name: '重点项目审批',
+                  path: '/tproject/manage/key-projects',
+                  component: './project-t/key-projects',
+                  icon: 'file-done',
+                  hideInMenu:true
                   
                 },
                 {
@@ -196,7 +211,7 @@ export default {
             },
             {
               path: '/sproject',
-              name: '项目管理s',
+              name: '项目管理(学生)',
               icon: 'project',
               routes: [
                 {
@@ -222,6 +237,13 @@ export default {
                   name: '重点项目申请',
                   path: '/sproject/manage/keyProject',
                   component: './project-s/manage/key-project',
+                  icon: 'file-add',
+                  hideInMenu:true
+                },
+                {
+                  name: '重点项目申请',
+                  path: '/sproject/manage/key-detail',
+                  component: './common/key-detail',
                   icon: 'file-add',
                   hideInMenu:true
                 },

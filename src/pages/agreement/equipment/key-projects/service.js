@@ -1,12 +1,19 @@
 import request from '@/utils/request';
 
 
-export async function reqEquipmentProjects(payload){
-  return request('/project/getPendingApprovalProjectByFunctionalDepartment')
+export async function reqEquipmentKeyProjects(payload){
+  return request('/project/getKeyProjectApplyingListByFunctionalDepartment')
 }
 export async function reqExportConclusionExcel() {
   return request('/file/generateConclusionExcel', {
     method: 'POST',
     responseType:'blob'
   });
+}
+export async function reqRejectedKeyProjects(params){
+  return request('/project/getHistoricalKeyProjectInfo',{
+    method:'post',
+    data:params
+  })
+
 }

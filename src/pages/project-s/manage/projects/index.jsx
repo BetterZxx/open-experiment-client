@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,operationUnit} from '@/utils/constant'
+import {projectType,operationUnit, experimentType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -44,7 +44,7 @@ const status = ['终止', '审核', '立项', '驳回'];
 /* eslint react/no-multi-comp:0 */
 @connect(({ listTableList, loading,studentProjects,detail }) => ({
   listTableList,
-  loading: loading.models.listTableList,
+  loading: loading.models.studentProjects,
   projects:studentProjects.projects,
   process:detail.process
 }))
@@ -76,8 +76,8 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
-      render:(type)=>type===1?'重点':'普通'
+      dataIndex: 'projectType',
+      render:(type)=>type===1?'普通':'重点'
     },
     {
       title: '项目角色',
@@ -85,8 +85,8 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>projectType[type]
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type]
 
     },
     {
@@ -104,7 +104,7 @@ class TableList extends Component {
         }
         return <span>
           <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.projectGroupId)} href="javasctipt:">详情</a>
+          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} href="javasctipt:">详情</a>
         </span>;
       },
     },
@@ -114,7 +114,7 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      dataIndex:'projectGroupId',
+      dataIndex:'id',
       render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
@@ -283,6 +283,32 @@ class TableList extends Component {
       modalVisible:true
     })
   }
+  handleKeyApply = ()=>{
+    const {selectedRows} = this.state
+    const {dispatch} = this.props
+    console.log(selectedRows)
+    if(selectedRows.length>1){
+      message.warning('同时只能对一个项目操作')
+      return;
+    }
+    let id = selectedRows[0]?selectedRows[0].id:'0'
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:7,
+        projectType:2
+      }
+    })
+    dispatch({
+      type:'detail/fetchProcess',
+      payload:{
+        projectId:id,
+        role:7,
+        projectType:2
+      }
+    })
+  }
   render() {
     const {
       listTableList: { data },
@@ -291,6 +317,7 @@ class TableList extends Component {
       process
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const btnDisable = selectedRows.length===0
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">申请终止/延期</Menu.Item>
@@ -338,7 +365,7 @@ class TableList extends Component {
                 <span>
                   <Button>上传材料</Button>
                   <Button>修改申请书</Button>
-                  <Button onClick={()=>this.props.history.push('/sproject/manage/keyProject')}>重点项目申请</Button>
+                  <Button disabled={btnDisable} onClick={()=>this.handleKeyApply()}>重点项目申请</Button>
                   <Dropdown overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
@@ -351,7 +378,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey='projectGroupId'
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

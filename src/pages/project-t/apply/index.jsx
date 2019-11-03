@@ -16,6 +16,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import moment from 'moment'
+import {majorCollege,grade,suggestGroupType,experimentType, funds} from '@/utils/constant'
 import styles from './style.less';
 
 
@@ -89,7 +90,20 @@ class BasicForm extends Component {
       keys: nextKeys,
     });
   };
+  renderTreeNode = (majorCollege)=>{
+    return majorCollege.map(item=>{
+      return <TreeNode value={item.cId+'c'} title={item.cName} key={item.cId+'c'} selectable={false}>
+        {
+          item.majors.map(element=>{
+            return <TreeNode value={element.mId} key={element.mId} title={element.mName}>
+            </TreeNode>
+          })
+        }
+      </TreeNode>
+    })
 
+
+  }
   render() {
     const { submitting } = this.props;
     const {
@@ -151,7 +165,7 @@ class BasicForm extends Component {
         
         label={index === 0 ? '学生学号' : ''}
         required={false}
-        key={k}
+        key={indexx}
       >
         {getFieldDecorator(`names[${k}]`, {
           validateTrigger: ['onChange', 'onBlur'],
@@ -251,14 +265,12 @@ class BasicForm extends Component {
             <FormItem {...formItemLayout} label="实验类型">
               <div>
                 {getFieldDecorator('experimentType', {
-                  initialValue: '1',
+                 
                 })(
                   <Radio.Group>
-                    <Radio value="1">科研</Radio>
-                    <Radio value="2">科技活动</Radio>
-                    <Radio value="3">自选课题</Radio>
-                    <Radio value="4">计算机应用</Radio>
-                    <Radio value="5">人文素质</Radio>
+                    {Object.keys(experimentType).map(item=>{
+                      return <Radio key={item} value={item}>{experimentType[item]}</Radio>
+                    })}
                   </Radio.Group>,
                 )}
                 
@@ -267,15 +279,14 @@ class BasicForm extends Component {
             <FormItem {...formItemLayout} label="建议审分组">
               <div>
                 {getFieldDecorator('suggestGroupType', {
-                  initialValue: '1',
+                  
                 })(
                   <Radio.Group>
-                    <Radio value="1">A组-石工地勘</Radio>
-                    <Radio value="2">B组-化工材料</Radio>
-                    <Radio value="3">C组-机械力学</Radio>
-                    <Radio value="4">D组-电气及制作</Radio>
-                    <Radio value="5">E组-软件与数学</Radio>
-                    <Radio value="6">F组-经管法艺体人文</Radio>
+                    {Object.keys(suggestGroupType).map(item=>{
+                      return <Radio value={item} key={item}>
+                        {suggestGroupType[item]}
+                      </Radio>
+                    })}
                   </Radio.Group>,
                 )}
                 
@@ -309,17 +320,7 @@ class BasicForm extends Component {
                 multiple={true}
                 onChange={this.onChange}
               >             
-                <TreeNode value="计科院" title="计科院" key="0-1-1" selectable={false}>
-                  <TreeNode value="1" title="软件工程" key="random"/>
-                  <TreeNode value="2" title="网络工程" key="random1" />
-                  <TreeNode value="3" title="物联网工程" key="random2" />
-                  <TreeNode value="4" title="计算机科学与技术" key="random4" />
-                </TreeNode>
-                <TreeNode value="5" title="石工院" key="0-1-2" selectable={false}>
-                  <TreeNode value="6" title="石油工程" key="random5" />
-                  <TreeNode value="7" title="石油与天然气工程" key="random6" />
-                  <TreeNode value="8" title="油气储运工程" key="random7" />
-                </TreeNode>
+                {this.renderTreeNode(majorCollege)}
               </TreeSelect>)}
             </FormItem>
             <FormItem {...formItemLayout} label="限选年级">
@@ -329,16 +330,14 @@ class BasicForm extends Component {
                     required: true,
                     message: '请输入适应年级',
                   },
-                ],
-                initialValue:['2016','2017']
+                ]
               })(<Select
                 mode="multiple"
                 placeholder="请选择适应学院"
               >
-                <Option value='2016'>2016级</Option>
-                <Option value='2017'>2017级</Option> 
-                <Option value='2018'>2018级</Option>
-                <Option value='2019'>2019级</Option>
+                {grade.map(item=>{
+                  return <Option key={item} value={item}>{item}级</Option>
+                })}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="限选学院">
@@ -349,17 +348,13 @@ class BasicForm extends Component {
                     message: '请输入适应学院',
                   },
                 ],
-                initialValue:['0','1']
               })(<Select
                 mode="multiple"
                 placeholder="请选择适应学院"
               >
-                <Option value='0'>计科院</Option>
-                <Option value='1'>电信院</Option> 
-                <Option value='2'>石工院</Option>
-                <Option value='3'>化工院</Option>
-                <Option value='4'>材料院</Option>
-                <Option value='5'>电气院</Option>
+                {majorCollege.map(item=>{
+                  return <Option value={item.cId} key={item.cId}>{item.cName}</Option>
+                })}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="适宜学生数">
@@ -383,10 +378,9 @@ class BasicForm extends Component {
               })(<Select
                 placeholder="请选择预申请金额"
               >
-                <Option value='500'>500元</Option>
-                <Option value='2500'>2500元</Option> 
-                <Option value='3000'>3000元</Option>
-                <Option value='5000'>5000元</Option>
+                {funds.map(item=>{
+                  return <Option key={item} value={item}>{item}元</Option>
+                })}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="计划实验时间/h">

@@ -41,9 +41,8 @@ const statusMap = ['default', 'success', 'error'];
 const status = ['待审核','已通过','已拒绝'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading,applyStudents,tprojects }) => ({
-  listTableList,
-  loading: loading.models.listTableList,
+@connect(({ loading,applyStudents,tprojects }) => ({
+  loading: loading.models.applyStudents,
   students:applyStudents.data,
   projects:tprojects.projects
 }))
@@ -192,6 +191,7 @@ class TableList extends Component {
       };
       this.setState({
         formValues: values,
+        modalVisible:false
       });
       dispatch({
         type: 'applyStudents/add',
@@ -236,7 +236,7 @@ class TableList extends Component {
                   }}
                 >
                   {projects.map((item,index)=>{
-                    return <Option key={index} value={item.projectGroupId}>{item.projectName}</Option>
+                    return <Option key={index} value={item.id}>{item.projectName}</Option>
 
                   })}
                 </Select>,
@@ -343,7 +343,7 @@ class TableList extends Component {
     const {dispatch} = this.props
     
     let payload = {
-        projectGroupId:selectedRows[0].projectGroupId,
+        projectGroupId:selectedRows[0].id,
         reason:'',
         userId:selectedRows[0].code
     }
@@ -370,7 +370,6 @@ class TableList extends Component {
   }
   render() {
     const {
-      listTableList: { data },
       loading,
       students,
       form,
@@ -442,7 +441,7 @@ class TableList extends Component {
                   }}
                 >
                   {projects.map((item,index)=>{
-                    return <Option key={index} value={item.projectGroupId}>{item.projectName}</Option>
+                    return <Option key={index} value={item.id}>{item.projectName}</Option>
 
                   })}
                 </Select>,

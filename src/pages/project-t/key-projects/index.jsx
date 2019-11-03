@@ -29,6 +29,7 @@ import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const {TextArea} = Input
 const { RangePicker } = DatePicker;
 
 const getValue = obj =>
@@ -42,9 +43,10 @@ const operationType = ['同意','拒绝','上报','修改']
 const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ loading,detail,tprojects }) => ({
+@connect(({ loading,detail,tprojectsKeyProjects }) => ({
+
   loading: loading.models.tprojects,
-  projects:tprojects.projects,
+  projects:tprojectsKeyProjects.projects,
   process:detail.process
 }))
 class TableList extends Component {
@@ -55,6 +57,9 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    mVisible:false,
+    approvalType:1,
+    text:''
   };
 
   columns = [
@@ -129,7 +134,7 @@ class TableList extends Component {
       dataIndex:'id',
       render: (id) => (
         <Fragment>
-          <a onClick={() => this.handleEdit(id)}>编辑</a>
+          <a onClick={() => this.editWarning()}>编辑</a>
           
           <Divider type="vertical" />
           <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
@@ -137,31 +142,22 @@ class TableList extends Component {
       ),
     },
   ];
-  handleEdit = (id)=>{
-    const {dispatch} = this.props
-    dispatch({
-      type:'detail/fetchDetail',
-      payload:{
-        projectGroupId:id,
-        role:8
-      }
-    })
-
-  }
   handleDetailClick = (id)=>{
     const {history,dispatch} = this.props
     dispatch({
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:5
+        role:5,
+        projectType:2
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:5
+        role:5,
+        projectType:2
       }
     })
    // history.push('/tproject/manage/detail',id)}
@@ -178,7 +174,7 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type:'tprojects/fetch'
+      type:'tprojectsKeyProjects/fetch'
     })
   }
 
@@ -190,10 +186,6 @@ class TableList extends Component {
     this.setState({
       formValues: {},
     });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
-    });
   };
   handleSelectRows = rows => {
     this.setState({
@@ -201,22 +193,97 @@ class TableList extends Component {
     });
   };
 
+
+  renderForm() {
+    const { expandForm } = this.state;
+    return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
+  }
   hideModal = ()=>{
     this.setState({
       modalVisible:false
     })
   }
   showProcessModal = (id)=>{
+    console.log(id)
     const {dispatch} = this.props
     dispatch({
       type:'detail/fetchProcess',
-      payload:{
-        role:5,
-        projectId:id
-      }
+      payload:id
     })
     this.setState({
       modalVisible:true
+    })
+  }
+  hideModal = ()=>{
+    this.setState({
+      mVisible:false,
+      modalVisible:false
+    })
+  }
+  showModal = ()=>{
+    this.setState({
+      mVisible:true
+    })
+  }
+  handleModalCancel = ()=>{
+    this.setState({
+      mVisible:false
+    })
+  }
+  handleModalOk = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch} = this.props
+    const data = selectedRows.map(item=>{
+      return {
+        reason:text,
+        projectId:item.id
+      }
+    })
+    let payload={
+      unit:3,
+      data,
+      type:approvalType,
+      isDetail:true
+    }
+    console.log(payload)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:3,
+        data,
+        type:approvalType,
+        isDetail:false
+      }
+    })
+    this.setState({mVisible:false,
+    text:''
+    })
+  }
+  handleReportClick = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch,tabActiveKey} = this.props
+    const data = selectedRows.map(item=>item.id)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:3,
+        data,
+        type:2,
+        isDetail:false,
+        status:tabActiveKey,
+      }
+    })
+
+  }
+  showApprovalModal = (type)=>{
+    this.setState({
+      approvalType:type,
+      mVisible:true
+    })
+  }
+  handleInputChange = (e)=>{
+    this.setState({
+      text:e.target.value
     })
   }
 
@@ -227,13 +294,14 @@ class TableList extends Component {
       process
     } = this.props;
     console.log('projects',projects)
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,mVisible,approvalType,text } = this.state;
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove">删除</Menu.Item>
         <Menu.Item key="approval">批量审批</Menu.Item>
       </Menu>
     );
+    const btnDisable = selectedRows.length===0
     console.log(process)
     const timeLines = process.map(item=>{
       switch(item.operationType){
@@ -262,17 +330,29 @@ class TableList extends Component {
        
     })
     return (
-      <PageHeaderWrapper>
+      <PageHeaderWrapper
+      extra={(<Button onClick={this.props.history.goBack}>返回</Button>)}
+      >
+        <Modal
+        visible={mVisible}
+        onOk={this.handleModalOk}
+        onCancel={this.handleModalCancel}
+        title={approvalType===0?'驳回理由':'审核意见'}
+        >
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+
+        </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.props.history.push('/tproject/apply')}>
-                  新建
+              <Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
+                批准
               </Button>
-              <Button type="primary" onClick={() =>{this.props.history.push('/tproject/manage/key-projects')}}>
-                重点项目审批
-              </Button>
+                <Button disabled={btnDisable}  onClick={()=>{}}>
+                  修改审批意见
+                </Button>
+              
+              <Button disabled={btnDisable}  onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
               {selectedRows.length > 0 && (
                 <span>
                   <Button>取消项目</Button>
@@ -292,7 +372,6 @@ class TableList extends Component {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              pagination={{ pageSize: 11 }}
             />
           </div>
           <Modal
@@ -304,8 +383,8 @@ class TableList extends Component {
             {/*01 实验室 23二级单位 45职能部门*/}
             <Timeline>
               {timeLines}
-          
             </Timeline>,
+
           </Modal>
         </Card>
       </PageHeaderWrapper>

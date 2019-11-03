@@ -365,7 +365,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={announcements}
-              rowKey='announcementId'
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

@@ -96,7 +96,7 @@ const Model = {
     save(state, action) {
       let data = action.payload.map(item=>{
         let data = {
-          ...item,...item.userDetailVO,projectGroupId:item.id
+          ...item,...item.userDetailVO,id:item.id
         }
         delete data.userDetailVO
         return data

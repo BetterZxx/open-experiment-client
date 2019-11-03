@@ -7,3 +7,9 @@ export async function reqApproval(url,data) {
     data,
   });
 }
+export async function reqKeyApply(params){
+  return request('/project/createKeyApply',{
+    method:'post',
+    data:params
+  })
+}

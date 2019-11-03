@@ -141,9 +141,8 @@ class Analysis extends Component {
     const { dashboardAnalysis, loading ,projects,announcements} = this.props;
     console.log(projects)
     const {
-      visitData,
-      visitData2,
-      salesData,
+      
+  
       searchData,
       offlineData,
       offlineChartData,
@@ -182,12 +181,11 @@ class Analysis extends Component {
       <GridContent>
         <React.Fragment>
           <Suspense fallback={<PageLoading />}>
-            <IntroduceRow loading={loading} visitData={visitData} />
+            <IntroduceRow loading={loading}  />
           </Suspense>
           <Suspense fallback={null}>
             <SalesCard
               rangePickerValue={rangePickerValue}
-              salesData={salesData}
               isActive={this.isActive}
               handleRangePickerChange={this.handleRangePickerChange}
               loading={loading}

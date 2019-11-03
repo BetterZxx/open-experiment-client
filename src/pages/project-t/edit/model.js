@@ -1,13 +1,18 @@
 import { message } from 'antd';
-import { fakeSubmitForm } from './service';
+import { reqUpdateApply } from './service';
 
 const Model = {
   namespace: 'editApplyForm',
   state: {},
   effects: {
-    *submitRegularForm({ payload }, { call }) {
-      yield call(fakeSubmitForm, payload);
+    *submitUpdateForm({ payload }, { call }) {
+      yield call(reqUpdateApply, payload);
+      if(res.code===0)
       message.success('提交成功');
+      else{
+        message.error('编辑出错')
+      }
+      //window.location.href
     },
   },
 };

@@ -1,29 +1,14 @@
 import request from '@/utils/request';
-const projectsUrl = ['/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader']
-export async function queryRule(params) {
-  return request('/api/rule', {
-    params,
-  });
-}
-export async function removeRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'delete' },
-  });
-}
-export async function addRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'post' },
-  });
-}
-export async function updateRule(params) {
-  return request('/api/rule', {
-    method: 'POST',
-    data: { ...params, method: 'update' },
-  });
+const keyProjectsUrl = {
+  '0':'/project/getKeyProjectApplyingListByLabAdmin',
+  '1':'/project/getToBeReportedKeyProjectByLabAdmin',
+  '12':'/project/getHistoricalKeyProjectInfo',
+  '13':'/project/getHistoricalKeyProjectInfo'
 }
 
-export async function reqLabProjects(payload) {
-  return request(projectsUrl[payload.status])
+export async function reqLabKeyProjects(payload) {
+  return request(keyProjectsUrl[payload.status],{
+    method:+payload.status<=1?'get':'post',
+    data:payload.data
+  })
 }

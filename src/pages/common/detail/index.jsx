@@ -25,7 +25,8 @@ import Achievement from './components/achievement'
 import styles from './style.less';
 import moment from 'moment';
 import { json } from 'body-parser';
-import {statusType} from '@/utils/constant'
+
+import {statusType,major,experimentType,suggestGroupType,operationType,operationUnit} from '@/utils/constant'
 
 const { Step } = Steps;
 const { TabPane } = Tabs;
@@ -47,12 +48,8 @@ const mobileMenu = (
     <Menu.Item key="">选项三</Menu.Item>
   </Menu>
 );
-const projectType = ['科研','科技活动','自选课题','计算机应用','人文素质']
-const suggestGroupType = ['A组-石工地勘','B组-化工材料','C组-机械力学','E组-软件与数学','F组-经管法艺体人文']
-const major = ['软件工程','网络工程','物联网工程']
 const status = ['申请项目','立项审核','中期检查','结题','已驳回','已终止']
-const operationType = ['同意','拒绝','上报','修改']
-const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
+
 function getHeaderStatus(num){
   if(num===-2){
     return '已驳回'
@@ -217,7 +214,7 @@ class Advanced extends Component {
     });
   }
   handleModalOk = ()=>{
-    const {dispatch,role,detail:{projectGroupId}} = this.props
+    const {dispatch,role,detail:{id}} = this.props
     const {approvalType} = this.state
     console.log(role,approvalType)
     this.setState({
@@ -229,7 +226,7 @@ class Advanced extends Component {
         unit:role,
         data:[
           {
-            projectId:projectGroupId,
+            projectId:id,
             reason:this.state.text
           }
         ],
@@ -255,7 +252,7 @@ class Advanced extends Component {
       payload:{
         unit:role,
         data:[
-            detail.projectGroupId,
+            detail.id,
         ],
         type:2,
         isDetail:true
@@ -309,22 +306,24 @@ class Advanced extends Component {
       <RouteContext.Consumer>
         {({ isMobile }) => (
           <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-            <Descriptions.Item label="创建人">{detail.creatorName}</Descriptions.Item>
+            <Descriptions.Item label="创建人">{detail.list.find(item=>item.code===detail.creatorId).realName}</Descriptions.Item>
             <Descriptions.Item label="开放实验室">{detail.labName}</Descriptions.Item>
             <Descriptions.Item label="地点">{detail.address}</Descriptions.Item>
             <Descriptions.Item label="实验类型">
               {
-                projectType[detail.projectType-1]
+                experimentType[detail.experimentType]
               }
             </Descriptions.Item>
             <Descriptions.Item label="实验时间">{`${moment(detail.startTime).format('YYYY-MM-DD')}~${moment(detail.startTime).format('YYYY-MM-DD')}`}</Descriptions.Item>
-            <Descriptions.Item label="项目级别">{detail.experimentType===1?'普通':'重点'}</Descriptions.Item>
+            <Descriptions.Item label="项目级别">{detail.projectType===1?'普通':'重点'}</Descriptions.Item>
             <Descriptions.Item label="建议审分组">
               {
-                suggestGroupType[detail.suggestGroupType-1]
+                suggestGroupType[detail.suggestGroupType]
               }
             </Descriptions.Item>
-            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item-1]).join('、')}</Descriptions.Item>
+            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>{
+              return major.find(i=>i.mId===item).mName
+            }).join('、')}</Descriptions.Item>
             <Descriptions.Item label="适宜学生数">{detail.fitPeopleNum}</Descriptions.Item>
             <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
             <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
@@ -334,7 +333,7 @@ class Advanced extends Component {
         )}
       </RouteContext.Consumer>
     );
-    const tDescriptions = detail.guideTeachers.map((item,key)=>{
+    const tDescriptions = !detail.guideTeachers?'':detail.guideTeachers.map((item,key)=>{
         return <div key={key}>
           
             <Descriptions
@@ -360,7 +359,7 @@ class Advanced extends Component {
             />
         </div>
       })
-      const sDecriptions = detail.stuMembers.map((item,key)=>{
+      const sDecriptions = !detail.stuMembers?'':detail.stuMembers.map((item,key)=>{
         return <div key={key}>
          
           <Descriptions
@@ -369,12 +368,12 @@ class Advanced extends Component {
                   }}
                 
                 >
-                  <Descriptions.Item label="姓名">{item.name}</Descriptions.Item>
-                  <Descriptions.Item label="电话">{item.phone}</Descriptions.Item>
-                  <Descriptions.Item label="email">{item.qq}</Descriptions.Item>
+                  <Descriptions.Item label="姓名">{item.realName}</Descriptions.Item>
+                  <Descriptions.Item label="电话">{item.mobilePhone}</Descriptions.Item>
+                  <Descriptions.Item label="qq">{item.qqNum}</Descriptions.Item>
                   <Descriptions.Item label="所属学院">{item.dept}</Descriptions.Item>
-                  <Descriptions.Item label="描述">
-                    这段描述很长很长很长很长很长很长很长很长很长很长很长很长很长很长...
+                  <Descriptions.Item label="年级">
+                    {item.grade}
                   </Descriptions.Item>
                 </Descriptions>
                 <Divider
@@ -515,7 +514,7 @@ class Advanced extends Component {
               <Table
                 pagination={false}
                 loading={loading}
-                rowKey={(history)=>history.operationType+history.operationUnit}
+                rowKey={(item,index)=>index}
                 dataSource={process}
                 columns={columns}
               />

@@ -43,10 +43,10 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading ,equipment}) => ({
-  listTableList,
+@connect(({  loading ,equipmentKeyProjects}) => ({
   loading: loading.models.listTableList,
-  projects:equipment.projects
+  projects:equipmentKeyProjects.projects,
+  tabActiveKey:equipmentKeyProjects.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -56,7 +56,6 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'auth'
   };
 
   columns = [
@@ -68,7 +67,7 @@ class TableList extends Component {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
       render:(t)=>{
-        return t.map(item=>item.userName).join('、')
+        return t?t.map(item=>item.userName).join('、'):''
       }
     },
     {
@@ -78,8 +77,7 @@ class TableList extends Component {
     },
     {
       title: '已选学生数',
-      dataIndex: 'memberStudents',
-      render:(students)=>students.length
+      dataIndex: 'subordinateCollege'
     },
     {
       title: '实验类型',
@@ -94,7 +92,7 @@ class TableList extends Component {
         return (
           <div>
             <span>{funds}</span>
-            <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a>
+            {/* <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a> */}
           </div>
           
         );
@@ -106,7 +104,7 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      dataIndex:'projectGroupId',
+      dataIndex:'id',
       render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
@@ -148,9 +146,31 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'equipment/fetchProjects',
+      type: 'equipmentKeyProjects/fetchProjects',
+      payload:{
+        status:'0',
+        data:{}
+      }
     });
   }
+  onTabChange = tabActiveKey => {
+    const {dispatch} = this.props
+    dispatch({
+      type:'equipmentKeyProjects/fetchProjects',
+      payload:{
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey==='12'?'13':'12',
+          operationUnit:6
+        }
+      }
+      
+    })
+    dispatch({
+      type:'equipmentKeyProjects/changeTabActiveKey',
+      payload:tabActiveKey
+    })
+  };
 
   
   handleFormReset = () => {
@@ -158,10 +178,6 @@ class TableList extends Component {
     form.resetFields();
     this.setState({
       formValues: {},
-    });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
     });
   };
 
@@ -171,51 +187,7 @@ class TableList extends Component {
     });
   };
 
-  handleSearch = e => {
-    e.preventDefault();
-    const { dispatch, form } = this.props;
-    form.validateFields((err, fieldsValue) => {
-      if (err) return;
-      const values = {
-        ...fieldsValue,
-        updatedAt: fieldsValue.updatedAt && fieldsValue.updatedAt.valueOf(),
-      };
-      this.setState({
-        formValues: values,
-      });
-      dispatch({
-        type: 'listTableList/fetch',
-        payload: values,
-      });
-    });
-  };
 
-
-  handleAdd = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/add',
-      payload: {
-        desc: fields.desc,
-      },
-    });
-    message.success('添加成功');
-    this.handleModalVisible();
-  };
-
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
   toggleForm = () => {
     const { expandForm } = this.state;
     this.setState({
@@ -442,11 +414,6 @@ class TableList extends Component {
       modalVisible:true
     })
   }
-  onTabChange = tabActiveKey => {
-    this.setState({
-      tabActiveKey,
-    });
-  };
   handleExport = ()=>{
     const {dispatch} = this.props
     dispatch({
@@ -463,20 +430,12 @@ class TableList extends Component {
       
     );
     const {
-      listTableList: { data },
       loading,
-      projects
+      projects, 
+      tabActiveKey
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, tabActiveKey, } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, } = this.state;
    console.log(projects)
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
     const btnDisable = selectedRows.length===0
     const content =<RouteContext.Consumer>
     {({ isMobile }) => (
@@ -512,15 +471,15 @@ class TableList extends Component {
       onTabChange={this.onTabChange}
       tabList={[
         {
-          key: 'auth',
+          key: '0',
           tab: '待审批',
         },
         {
-          key: 'reject',
+          key: '13',
           tab: '已驳回',
         },
         {
-          key: 'aut',
+          key: '12',
           tab: '已审批',
         },
       ]}
@@ -547,7 +506,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey='projectGroupId'
+              rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}

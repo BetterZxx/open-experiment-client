@@ -1,9 +1,9 @@
-import { reqSecondProjects,reqUpdateFunds,reqExportApplyExcel} from './service';
+import { reqSecondProjects,reqUpdateFunds,reqExportApplyExcel,reqSecondKeyProjects} from './service';
 import { message } from 'antd';
 import {saveAs} from 'file-saver'
 
 const Model = {
-  namespace: 'second1',
+  namespace: 'secondKeyProjects',
   state: {
     secondProjects:[],
     tabActiveKey:'0'
@@ -16,7 +16,7 @@ const Model = {
        *  status:string
        * }
        */
-      const response = yield call(reqSecondProjects, payload);
+      const response = yield call(reqSecondKeyProjects, payload);
       if(response.code===0){
         yield put({
           type: 'save',

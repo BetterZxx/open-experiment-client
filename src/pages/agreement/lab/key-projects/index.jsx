@@ -40,13 +40,12 @@ const getValue = obj =>
 
 const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
-const pType = projectType.slice(1)
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ lab, loading }) => ({
-  labProjects:lab.labProjects,
+@connect(({ lab, loading,labKeyProjects }) => ({
+  labProjects:labKeyProjects.labProjects,
   loading: loading.models.lab,
-  tabActiveKey:lab.tabActiveKey
+  tabActiveKey:labKeyProjects.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -72,7 +71,7 @@ class TableList extends Component {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
       render:(t)=>{
-        return t.map(item=>item.userName).join('、')
+        return t?t.map(item=>item.userName).join('、'):''
       }
     },
     {
@@ -81,13 +80,33 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
-      render:(type)=>type===1?'重点':'普通'
+      dataIndex: 'projectType',
+      render:(type)=>type===1?'普通':'重点',
+      filters:[
+        {
+          text:'普通',
+          value:1
+        },
+        {
+          text:'重点',
+          value:2
+        }
+
+      ],
+      onFilter: (value, record) => record.projectType === value,
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>experimentType[type]
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type],
+      filters:Object.keys(experimentType).map((item)=>{
+        return {
+          text:experimentType[item],
+          value:item
+        }
+      })
+      ,
+      onFilter: (value, record) => record.experimentType === value,
 
     },
  
@@ -97,7 +116,7 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      dataIndex:'projectGroupId',
+      dataIndex:'id',
       render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
@@ -139,39 +158,15 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type:'lab/fetchProjects',
+      type:'labKeyProjects/fetchProjects',
       payload:{
-        status:0
+        status:0,
       }
 
     })
     
   }
 
-  handleStandardTableChange = (pagination, filtersArg, sorter) => {
-    const { dispatch } = this.props;
-    const { formValues } = this.state;
-    const filters = Object.keys(filtersArg).reduce((obj, key) => {
-      const newObj = { ...obj };
-      newObj[key] = getValue(filtersArg[key]);
-      return newObj;
-    }, {});
-    const params = {
-      currentPage: pagination.current,
-      pageSize: pagination.pageSize,
-      ...formValues,
-      ...filters,
-    };
-
-    if (sorter.field) {
-      params.sorter = `${sorter.field}_${sorter.order}`;
-    }
-
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: params,
-    });
-  };
 
   handleFormReset = () => {
     const { form, dispatch } = this.props;
@@ -236,8 +231,8 @@ class TableList extends Component {
                   }}
                   
                 >
-                  {pType.map((item,index)=>{
-                    return <Option key={index} value={index+1}>{item}</Option>
+                  {Object.keys(experimentType).map((item)=>{
+                    return <Option key={item} value={item}>{experimentType[item]}</Option>
                   })}
                 </Select>,
               )} 
@@ -271,14 +266,18 @@ class TableList extends Component {
   onTabChange = tabActiveKey => {
     const {dispatch} = this.props
     dispatch({
-      type:'lab/fetchProjects',
+      type:'labKeyProjects/fetchProjects',
       payload:{
-        status:tabActiveKey
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey,
+          operationUnit:5
+        }
       }
       
     })
     dispatch({
-      type:'lab/changeTabActiveKey',
+      type:'labKeyProjects/changeTabActiveKey',
       payload:tabActiveKey
     })
   };
@@ -303,7 +302,7 @@ class TableList extends Component {
     const data = selectedRows.map(item=>{
       return {
         reason:text,
-        projectId:item.projectGroupId
+        projectId:item.id
       }
     })
     let payload={
@@ -329,7 +328,7 @@ class TableList extends Component {
   handleReportClick = ()=>{
     const {selectedRows,text,approvalType} = this.state
     const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.projectGroupId)
+    const data = selectedRows.map(item=>item.id)
     dispatch({
       type:'approval/key',
       payload:{
@@ -391,13 +390,14 @@ class TableList extends Component {
           tab: '待上报',
         },
         {
-          key: '2',
-          tab: '已上报',
-        },
-        {
-          key: '3',
+          key: '12',
           tab: '已驳回',
         },
+        {
+          key: '13',
+          tab: '已上报',
+        },
+        
       ]}
       >
         <Modal
@@ -411,7 +411,7 @@ class TableList extends Component {
         </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
               {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
@@ -434,7 +434,7 @@ class TableList extends Component {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              rowKey='projectGroupId'
+              rowKey={(item,index)=>index}
             />
           </div>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

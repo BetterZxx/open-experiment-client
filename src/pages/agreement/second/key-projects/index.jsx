@@ -26,7 +26,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType} from '@/utils/constant'
+import {experimentType} from '@/utils/constant'
 import {saveAs} from 'file-saver'
 import styles from './style.less';
 
@@ -44,10 +44,10 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({  loading,second }) => ({
+@connect(({  loading,secondKeyProjects }) => ({
   loading: loading.models.second,
-  projects:second.secondProjects,
-  tabActiveKey:second.tabActiveKey
+  projects:secondKeyProjects.secondProjects,
+  tabActiveKey:secondKeyProjects.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -70,12 +70,11 @@ class TableList extends Component {
     {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
-      render:(t)=>t[0].userName
+      render:(t)=>''
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
-      render: val => val===0?'普通':'重点'
+      render: val =>'重点'
     },
     {
       title: '已选学生数',
@@ -84,14 +83,41 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>{
-        return projectType[type]
-      }
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type],
+      filters:Object.keys(experimentType).map((item)=>{
+        return {
+          text:experimentType[item],
+          value:item
+        }
+      })
+      ,
+      onFilter: (value, record) => record.experimentType === value,
+
     },
     {
       title: '预申请金额',
       dataIndex:'fundsApplyAmount',
+      filters:[
+        {
+          text:'500',
+          value:500
+        },
+        {
+          text:'2500',
+          value:2500
+        },
+        {
+          text:'3000',
+          value:3000
+        },
+        {
+          text:'5000',
+          value:5000
+        }
+
+      ],
+      onFilter: (value, record) => record.fundsApplyAmount === value,
       render:(funds)=> {
         return (
           <div>
@@ -109,7 +135,7 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      dataIndex:'projectGroupId',
+      dataIndex:'id',
       render: (id) => (
         <Fragment>
           {/* <a onClick={() => this.editWarning()}>编辑</a>
@@ -144,7 +170,7 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type: 'second/fetchProjects',
+      type: 'secondKeyProjects/fetchProjects',
       payload:{
         status:'0'
       }
@@ -157,10 +183,6 @@ class TableList extends Component {
     form.resetFields();
     this.setState({
       formValues: {},
-    });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
     });
   };
   handleSelectRows = rows => {
@@ -240,13 +262,17 @@ class TableList extends Component {
   onTabChange = tabActiveKey => {
     const {dispatch} = this.props
     dispatch({
-      type:'second/fetchProjects',
+      type:'secondKeyProjects/fetchProjects',
       payload:{
-        status:tabActiveKey
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey,
+          operationUnit:5
+        }
       }
     })
     dispatch({
-      type:'second/changeTabActiveKey',
+      type:'secondKeyProjects/changeTabActiveKey',
       payload:tabActiveKey
     })
   };
@@ -261,7 +287,7 @@ class TableList extends Component {
     const data = selectedRows.map(item=>{
       return {
         reason:text,
-        projectId:item.projectGroupId
+        projectId:item.id
       }
     })
     let payload={
@@ -299,7 +325,7 @@ class TableList extends Component {
   handleReportClick = ()=>{
     const {selectedRows,text,approvalType} = this.state
     const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.projectGroupId)
+    const data = selectedRows.map(item=>item.id)
     dispatch({
       type:'approval/key',
       payload:{
@@ -327,7 +353,7 @@ class TableList extends Component {
     const {dispatch,tabActiveKey} = this.props
     const {selectedRows,funds} = this.state
     console.log(selectedRows)
-    const projectIdList = selectedRows.map(item=>item.projectGroupId)
+    const projectIdList = selectedRows.map(item=>item.id)
     dispatch({
       type:'second/updateFunds',
       payload:{
@@ -415,13 +441,14 @@ class TableList extends Component {
           tab: '待上报',
         },
         {
-          key: '2',
-          tab: '已上报',
-        },
-        {
-          key: '3',
+          key: '12',
           tab: '已驳回',
         },
+        {
+          key: '13',
+          tab: '已上报',
+        },
+        
       ]}
       >
         <Modal
@@ -448,7 +475,7 @@ class TableList extends Component {
         </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
-            <div className={styles.tableListForm}>{this.renderForm()}</div>
+            {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
               {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
@@ -469,7 +496,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
              
               dataSource={projects}
-              rowKey = 'projectGroupId' 
+              rowKey = 'id' 
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
