@@ -180,6 +180,7 @@ class Analysis extends Component {
     return (
       <GridContent>
         <React.Fragment>
+          
           <Suspense fallback={<PageLoading />}>
             <IntroduceRow loading={loading}  />
           </Suspense>

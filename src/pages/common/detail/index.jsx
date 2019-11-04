@@ -22,6 +22,7 @@ import React, { Component, Fragment } from 'react';
 import classNames from 'classnames';
 import { connect } from 'dva';
 import Achievement from './components/achievement'
+import BaseInfo from '../detail-components/BaseInfo'
 import styles from './style.less';
 import moment from 'moment';
 import { json } from 'body-parser';
@@ -302,37 +303,6 @@ class Advanced extends Component {
       <Button onClick={()=>this.props.history.goBack()}>返回</Button>
     </div>)
     console.log(process)
-    const description = (
-      <RouteContext.Consumer>
-        {({ isMobile }) => (
-          <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-            <Descriptions.Item label="创建人">{detail.list.find(item=>item.code===detail.creatorId).realName}</Descriptions.Item>
-            <Descriptions.Item label="开放实验室">{detail.labName}</Descriptions.Item>
-            <Descriptions.Item label="地点">{detail.address}</Descriptions.Item>
-            <Descriptions.Item label="实验类型">
-              {
-                experimentType[detail.experimentType]
-              }
-            </Descriptions.Item>
-            <Descriptions.Item label="实验时间">{`${moment(detail.startTime).format('YYYY-MM-DD')}~${moment(detail.startTime).format('YYYY-MM-DD')}`}</Descriptions.Item>
-            <Descriptions.Item label="项目级别">{detail.projectType===1?'普通':'重点'}</Descriptions.Item>
-            <Descriptions.Item label="建议审分组">
-              {
-                suggestGroupType[detail.suggestGroupType]
-              }
-            </Descriptions.Item>
-            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>{
-              return major.find(i=>i.mId===item).mName
-            }).join('、')}</Descriptions.Item>
-            <Descriptions.Item label="适宜学生数">{detail.fitPeopleNum}</Descriptions.Item>
-            <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
-            <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
-            <Descriptions.Item label="开放实验条件">{detail.experimentCondition}</Descriptions.Item>
-           
-          </Descriptions>
-        )}
-      </RouteContext.Consumer>
-    );
     const tDescriptions = !detail.guideTeachers?'':detail.guideTeachers.map((item,key)=>{
         return <div key={key}>
           
@@ -390,7 +360,7 @@ class Advanced extends Component {
         title={`项目名称：${detail.projectName}`}
         extra={action}
         className={styles.pageHeader}
-        content={description}
+        content={<BaseInfo detail={detail} ></BaseInfo>}
         extraContent={extra}
         tabActiveKey={tabActiveKey}
         onTabChange={this.onTabChange}
