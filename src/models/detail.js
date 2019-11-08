@@ -1,4 +1,4 @@
-import { reqOwnProjects, reqProjectProcess, reqProjectDetail,reqKeyProjectProcess } from '../services/detail';
+import { reqOwnProjects, reqProjectProcess, reqProjectDetail,reqKeyProjectProcess, reqUploadApplyFile } from '../services/detail';
 import { message } from 'antd';
 import router from 'umi/router';
 /**
@@ -50,7 +50,9 @@ const Model = {
     baseInfo: {}, //项目基本信息
     process: [],  //操作历史
     projectType:1, //项目类型-普通，重点
-    role:0   //0-实验室，1-学院，2-职能部门，3-指导老师
+    role:0 ,  //0-实验室，1-学院，2-职能部门，3-指导老师
+    fileList:[]
+
   },
   effects: {
     /**
@@ -142,6 +144,18 @@ const Model = {
             payload: projectType,
           });
         }
+        yield put({
+          type:'saveFileList',
+          payload:[
+            {
+                    uid: '1',
+                    name: res.data.applyurl.replace(/^.+\//g,''),  
+                    status: 'done',
+                    response: 'Server Error 500', // custom error message to show
+                    url: 'http://'+res.data.applyurl,
+            },
+          ]
+        })
         console.log(router);
         if (window.location.pathname === roleURL[payload.role]) {
           router.replace((projectType===2?keyRoleURL:roleURL)[payload.role]);
@@ -156,6 +170,19 @@ const Model = {
         message.error(`请求项目详情出错:${res.msg}`);
       }
     },
+    *uploadApplyFile({payload},{call,put}){
+      const res = yield call(reqUploadApplyFile,payload.data)
+      console.log(payload)
+      if(res.code===0){
+        message.success('上传成功')
+        yield put({
+          type:'saveFileList',
+          payload:[payload.file]
+        })
+      }else{
+        message.error('上传失败')
+      }
+    }
   },
   reducers: {
     saveProcess(state, { payload }) {
@@ -169,6 +196,9 @@ const Model = {
     },
     saveProjectType(state,{payload}) {
       return {...state, projectType:payload}
+    },
+    saveFileList(state,{payload}){
+      return {...state,fileList:payload}
     }
   },
 };

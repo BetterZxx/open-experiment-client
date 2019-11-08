@@ -10,6 +10,12 @@ export async function reqExportConclusionExcel() {
     responseType:'blob'
   });
 }
+export async function reqFilter(params){
+  return request('/project/conditionallyQueryOfKeyProject',{
+    method: 'post',
+    data:params
+  })
+}
 export async function reqRejectedKeyProjects(params){
   return request('/project/getHistoricalKeyProjectInfo',{
     method:'post',

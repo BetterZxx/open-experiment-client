@@ -245,7 +245,7 @@ class Advanced extends Component {
             <div className={styles.main}>
               <GridContent>
                 {/* <Process/> */}
-                <Preview/>
+                <Preview fileUrl={detail.fileUrl}/>
                 <Member memberList={detail.list} />
                 <Advice process={process} />
                 <History process={process}/>

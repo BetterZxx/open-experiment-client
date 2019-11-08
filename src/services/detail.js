@@ -25,4 +25,10 @@ export async function reqProjectDetail(params) {
     params
   });
 }
+export async function reqUploadApplyFile(params) {
+  return request('/file/reloadApplyDoc', {
+    method: 'post',
+    data:params
+  });
+}
 

@@ -25,6 +25,10 @@ import Achievement from './components/achievement'
 import BaseInfo from '../detail-components/BaseInfo'
 import styles from './style.less';
 import moment from 'moment';
+import Advice from '../detail-components/Advice';
+import Member from '../detail-components/Member';
+import Process from '../detail-components/Process'
+import History from '../detail-components/History'
 import { json } from 'body-parser';
 
 import {statusType,major,experimentType,suggestGroupType,operationType,operationUnit} from '@/utils/constant'
@@ -399,27 +403,7 @@ class Advanced extends Component {
         
         <div className={styles.main}>
           <GridContent>
-            <Card
-              title="项目进度"
-              style={{
-                marginBottom: 24,
-              }}
-            >
-              <RouteContext.Consumer>
-                {({ isMobile }) => (
-                  <Steps
-                    direction={isMobile ? 'vertical' : 'horizontal'}
-                   
-                    current={getContentStatus(detail.status)}
-                  >
-                    <Step title="申请项目" description={desc1} />
-                    <Step title="立项审核" description={desc1} />
-                    <Step title="中期检查" />
-                    <Step title="结题" />
-                  </Steps>
-                )}
-              </RouteContext.Consumer>
-            </Card>
+            
             <Card
               title="项目主要内容"
               style={{
@@ -429,66 +413,11 @@ class Advanced extends Component {
               {detail.mainContent}
               
             </Card>
-            <Card
-              title="人员信息"
-              style={{
-                marginBottom: 24,
-              }}
-              bordered={false}
-            >
-              <Card style={{marginBottom:20}} type="inner" title="指导老师" bordered={false}>
-                
-                {tDescriptions}
-              </Card>
-              <Card type="inner" title="学生" bordered={false}>
-                
-                {sDecriptions}
-              </Card>
-            </Card>
            
-              <Card
-
-              title="实验室审核意见"
-              
-              style={{
-                marginBottom: 24,
-              }}
-              bordered={false}
-              >
-              {process[0]&&process[0].operationType==='1'?process[0].reason:<Empty/>}
-              </Card>
-              <Card
-              style={{
-                marginBottom: 24,
-              }}
-              bordered={false}
-              title="二级单位审核意见"
-              >
-              {process[2]&&process[2].operationType==='1'?process[2].reason:<Empty/>}
-              </Card>
-              <Card         
-              style={{
-                marginBottom: 24,
-              }}
-              bordered={false}  
-              title="职能部门审核意见"
-              >
-              {process[4]&&process[4].operationType==='1'?process[4].reason:<Empty/>}
-              </Card>
+            <Member memberList={detail.list} />
+            <Advice process={process} />
    
-            <Card
-              className={styles.tabsCard}
-              bordered={false}
-              title='操作历史'
-            >
-              <Table
-                pagination={false}
-                loading={loading}
-                rowKey={(item,index)=>index}
-                dataSource={process}
-                columns={columns}
-              />
-            </Card>
+            <History process={process}/>
           </GridContent>
         </div>
         </>

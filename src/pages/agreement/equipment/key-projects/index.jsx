@@ -25,7 +25,7 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
-import {projectType} from '@/utils/constant'
+import {experimentType,majorCollege,suggestGroupType} from '@/utils/constant'
 import UpdateForm from './components/UpdateForm';
 import styles from './style.less';
 
@@ -194,12 +194,29 @@ class TableList extends Component {
       expandForm: !expandForm,
     });
   };
+  handleFilter = (e)=>{
+    e.preventDefault()
+    const {dispatch,form} = this.props
+    form.validateFields((err,values)=>{
+      console.log(values)
+      let payload = {...values,
+        startTime:values.date&&values.date[0].format('x'),
+        endTime:values.date&&values.date[1].format('x')
+      }
+      delete payload.date
+      dispatch({
+        type:'equipmentKeyProjects/filter',
+        payload
+      })
+    })
+    
+  }
   renderAdvancedForm() {
     const {
       form: { getFieldDecorator },
     } = this.props;
     return (
-      <Form onSubmit={this.handleSearch} layout="inline">
+      <Form onSubmit={this.handleFilter} layout="inline">
         <Row
           gutter={{
             md: 8,
@@ -209,39 +226,39 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="项目名称">
-              {getFieldDecorator('name')(<Input placeholder="请输入" />)}
+              {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="学院">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('college')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">关闭</Option>
-                  <Option value="1">运行中</Option>
+                  {majorCollege.map(item=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
+                  })}
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="建议审分组">
-              {getFieldDecorator('status4')(
+              {getFieldDecorator('suggestGroupType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">A组-石工勘探</Option>
-                  <Option value="1">B组-化工材料</Option>
-                  <Option value="2">C组-机械力学</Option>
-                  <Option value="3">D组-电气及制作</Option>
-                  <Option value="4">E组-软件与数学</Option>
-                  <Option value="5">F组-经管法艺体人文</Option>
+                  {
+                    Object.keys(suggestGroupType).map(item=>{
+                      return <Option key={item} value={item}>{suggestGroupType[item]}</Option>
+                    })
+                  }
                 </Select>,
               )}
             </FormItem>
@@ -276,10 +293,10 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  <Option value="0">500</Option>
-                  <Option value="1">2500</Option>
-                  <Option value="2">3000</Option>
-                  <Option value="3">5000</Option>
+                  <Option value="500">500元</Option>
+                  <Option value="2500">2500元</Option>
+                  <Option value="3000">3000元</Option>
+                  <Option value="5000">5000元</Option>
                 </Select>,
               )}
             </FormItem>
@@ -326,7 +343,7 @@ class TableList extends Component {
     const { form } = this.props;
     const { getFieldDecorator } = form;
     return (
-      <Form onSubmit={this.handleSearch} layout="inline">
+      <Form onSubmit={this.handleFilter} layout="inline">
         <Row
           gutter={{
             md: 8,
@@ -336,38 +353,34 @@ class TableList extends Component {
         >
           <Col md={8} sm={24}>
             <FormItem label="学院">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('college')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">计科院</Option>
-                  <Option value="1">电信院</Option>
-                  <Option value="2">石工院</Option>
-                  <Option value="3">材料员</Option>
-                  <Option value='4'>体院</Option>
-                  <Option value="5">经管院</Option>
+                  {majorCollege.map(item=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
+                  })}
                 </Select>,
               )}
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="建议审分组">
-              {getFieldDecorator('status')(
+              {getFieldDecorator('suggestGroupType')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="0">A组-石工勘探</Option>
-                  <Option value="1">B组-化工材料</Option>
-                  <Option value="2">C组-机械力学</Option>
-                  <Option value="3">D组-电气及制作</Option>
-                  <Option value="4">E组-软件与数学</Option>
-                  <Option value="5">F组-经管法艺体人文</Option>
+                  {
+                    Object.keys(suggestGroupType).map(item=>{
+                      return <Option key={item} value={item}>{suggestGroupType[item]}</Option>
+                    })
+                  }
                 </Select>,
               )}
             </FormItem>

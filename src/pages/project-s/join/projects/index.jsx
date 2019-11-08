@@ -22,7 +22,7 @@ import CreateForm from './components/CreateForm';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import {projectType,major,college,grade,suggestGroupType, experimentType} from '@/utils/constant'
+import {projectType,major,college,grade,suggestGroupType, experimentType, majorCollege} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -381,8 +381,8 @@ class TableList extends Component {
                 }}
               >
                 {
-                    college.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    majorCollege.map((item)=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
                   })
                 }
                 
@@ -422,8 +422,8 @@ class TableList extends Component {
                   mode="multiple"
                 >
                   {
-                    major.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    major.map((item)=>{
+                    return <Option key={item.mId} value={item.mId}>{item.mName}</Option>
                   })
                   }
                 </Select>,
@@ -441,8 +441,8 @@ class TableList extends Component {
                   mode="multiple"
                 >
                   {
-                    college.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    majorCollege.map((item)=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
                   })
                   }
                 </Select>,
@@ -484,8 +484,8 @@ class TableList extends Component {
                   }}
                 >
                   {
-                    projectType.map((item,index)=>{
-                      return item?<Option key={index} value={index}>{item}</Option>:''
+                    Object.keys(experimentType).map((item)=>{
+                      return <Option key={item} value={item}>{experimentType[item]}</Option>
                     })
                   }
                 </Select>,
@@ -494,7 +494,7 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="普通/重点项目">
-              {getFieldDecorator('experimentType')(
+              {getFieldDecorator('projectType')(
                 <Select
                   placeholder="请选择"
                   style={{

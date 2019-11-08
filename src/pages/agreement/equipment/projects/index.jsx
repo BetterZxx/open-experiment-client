@@ -25,7 +25,7 @@ import moment from 'moment';
 import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
-import {projectType,major,college,grade,suggestGroupType, majorCollege} from '@/utils/constant'
+import {experimentType,major,college,grade,suggestGroupType, majorCollege} from '@/utils/constant'
 import UpdateForm from './components/UpdateForm';
 import styles from './style.less';
 
@@ -73,7 +73,7 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
+      dataIndex: 'projectType',
       render:(type)=>type===1?'重点':'普通'
     },
     {
@@ -82,8 +82,8 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>projectType[type]
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type]
 
     },
     {
@@ -230,8 +230,8 @@ class TableList extends Component {
                 }}
               >
                 {
-                    college.map((item,index)=>{
-                    return item?<Option key={index} value={index}>{item}</Option>:''
+                    majorCollege.map((item)=>{
+                    return <Option key={item.cId} value={item.cId}>{item.cName}</Option>
                   })
                 }
                 
@@ -248,8 +248,8 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  {suggestGroupType.map((item,index)=>{
-                    return item?<Option value={index}>{item}</Option>:''
+                  {Object.keys(suggestGroupType).map(item=>{
+                    return <Option key={item} value={item}>{suggestGroupType[item]}</Option>
                   })}
                  
                 </Select>,
@@ -286,9 +286,9 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  <Option value={2500}>2500</Option>
-                  <Option value={3000}>3000</Option>
-                  <Option value={5000}>5000</Option>
+                  <Option value="2500">2500元</Option>
+                  <Option value='3000'>3000元</Option>
+                  <Option value='5000'>5000元</Option>
                 </Select>,
               )}
             </FormItem>

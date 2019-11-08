@@ -9,8 +9,8 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://10.20.0.57:8083' 
-const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file']
+const proxyURL = 'http://10.20.0.78:8083' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file','/permission']
 const proxyOptions = {
   target: proxyURL,
   changeOrigin: true,
