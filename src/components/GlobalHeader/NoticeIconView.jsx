@@ -110,7 +110,7 @@ class GlobalHeaderRight extends Component {
         onItemClick={item => {
           this.changeReadState(item);
         }}
-        loading={fetchingNotices}
+        
         clearText="清空"
         viewMoreText="查看更多"
         onClear={this.handleNoticeClear}
@@ -150,7 +150,7 @@ class GlobalHeaderRight extends Component {
 export default connect(({ user, global, loading }) => ({
   currentUser: user.currentUser,
   collapsed: global.collapsed,
-  fetchingMoreNotices: loading.effects['global/fetchMoreNotices'],
-  fetchingNotices: loading.effects['global/fetchNotices'],
+ // fetchingMoreNotices: loading.effects['global/fetchMoreNotices'],
+  //fetchingNotices: loading.effects['global/fetchNotices'],
   notices: global.notices,
 }))(GlobalHeaderRight);

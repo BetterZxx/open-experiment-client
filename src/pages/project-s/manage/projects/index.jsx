@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,operationUnit, experimentType} from '@/utils/constant'
+import {projectType,operationUnit, experimentType,statusType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -92,20 +92,21 @@ class TableList extends Component {
     {
       title: '状态',
       render:(project) => {
-        let val = 0
-        if(project.status>=0&&project.status<=4){
-          val = 1
-        }else if(project.status>4){
-          val = 2
-        }else if(project.status===-3){
-          val = 0
-        }else if(project.status===-2){
-          val = 3
-        }
-        return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} href="javasctipt:">详情</a>
-        </span>;
+        return statusType[project.status]
+        // let val = 0
+        // if(project.status>=0&&project.status<=4){
+        //   val = 1
+        // }else if(project.status>4){
+        //   val = 2
+        // }else if(project.status===-3){
+        //   val = 0
+        // }else if(project.status===-2){
+        //   val = 3
+        // }
+        // return <span>
+        //   <Badge status={statusMap[val]} text={status[val]} />
+        //   <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} href="javasctipt:">详情</a>
+        // </span>;
       },
     },
     {
@@ -311,7 +312,7 @@ class TableList extends Component {
   }
   render() {
     const {
-      listTableList: { data },
+    
       loading,
       projects,
       process

@@ -441,11 +441,11 @@ class TableList extends Component {
           tab: '待上报',
         },
         {
-          key: '12',
+          key: '2',
           tab: '已驳回',
         },
         {
-          key: '13',
+          key: '3',
           tab: '已上报',
         },
         

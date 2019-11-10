@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import {PageHeaderWrapper} from '@ant-design/pro-layout'
 import {connect} from 'dva'
-import {Card,Table,Button,Modal,Input,Select,Form}  from 'antd'
+import {Card,Table,Button,Modal,Input,Select,Form,Popconfirm}  from 'antd'
+import {roleNames} from '@/utils/constant'
 
 const {Option} = Select
 @connect(({role})=>({
@@ -13,6 +14,59 @@ class Authority extends Component {
     this.state = { 
       mVisible:false
      }
+  }
+  componentDidMount(){
+    const {dispatch} = this.props
+    dispatch({
+      type:'role/fetch'
+    })
+  }
+  columns = [
+    {
+      title:'ID',
+      dataIndex:'id'
+    },
+    {
+      title:'工号',
+      dataIndex:'code'
+    },
+    {
+      title:'姓名',
+      dataIndex:'realName'
+    },
+    {
+      title:'电话',
+      dataIndex:'mobilePhone'
+    },
+    {
+      title:'email',
+      dataIndex:'email'
+    },
+    {
+      title:'角色',
+      dataIndex:'role',
+      render:(role)=>{
+        return roleNames[role]
+      }
+    },
+    {
+      title:'操作',
+      render:(user)=>{
+        return <Popconfirm placement="topLeft" title={`确认删除该公告?`} onConfirm={()=>this.handleDelete(user)} okText="确认" cancelText="取消">
+                  <a style={{color:'red'}}>删除</a>
+              </Popconfirm>
+      }
+    }
+  ]
+  handleDelete = (user)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'role/delete',
+      payload:{
+        roleId:user.role,
+        userId:user.code
+      }
+    })
   }
   handleAddRole = ()=>{
     const {form,dispatch} = this.props
@@ -44,6 +98,7 @@ class Authority extends Component {
     )
     const {getFieldDecorator} = this.props.form
     const {mVisible} = this.state 
+    const {roles} = this.props
     const formLayout = {
       wrapperCol:{
         span:18
@@ -81,6 +136,11 @@ class Authority extends Component {
             </Form.Item>
           </Form>
         </Modal>
+        <Table
+        columns={this.columns}
+        dataSource={roles}
+        rowKey={(item,index)=>index}
+        />
 
       </Card>
     </PageHeaderWrapper>

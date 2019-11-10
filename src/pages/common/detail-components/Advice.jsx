@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import {Descriptions,Card} from 'antd'
+import {Descriptions,Card,Empty} from 'antd'
 class Adcice extends Component {
   constructor(props) {
     super(props);
@@ -7,6 +7,15 @@ class Adcice extends Component {
   }
   render() { 
     const {process} = this.props
+    const labOperation = process.find(item=>{
+      return item.operationType==="1"&&item.operationUnit==='4'
+    })
+    const secondOperation = process.find(item=>{
+      return item.operationType==='1'&&item.operationUnit==='5'
+    })
+    const equipOperation = process.find(item=>{
+      return item.operationType==='1'&&item.operationUnit==='6'
+    })
     return ( 
             <Card
 
@@ -22,7 +31,9 @@ class Adcice extends Component {
               column={1}
             >
               <Descriptions.Item>
-                skcfdh     
+                {
+                  labOperation?labOperation.reason:<Empty/>
+                }
               </Descriptions.Item>
             </Descriptions>
             <Descriptions
@@ -30,7 +41,9 @@ class Adcice extends Component {
               column={1}
             >
               <Descriptions.Item>
-                skcfdh     
+              {
+                  secondOperation?secondOperation.reason:<Empty/>
+                }     
               </Descriptions.Item>
               
             </Descriptions>
@@ -39,7 +52,9 @@ class Adcice extends Component {
               column={1}
             >
               <Descriptions.Item>
-                skcfdh     
+              {
+                  equipOperation?equipOperation.reason:<Empty/>
+                }     
               </Descriptions.Item>
             </Descriptions>
 

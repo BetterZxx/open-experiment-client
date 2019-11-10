@@ -24,7 +24,7 @@ class Preview extends Component {
     
   }
   downloadApplyModel = ()=>{
-    saveAs('http://47.107.61.232:8081/sign/100%E9%A2%98%E7%B3%BB%E5%88%97by_July.pdf','www.pdf')
+    saveAs('http://10.20.0.78:8083/material/附件3-课外开放实验校级重点项目申请书(2017版).doc','www.doc')
   }
   render() {
     // const props = {
@@ -82,7 +82,7 @@ class Preview extends Component {
         </div>
         <Button onClick={this.togglePreview}>{isPreview ? '取消预览' : '预览'}</Button>
         <embed
-          src={'http://'+detail.applyurl}
+          src={detail.applyurl}
           style={{ display: isPreview ? 'block' : 'none' }}
           type="application/pdf"
           width="100%"

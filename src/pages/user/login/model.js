@@ -7,7 +7,8 @@ const Model = {
   namespace: 'userLogin',
   state: {
     status: undefined,
-    imgSrc: ''
+    imgSrc: '',
+    user:{}
   },
   effects: {
     *login({ payload }, { call, put }) {
@@ -20,6 +21,10 @@ const Model = {
       if(res.code===0){
         setAuthority('admin');
         setToken(res.data.token)
+        yield put({
+          type:'save',
+          payload:res.data
+        })
         message.success('登录成功')
       }else{
         message.error('登录失败')
@@ -68,6 +73,9 @@ const Model = {
     },
     setImgSrc(state,{payload}){
       return { ...state, imgSrc:`data:image/jpg;base64,${payload.data}` }
+    },
+    save(state,{payload}){
+      return {...state,user:payload}
     }
   },
 };

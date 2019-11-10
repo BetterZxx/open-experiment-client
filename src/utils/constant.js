@@ -12,6 +12,17 @@ export const suggestGroupType = {
   '4':'E组-软件与数学',
   '5':'F组-经管法艺体人文'}
 export const operationType = ['同意','拒绝','上报','修改']
+export const roleNames={
+  '0':'超级管理员',
+  '1':'学生',
+  '2':'项目组长',
+  '3':'指导老师',
+  '4':'实验室主任',
+  '5':'二级单位',
+  '6':'职能部门',
+  '7':'职能部门领导',
+
+}
 export const operationUnit = {
   '4':'实验室主任',
   '5':'二级单位',
@@ -19,6 +30,7 @@ export const operationUnit = {
 export const grade = [2016,2017,2018,2019]
 export const memberRole = ['指导老师','项目组长','普通成员']
 export const statusType = {
+  '-4':'重点申请',
   '-3':'项目已被终止',
   '-2':'驳回修改',
   '0':'待审核',
@@ -339,3 +351,14 @@ export const majorCollege = [
 export const major = majorCollege.reduce((cur,pre)=>{
     return cur.concat(pre.majors)
   },[])
+export const collegeTimeLimit = {
+  '0':'申报时间限制',
+  '1':'学生申请加入项目时间限制',
+  '2':'审批学生申请时间限制',
+  '3':'实验室审核时间限制',
+  '4':'重点项目申报时间限制',
+  '5':'指导老师重点项目审核时间限制',
+  '6':'实验室重点项目审核时间限制',
+  '7':'实验室上报时间限制',
+  '8':'二级单位审核时间限制',
+}

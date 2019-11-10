@@ -1,14 +1,14 @@
 import { message } from 'antd';
-import { reqAddRole,reqRemoveRole,reqRoleList } from './service';
+import { reqLimitList,reqAppendLimits,reqUpdateLimits } from './service';
 
 const Model = {
-  namespace: 'role',
+  namespace: 'setting',
   state: {
-    roles:[]
+    colleges:[]
   },
   effects: {
     *fetch({ payload }, { call,put }) {
-      const res = yield call(reqRoleList, payload);
+      const res = yield call(reqLimitList, payload);
       if(res.code===0)
         yield put({
           type:'save',
@@ -19,10 +19,11 @@ const Model = {
       }
       //window.location.href
     },
-    *add({payload},{call,put}){
-      const res = yield call (reqAddRole,payload)
+    *append({payload},{call,put}){
+      console.log('appendlimit',payload)
+      const res = yield call (reqAppendLimits,payload)
       if(res.code===0){
-        message.success('添加成功')
+        message.success('操作成功')
         yield put({
           type:'fetch'
         })
@@ -30,8 +31,9 @@ const Model = {
         message.error(`操作失败：${res.msg}`)
       }
     },
-    *delete({payload},{call,put}){
-      const res = yield call(reqRemoveRole,payload)
+    *update({payload},{call,put}){
+      console.log('updatelimit',payload)
+      const res = yield call(reqUpdateLimits,payload)
       if(res.code===0){
         yield put({
           type:'fetch'
@@ -45,7 +47,7 @@ const Model = {
   
  reducers:{
    save(state,{payload}){
-     return {...state,roles:payload}
+     return {...state,colleges:payload}
    }
  } 
 };

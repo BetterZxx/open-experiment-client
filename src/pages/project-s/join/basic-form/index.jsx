@@ -75,7 +75,7 @@ class BasicForm extends Component {
     const { dispatch,detail, form } = this.props;
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        values.projectGroupId = detail.projectGroupId
+        values.projectGroupId = detail.id
         dispatch({
           type: 'studentProjects/join',
           payload: values,

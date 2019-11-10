@@ -9,7 +9,7 @@ import Projects from '@/pages/account/center/components/Projects';
 
 const IntroduceRow = React.lazy(() => import('./components/IntroduceRow'));
 const SalesCard = React.lazy(() => import('./components/SalesCard'));
-const TopSearch = React.lazy(() => import('./components/TopSearch'));
+const Announcement = React.lazy(() => import('./components/Announcement'));
 const ProportionSales = React.lazy(() => import('./components/ProportionSales'));
 const OfflineData = React.lazy(() => import('./components/OfflineData'));
 const salePieData = [
@@ -140,28 +140,28 @@ class Analysis extends Component {
     const { rangePickerValue, salesType, currentTabKey } = this.state;
     const { dashboardAnalysis, loading ,projects,announcements} = this.props;
     console.log(projects)
-    const {
+    // const {
       
   
-      searchData,
-      offlineData,
-      offlineChartData,
-      salesTypeData,
-      salesTypeDataOnline,
-      salesTypeDataOffline,
+    //   searchData,
+    //   offlineData,
+    //   offlineChartData,
+    //   salesTypeData,
+    //   salesTypeDataOnline,
+    //   salesTypeDataOffline,
       
-    } = dashboardAnalysis;
-    let salesPieData;
+    // } = dashboardAnalysis;
+    // let salesPieData;
     let announcementsData = announcements.filter(item=>{
       return item.status === 1
     }).sort((a,b)=>{
       return b.publishTime - a.publishTime 
     })
-    if (salesType === 'all') {
-      salesPieData = salesTypeData;
-    } else {
-      salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
-    }
+    // if (salesType === 'all') {
+    //   salesPieData = salesTypeData;
+    // } else {
+    //   salesPieData = salesType === 'online' ? salesTypeDataOnline : salesTypeDataOffline;
+    // }
 
     const menu = (
       <Menu>
@@ -176,7 +176,7 @@ class Analysis extends Component {
         </Dropdown>
       </span>
     );
-    const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
+    // const activeKey = currentTabKey || (offlineData[0] && offlineData[0].name);
     return (
       <GridContent>
         <React.Fragment>
@@ -185,13 +185,13 @@ class Analysis extends Component {
             <IntroduceRow loading={loading}  />
           </Suspense>
           <Suspense fallback={null}>
-            <SalesCard
+            {/* <SalesCard
               rangePickerValue={rangePickerValue}
               isActive={this.isActive}
               handleRangePickerChange={this.handleRangePickerChange}
               loading={loading}
               selectDate={this.selectDate}
-            />
+            /> */}
           </Suspense>
           <Row
             gutter={24}
@@ -202,33 +202,36 @@ class Analysis extends Component {
           >
             <Col xl={12} lg={24} md={24} sm={24} xs={24}>
               <Suspense fallback={null}>
-                <TopSearch
+                <Announcement
                   loading={loading}
                   data={announcementsData}
-                  dropdownGroup={dropdownGroup}
+                  title='所有公告'
                   handleView={this.handleView}
                 />
               </Suspense>
             </Col>
             <Col xl={12} lg={24} md={24} sm={24} xs={24}>
               <Suspense fallback={null}>
-                <ProportionSales
+              <Announcement
+                  loading={loading}
+                  data={announcementsData}
+                  title='院内公告'
+                  handleView={this.handleView}
+                />
+                {/* <ProportionSales
                   dropdownGroup={dropdownGroup}
                   salesType={salesType}
                   loading={loading}
                   salesPieData={salePieData}
                   handleChangeSalesType={this.handleChangeSalesType}
-                />
+                /> */}
               </Suspense>
             </Col>
           </Row>
           <Suspense fallback={null}>
             <OfflineData
-              activeKey={activeKey}
+              
               loading={loading}
-              offlineData={offlineData}
-              offlineChartData={offlineChartData}
-              handleTabChange={this.handleTabChange}
             />
           </Suspense>
         </React.Fragment>

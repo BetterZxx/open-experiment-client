@@ -462,7 +462,6 @@ class TableList extends Component {
   }
   render() {
     const {
-      listTableList: { data },
       loading,
       projects
     } = this.props;

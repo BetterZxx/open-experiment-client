@@ -306,7 +306,6 @@ class TableList extends Component {
   }
   render() {
     const {
-      listTableList: { data },
       loading,
       announcements
     } = this.props;
@@ -367,6 +366,7 @@ class TableList extends Component {
               dataSource={announcements}
               rowKey={(item,index)=>index}
               columns={this.columns}
+              pagination={{pageSize:8}}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />

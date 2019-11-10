@@ -19,23 +19,7 @@ const topColResponsiveProps = {
 
 const IntroduceRow = ({ loading, visitData }) => (
   <Row gutter={24} type="flex">
-    <Col {...topColResponsiveProps}>
-      <ChartCard
-        bordered={false}
-        title="项目总申请数"
-        action={
-          <Tooltip title="指标说明">
-            <Icon type="info-circle-o" />
-          </Tooltip>
-        }
-        loading={loading}
-        total={() => <span>{numeral(12423).format('0,0')}</span>}
-        footer={<Field label="已审核" value='78%' />}
-        contentHeight={46}
-      >
-        <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" />
-      </ChartCard>
-    </Col>
+   
 
     <Col {...topColResponsiveProps}>
       <ChartCard
@@ -90,6 +74,23 @@ const IntroduceRow = ({ loading, visitData }) => (
         contentHeight={46}
       >
         <span style={{fontSize:17}}>{'2017-06-30 ~ 2018-09-23'}</span>
+        {/* <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" /> */}
+      </ChartCard>
+    </Col>
+    <Col {...topColResponsiveProps}>
+      <ChartCard
+        bordered={false}
+        title="项目申报数"
+        action={
+          <Tooltip title="指标说明">
+            <Icon type="info-circle-o" />
+          </Tooltip>
+        }
+        loading={loading}
+        total={() => <span>{numeral(12423).format('0,0')}</span>}
+        
+        contentHeight={46}
+      >
         {/* <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" /> */}
       </ChartCard>
     </Col>

@@ -1,14 +1,14 @@
 import { message } from 'antd';
-import { reqAddRole,reqRemoveRole,reqRoleList } from './service';
+import { reqTimeLimit,reqDeleteTimeLimit,reqSetTimeLimit,reqUpdateTimeLimit} from './service';
 
 const Model = {
-  namespace: 'role',
+  namespace: 'secondSetting',
   state: {
-    roles:[]
+    timeLimits:[]
   },
   effects: {
     *fetch({ payload }, { call,put }) {
-      const res = yield call(reqRoleList, payload);
+      const res = yield call(reqTimeLimit, payload);
       if(res.code===0)
         yield put({
           type:'save',
@@ -20,7 +20,7 @@ const Model = {
       //window.location.href
     },
     *add({payload},{call,put}){
-      const res = yield call (reqAddRole,payload)
+      const res = yield call (reqSetTimeLimit,payload)
       if(res.code===0){
         message.success('添加成功')
         yield put({
@@ -31,7 +31,18 @@ const Model = {
       }
     },
     *delete({payload},{call,put}){
-      const res = yield call(reqRemoveRole,payload)
+      const res = yield call(reqDeleteTimeLimit,payload)
+      if(res.code===0){
+        yield put({
+          type:'fetch'
+        })
+        message.success('操作成功')
+      }else{
+        message.error(`操作失败：${res.msg}`)
+      }
+    },
+    *update({payload},{call,put}){
+      const res = yield call(reqUpdateTimeLimit,payload)
       if(res.code===0){
         yield put({
           type:'fetch'
@@ -45,7 +56,7 @@ const Model = {
   
  reducers:{
    save(state,{payload}){
-     return {...state,roles:payload}
+     return {...state,timeLimits:payload}
    }
  } 
 };

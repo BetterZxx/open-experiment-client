@@ -36,6 +36,7 @@ class AvatarDropdown extends React.Component {
       },
       menu,
     } = this.props;
+
     const menuHeaderDropdown = (
       <Menu className={styles.menu} selectedKeys={[]} onClick={this.onMenuClick}>
         {menu && (
@@ -58,11 +59,11 @@ class AvatarDropdown extends React.Component {
         </Menu.Item>
       </Menu>
     );
-    return currentUser && currentUser.name ? (
+    return currentUser && currentUser.realName ? (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} src={currentUser.avatar} alt="avatar" />
-          <span className={styles.name}>{userInfo.realName}</span>
+          <Avatar size="small" className={styles.avatar} style={{color:'green',backgroundColor:'green'}} src={currentUser.avatar} alt="avatar" />
+          <span className={styles.name}>{currentUser.realName}</span>
         </span>
       </HeaderDropdown>
     ) : (
@@ -78,6 +79,6 @@ class AvatarDropdown extends React.Component {
 }
 
 export default connect(({ user }) => ({
-  currentUser: user.currentUser,
+  currentUser:user.currentUser,
   userInfo: user.userInfo
 }))(AvatarDropdown);

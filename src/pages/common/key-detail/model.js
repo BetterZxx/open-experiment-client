@@ -15,7 +15,9 @@ const Model = {
         payload: response,
       });
     },
+    
   },
+
   reducers: {
     show(state, { payload }) {
       return { ...state, ...payload };

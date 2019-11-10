@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,memberRole} from '@/utils/constant'
+import {projectType,memberRole, experimentType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -69,7 +69,7 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex:'experimentType',
+      dataIndex:'projectType',
       render:(type)=>{
         return type===1?'普通':'重点'
       }
@@ -95,8 +95,8 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>projectType[type]
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type]
 
     },
     {
@@ -311,7 +311,7 @@ class TableList extends Component {
     const {selectedRows} = this.state
     let payload = selectedRows.map(item=>{
       return {
-        projectGroupId:item.projectGroupId,
+        projectGroupId:item.id,
         reason:'',
         userId:item.code
       }
@@ -326,7 +326,7 @@ class TableList extends Component {
     const {selectedRows} = this.state
     let payload = selectedRows.map(item=>{
       return {
-        projectGroupId:item.projectGroupId,
+        projectGroupId:item.id,
         reason:'',
         userId:item.code
       }
@@ -359,9 +359,10 @@ class TableList extends Component {
     const {dispatch} = this.props
     
     let payload = {
-        projectGroupId:selectedRows[0].projectGroupId,
+        projectGroupId:selectedRows[0].id,
         reason:'',
-        userId:selectedRows[0].code
+        userId:selectedRows[0].code,
+        memberRole:2
     }
     dispatch({
       type:'applyStudents/setLeader',

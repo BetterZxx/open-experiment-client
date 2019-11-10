@@ -271,7 +271,7 @@ class TableList extends Component {
         status:tabActiveKey,
         data:{
           operationType:tabActiveKey,
-          operationUnit:5
+          operationUnit:4
         }
       }
       
@@ -328,7 +328,7 @@ class TableList extends Component {
   handleReportClick = ()=>{
     const {selectedRows,text,approvalType} = this.state
     const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.id)
+    const data = selectedRows.map(item=>({projectId:item.id,reason:''}))
     dispatch({
       type:'approval/key',
       payload:{
@@ -390,11 +390,11 @@ class TableList extends Component {
           tab: '待上报',
         },
         {
-          key: '12',
+          key: '2',
           tab: '已驳回',
         },
         {
-          key: '13',
+          key: '3',
           tab: '已上报',
         },
         

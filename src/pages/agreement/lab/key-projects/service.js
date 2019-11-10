@@ -2,8 +2,8 @@ import request from '@/utils/request';
 const keyProjectsUrl = {
   '0':'/project/getKeyProjectApplyingListByLabAdmin',
   '1':'/project/getToBeReportedKeyProjectByLabAdmin',
-  '12':'/project/getHistoricalKeyProjectInfo',
-  '13':'/project/getHistoricalKeyProjectInfo'
+  '2':'/project/getHistoricalKeyProjectInfo',
+  '3':'/project/getHistoricalKeyProjectInfo'
 }
 
 export async function reqLabKeyProjects(payload) {

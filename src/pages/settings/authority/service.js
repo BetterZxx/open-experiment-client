@@ -6,3 +6,12 @@ export async function reqAddRole(params) {
     data: params,
   });
 }
+export async function reqRoleList(){
+  return request('/permission/getUserInfoByRole')
+}
+export async function reqRemoveRole(params){
+  return request('/permission/deleteUserRole',{
+    method:'post',
+    data:params
+  })
+}

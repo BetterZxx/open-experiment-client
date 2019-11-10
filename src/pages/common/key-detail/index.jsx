@@ -53,8 +53,8 @@ function getHeaderStatus(num) {
   }
 }
 
-@connect(({ profileAdvanced, detail }) => ({
-  profileAdvanced,
+@connect(({ detail }) => ({
+ 
   detail: detail.baseInfo,
   role: detail.role,
   process: detail.process,
@@ -77,7 +77,7 @@ class Advanced extends Component {
     const {
       dispatch,
       role,
-      detail: { projectGroupId },
+      detail: { id },
     } = this.props;
     const { approvalType } = this.state;
     console.log(role, approvalType);
@@ -90,7 +90,7 @@ class Advanced extends Component {
         unit: role,
         data: [
           {
-            projectId: projectGroupId,
+            projectId: id,
             reason: this.state.text,
           },
         ],
@@ -147,7 +147,7 @@ class Advanced extends Component {
     dispatch({
       type: 'approval/apply',
       payload: {
-        projectId: detail.projectGroupId,
+        projectId: detail.id,
       },
     });
   };
@@ -163,9 +163,8 @@ class Advanced extends Component {
       text,
       isPreview,
     } = this.state;
-    const { profileAdvanced, loading, detail, process } = this.props;
+    const {  loading, detail, process } = this.props;
     console.log(detail);
-    const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
     const extra = (
       <div className={styles.moreInfo}>
         <Statistic style={{ textAlign: 'left', marginRight: 30 }} title="状态" value={'未提交'} />

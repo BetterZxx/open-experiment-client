@@ -44,7 +44,7 @@ class BasicForm extends Component {
           startTime:values.time[0].format('YYYY-MM-DD'),
           endTime:values.time[1].format('YYYY-MM-DD'),
           stuCodes:values.names,
-          teacherCodes:['31']
+          
         }
         delete payload.names
         delete payload.keys
@@ -165,7 +165,7 @@ class BasicForm extends Component {
         
         label={index === 0 ? '学生学号' : ''}
         required={false}
-        key={indexx}
+        key={index}
       >
         {getFieldDecorator(`names[${k}]`, {
           validateTrigger: ['onChange', 'onBlur'],
@@ -364,6 +364,10 @@ class BasicForm extends Component {
                     required: true,
                     message: '请输入适宜学生数',
                   },
+                  {
+                    pattern:/\d+/,
+                    message:'请输入数字' 
+                  }
                 ],
               })(<Input placeholder="请输入适宜学生数" />)}
             </FormItem>
@@ -389,7 +393,12 @@ class BasicForm extends Component {
                   {
                     required: true,
                     message: '请输入计划实验时间',
-                  },
+                  }
+                  ,
+                  {
+                    pattern:/\d+/,
+                    message:'请输入数字' 
+                  }
                 ],
               })(<Input placeholder="请输入计划实验时间" />)}
             </FormItem>

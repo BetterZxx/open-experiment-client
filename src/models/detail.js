@@ -149,10 +149,10 @@ const Model = {
           payload:[
             {
                     uid: '1',
-                    name: res.data.applyurl.replace(/^.+\//g,''),  
+                    name: res.data.applyurl?res.data.applyurl.replace(/^.+\/\d_/g,''):'',  
                     status: 'done',
                     response: 'Server Error 500', // custom error message to show
-                    url: 'http://'+res.data.applyurl,
+                    url: res.data.applyurl,
             },
           ]
         })
@@ -175,9 +175,18 @@ const Model = {
       console.log(payload)
       if(res.code===0){
         message.success('上传成功')
+
         yield put({
           type:'saveFileList',
-          payload:[payload.file]
+          payload:[
+            {
+              uid: '1',
+              name: res.data.url?res.data.url.replace(/^.+\/\d_/g,''):'',  
+              status: 'done',
+              response: 'Server Error 500', // custom error message to show
+              url: res.data.url,
+            },
+          ]
         })
       }else{
         message.error('上传失败')

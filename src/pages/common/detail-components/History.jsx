@@ -21,7 +21,7 @@ const columns = [
     title: '操作时间',
     dataIndex: 'operationTime',
     render: time => {
-      return moment(time).format('YYYY-MM-DD HH:MM');
+      return moment(time).format('YYYY-MM-DD');
     },
   },
   {

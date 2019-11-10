@@ -195,11 +195,11 @@ const columns = [
   },
 ];
 
-@connect(({ profileAdvanced, loading,detail }) => ({
-  profileAdvanced,
+@connect(({  loading,detail }) => ({
+  
+
   detail:detail.baseInfo,
   role:detail.role,
-  loading: loading.effects['profileAdvanced/fetchAdvanced'],
   process:detail.process,
   text:''
 }))
@@ -214,9 +214,7 @@ class Advanced extends Component {
 
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'profileAdvanced/fetchAdvanced',
-    });
+ 
   }
   handleModalOk = ()=>{
     const {dispatch,role,detail:{id}} = this.props
@@ -291,9 +289,9 @@ class Advanced extends Component {
   }
   render() {
     const { operationKey, tabActiveKey,mVisible,projectId,approvalType,text } = this.state;
-    const { profileAdvanced, loading,detail,process } = this.props;
+    const {  loading,detail,process=[] } = this.props;
     console.log(detail)
-    const { advancedOperation1, advancedOperation2, advancedOperation3 } = profileAdvanced;
+    
     const extra = (
       <div className={styles.moreInfo}>
         <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />

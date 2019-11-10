@@ -15,12 +15,11 @@ import moment from 'moment';
 //   'Los Angeles battles huge wildfires.',
 // ];
 
-const TopSearch = ({ loading,data, dropdownGroup,handleView }) => (
+const TopSearch = ({ loading,data,handleView,title }) => (
  <Card
     loading={loading}
     bordered={false}
-    title="公告栏"
-    extra={dropdownGroup}
+    title={title}
     style={{
       height: '100%',
     }}

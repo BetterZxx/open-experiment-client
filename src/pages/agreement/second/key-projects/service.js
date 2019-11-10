@@ -2,8 +2,8 @@ import request from '@/utils/request';
 const keyProjectsUrl = {
   '0':'/project/getKeyProjectApplyingListBySecondaryUnit',
   '1':'/project/getToBeReportedKeyProjectBySecondaryUnit',
-  '12':'/project/getHistoricalKeyProjectInfo',
-  '13':'/project/getHistoricalKeyProjectInfo'
+  '2':'/project/getHistoricalKeyProjectInfo',
+  '3':'/project/getHistoricalKeyProjectInfo'
 }
 
 export async function reqSecondProjects(payload) {
