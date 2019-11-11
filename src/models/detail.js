@@ -24,6 +24,17 @@ const roleURL = [
   '/sproject/manage/detail',
   '/tproject/manage/edit'
 ];
+const roleToUnitMap = {
+  '0':'0',
+  '1':'1',
+  '2':'2',
+  '3':'9',
+  '4':'9',
+  '5':'9',
+  '6':'9',
+  '7':'9',
+  '8':'9',
+}
 
 /**
  * 获取详情后跳转的路由地址-重点立项
@@ -44,6 +55,18 @@ const keyRoleURL = [
   '/sproject/manage/key-detail'
 ];
 
+const roleToUnitKeyMap = {
+  '0':'0',
+  '1':'1',
+  '2':'2',
+  '3':'9',
+  '4':'9',
+  '5':'3',
+  '6':'9',
+  '7':'9',
+  '8':'9',
+}
+
 const Model = {
   namespace: 'detail',
   state: {
@@ -51,7 +74,8 @@ const Model = {
     process: [],  //操作历史
     projectType:1, //项目类型-普通，重点
     role:0 ,  //0-实验室，1-学院，2-职能部门，3-指导老师
-    fileList:[]
+    fileList:[],
+    unit:9
 
   },
   effects: {
@@ -127,7 +151,7 @@ const Model = {
      */
     *fetchDetail({ payload }, { call, put }) {
       console.log('fetchDetail', payload);
-      const {projectType} = payload
+      const {projectType,role} = payload
       const res = yield call(reqProjectDetail, { id:payload.projectGroupId});
       if (res.code === 0) {
         yield put({
@@ -143,7 +167,12 @@ const Model = {
             type: 'saveProjectType',
             payload: projectType,
           });
+          
         }
+        yield put({
+          type:'saveUnit',
+          payload:(projectType===2?roleToUnitKeyMap:roleToUnitMap)[role]
+        })
         yield put({
           type:'saveFileList',
           payload:[
@@ -208,6 +237,10 @@ const Model = {
     },
     saveFileList(state,{payload}){
       return {...state,fileList:payload}
+    },
+    saveUnit(state,{payload}){
+      return {...state,unit:payload}
+
     }
   },
 };

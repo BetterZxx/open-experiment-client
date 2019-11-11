@@ -33,7 +33,7 @@ const keyApprovalUrl = [
  * 0-实验室，1-二级单位，2-职能部门，3-指导老师
  */
 const approvalType = ['lab/fetchProjects','second/fetchProjects','equipment/fetchProjects','tproject/fetch']
-const keyApprovalType = ['lab/fetchProjects','second/fetchProjects','equipment/fetchProjects','tproject/fetch']
+const keyApprovalType = ['labKeyProjects/fetchProjects','secondKeyProjects/fetchProjects','equipmentKeyProjects/fetchProjects','tprojectKeyProjects/fetch']
 
 const Model = {
   namespace: 'approval',
@@ -107,7 +107,7 @@ const Model = {
             type:'detail/fetchDetail',
             payload:{
               projectGroupId:typeof data[0]==='object'?data[0].projectId:data[0],
-              role:unit,
+              role:unit,//***************************************** */
               projectType:2
             }
           })
@@ -122,7 +122,7 @@ const Model = {
         }else{
           console.log('ssssssss',approvalType[unit])
           yield put({
-            type:approvalType[unit],
+            type:keyApprovalType[unit],
             payload:{
               status
             }

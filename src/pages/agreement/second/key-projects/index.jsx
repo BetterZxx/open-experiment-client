@@ -70,7 +70,7 @@ class TableList extends Component {
     {
       title: '指导老师',
       dataIndex: 'guidanceTeachers',
-      render:(t)=>''
+      render:(t)=>t.map(e=>e.userName).join('、')
     },
     {
       title: '项目级别',
@@ -97,7 +97,7 @@ class TableList extends Component {
     },
     {
       title: '预申请金额',
-      dataIndex:'fundsApplyAmount',
+      dataIndex:'applyFunds',
       filters:[
         {
           text:'500',

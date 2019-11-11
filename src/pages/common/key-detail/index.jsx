@@ -59,6 +59,7 @@ function getHeaderStatus(num) {
   role: detail.role,
   process: detail.process,
   text: '',
+  unit:detail.unit
 }))
 class Advanced extends Component {
   state = {
@@ -78,6 +79,7 @@ class Advanced extends Component {
       dispatch,
       role,
       detail: { id },
+      unit
     } = this.props;
     const { approvalType } = this.state;
     console.log(role, approvalType);
@@ -87,7 +89,7 @@ class Advanced extends Component {
     dispatch({
       type: 'approval/key',
       payload: {
-        unit: role,
+        unit,
         data: [
           {
             projectId: id,
@@ -106,13 +108,13 @@ class Advanced extends Component {
     });
   };
   handleReportClick = () => {
-    const { dispatch, role, detail } = this.props;
+    const { dispatch, role, detail,unit } = this.props;
     const { approvalType, projectId } = this.state;
     console.log(role, approvalType);
     dispatch({
       type: 'approval/key',
       payload: {
-        unit: role,
+        unit,
         data: [detail.projectGroupId],
         type: 2,
         isDetail: true,

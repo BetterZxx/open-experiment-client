@@ -24,6 +24,7 @@ export const roleNames={
 
 }
 export const operationUnit = {
+  '3':'指导老师',
   '4':'实验室主任',
   '5':'二级单位',
   '6':'职能部门'}

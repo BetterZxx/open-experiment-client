@@ -201,7 +201,8 @@ const columns = [
   detail:detail.baseInfo,
   role:detail.role,
   process:detail.process,
-  text:''
+  text:'',
+  unit:detail.unit
 }))
 class Advanced extends Component {
   state = {
@@ -217,7 +218,7 @@ class Advanced extends Component {
  
   }
   handleModalOk = ()=>{
-    const {dispatch,role,detail:{id}} = this.props
+    const {dispatch,role,detail:{id},unit} = this.props
     const {approvalType} = this.state
     console.log(role,approvalType)
     this.setState({
@@ -226,7 +227,7 @@ class Advanced extends Component {
     dispatch({
       type:'approval/normal',
       payload:{
-        unit:role,
+        unit,
         data:[
           {
             projectId:id,
@@ -247,13 +248,13 @@ class Advanced extends Component {
     
   }
   handleReportClick = ()=>{
-    const {dispatch,role,detail} = this.props
+    const {dispatch,role,detail,unit} = this.props
     const {approvalType,projectId} = this.state
     console.log(role,approvalType)
     dispatch({
       type:'approval/normal',
       payload:{
-        unit:role,
+        unit,
         data:[
             detail.id,
         ],
