@@ -19,7 +19,7 @@ const Model = {
       }); // Login successfully
       const res = yield call(reqToken,payload)
       if(res.code===0){
-        setAuthority('admin');
+        setAuthority(['admin',res.data.roles.id]);
         setToken(res.data.token)
         yield put({
           type:'save',

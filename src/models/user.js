@@ -1,4 +1,4 @@
-import { queryCurrent, query as queryUsers,reqUserInfo } from '@/services/user';
+import { queryCurrent, query as queryUsers,reqUserInfo,reqUpdateUserInfo } from '@/services/user';
 import {message} from 'antd'
 const UserModel = {
   namespace: 'user',
@@ -19,6 +19,14 @@ const UserModel = {
         message.error(`获取用户信息出错${response.msg}`)
       } 
     },
+    *updateUserInfo({payload},{call,put}){
+      const res = yield call(reqUpdateUserInfo,payload)
+      if(res.code===0){
+        message.success('修改成功')
+      }else{
+        message.error( `修改出错${res.msg}`)
+      }
+    }
   },
   reducers: {
     saveCurrentUser(state, action) {

@@ -33,6 +33,7 @@ const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 const {Countdown} = Statistic
+const {TextArea} = Input
 const deadline = Date.now() + 1000 * 60 * 60 * 24 * 2 + 1000 * 30;
 const getValue = obj =>
   Object.keys(obj)
@@ -56,6 +57,11 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
+    tabActiveKey:'0',
+    approvalType:1,
+    mVisible:false,
+    experimentType:undefined,
+    projectType:undefined
   };
 
   columns = [
@@ -72,7 +78,7 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex: 'experimentType',
+      dataIndex: 'projectType',
       render:(type)=>type===1?'重点':'普通'
     },
     {
@@ -81,13 +87,13 @@ class TableList extends Component {
     },
     {
       title: '实验类型',
-      dataIndex: 'projectType',
-      render:(type)=>projectType[type]
+      dataIndex: 'experimentType',
+      render:(type)=>experimentType[type]
 
     },
     {
       title: '预申请金额',
-      dataIndex:'fundsApplyAmount',
+      dataIndex:'applyFunds',
       render:(funds)=> {
         return (
           <div>
@@ -134,14 +140,6 @@ class TableList extends Component {
       }
     })
   }
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
-  }
 
   componentDidMount() {
     const { dispatch } = this.props;
@@ -160,7 +158,7 @@ class TableList extends Component {
       payload:{
         status:tabActiveKey,
         data:{
-          operationType:tabActiveKey==='12'?'13':'12',
+          operationType:tabActiveKey,
           operationUnit:6
         }
       }
@@ -417,20 +415,81 @@ class TableList extends Component {
     const { expandForm } = this.state;
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
-  hideModal = ()=>{
-    this.setState({
-      modalVisible:false
-    })
-  }
-  showModal = ()=>{
-    this.setState({
-      modalVisible:true
-    })
-  }
   handleExport = ()=>{
     const {dispatch} = this.props
     dispatch({
       type:'equipment/export'
+    })
+  }
+  hideModal = ()=>{
+    this.setState({
+      mVisible:false
+    })
+  }
+  showModal = ()=>{
+    this.setState({
+      mVisible:true
+    })
+  }
+  handleModalCancel = ()=>{
+    this.setState({
+      mVisible:false
+    })
+  }
+  handleModalOk = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch} = this.props
+    const data = selectedRows.map(item=>{
+      return {
+        reason:text,
+        projectId:item.id
+      }
+    })
+    let payload={
+      unit:0,
+      data,
+      type:approvalType,
+      isDetail:true
+    }
+    console.log(payload)
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:0,
+        data,
+        type:approvalType,
+        isDetail:false
+      }
+    })
+    this.setState({mVisible:false,
+    text:''
+    })
+  }
+  handleReportClick = ()=>{
+    const {selectedRows,text,approvalType} = this.state
+    const {dispatch,tabActiveKey} = this.props
+    const data = selectedRows.map(item=>({projectId:item.id,reason:''}))
+    dispatch({
+      type:'approval/key',
+      payload:{
+        unit:0,
+        data,
+        type:2,
+        isDetail:false,
+        status:tabActiveKey
+      }
+    })
+
+  }
+  showApprovalModal = (type)=>{
+    this.setState({
+      approvalType:type,
+      mVisible:true
+    })
+  }
+  handleInputChange = (e)=>{
+    this.setState({
+      text:e.target.value
     })
   }
   render() {
@@ -447,7 +506,7 @@ class TableList extends Component {
       projects, 
       tabActiveKey
     } = this.props;
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues, } = this.state;
+    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,mVisible,approvalType,text } = this.state;
    console.log(projects)
     const btnDisable = selectedRows.length===0
     const content =<RouteContext.Consumer>
@@ -488,33 +547,36 @@ class TableList extends Component {
           tab: '待审批',
         },
         {
-          key: '13',
+          key: '2',
           tab: '已驳回',
         },
         {
-          key: '12',
+          key: '1',
           tab: '已审批',
         },
       ]}
       >
+        <Modal
+        visible={mVisible}
+        onOk={this.handleModalOk}
+        onCancel={this.handleModalCancel}
+        title={approvalType===0?'驳回理由':'审核意见'}
+        >
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+
+        </Modal>
         <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            {tabActiveKey!=='reported'&&tabActiveKey!=='reject'&&<div className={styles.tableListOperator}>
+            <div className={styles.tableListOperator}>
              
-              {tabActiveKey==='auth'&&<Button type="primary" disabled={btnDisable} onClick={()=>{}}>
+              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准立项
               </Button>}
-              {tabActiveKey==='report'&&<span> 
-                <Button disabled={btnDisable} type="primary" onClick={()=>{}}>
-                  上报
-                </Button>
-                <Button disabled={btnDisable} onClick={()=>{}}>
-                  修改审批意见
-                </Button>
-              </span>}
-              <Button disabled={btnDisable}>驳回</Button> 
-            </div>}
+            {tabActiveKey!=='2'&&<Button disabled={btnDisable} style={{
+              marginLeft:15
+            }} onClick={()=>this.showApprovalModal(0)}>驳回</Button> }
+            </div>
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}

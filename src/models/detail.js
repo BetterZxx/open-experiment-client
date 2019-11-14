@@ -63,7 +63,7 @@ const roleToUnitKeyMap = {
   '4':'9',
   '5':'3',
   '6':'9',
-  '7':'9',
+  '7':'4',
   '8':'9',
 }
 
@@ -178,7 +178,7 @@ const Model = {
           payload:[
             {
                     uid: '1',
-                    name: res.data.applyurl?res.data.applyurl.replace(/^.+\/\d_/g,''):'',  
+                    name: res.data.applyurl?res.data.applyurl.replace(/.+\/\d+_/g,''):'',  
                     status: 'done',
                     response: 'Server Error 500', // custom error message to show
                     url: res.data.applyurl,
@@ -210,7 +210,7 @@ const Model = {
           payload:[
             {
               uid: '1',
-              name: res.data.url?res.data.url.replace(/^.+\/\d_/g,''):'',  
+              name: res.data.url?res.data.url.replace(/.+\/\d+_/g,''):'',  
               status: 'done',
               response: 'Server Error 500', // custom error message to show
               url: res.data.url,

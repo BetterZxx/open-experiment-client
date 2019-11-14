@@ -17,8 +17,8 @@ export async function reqAnnouncementSave(payload){
 }
 export async function reqAnnouncementDelete(payload){
   return request('/announcement/delete',{
-    method:'post',
-    data:payload
+    method:'get',
+    params:payload
   })
 }
 export async function reqAnnouncementPublish(payload){

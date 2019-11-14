@@ -81,7 +81,7 @@ const Model = {
 
         }
       }else{
-        message.success('操作失败！')
+        message.error(`操作失败:${res.msg}`)
       }
 
     }
@@ -97,7 +97,7 @@ const Model = {
      * }
      */
     *key({payload},{call,put}){
-      const {data,type,unit,isDetail,status=0} = payload
+      const {data,type,unit,isDetail,status=0,role=0} = payload
       console.log('key',payload)
       const res = yield call(reqApproval,keyApprovalUrl[unit][type],data)
       if(res.code===0){
@@ -107,7 +107,7 @@ const Model = {
             type:'detail/fetchDetail',
             payload:{
               projectGroupId:typeof data[0]==='object'?data[0].projectId:data[0],
-              role:unit,//***************************************** */
+              role,//***************************************** */
               projectType:2
             }
           })
@@ -115,7 +115,7 @@ const Model = {
             type:'detail/fetchProcess',
             payload:{
               projectId:data[0].projectId,
-              role:unit,
+              role,
               projectType:2
             }
           })        
@@ -130,7 +130,7 @@ const Model = {
 
         }
       }else{
-        message.success('操作失败！')
+        message.error(`操作失败:${res.msg}`)
       }
     }
     ,
@@ -163,7 +163,7 @@ const Model = {
           }
         })        
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     }  
   },   

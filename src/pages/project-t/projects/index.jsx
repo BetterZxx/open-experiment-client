@@ -295,10 +295,11 @@ class TableList extends Component {
               pagination={{ pageSize: 11 }}
             />
           </div>
+          {/* footer={<Button type='primary'>确认修改</Button>} */}
           <Modal
             visible={modalVisible}
             onCancel={this.hideModal}
-            footer={<Button type='primary'>确认修改</Button>}
+            footer=''
             
           >
             {/*01 实验室 23二级单位 45职能部门*/}

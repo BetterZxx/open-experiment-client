@@ -11,3 +11,9 @@ export async function queryNotices() {
 export async function reqUserInfo(){
   return request('/user/getMyInfo')
 }
+export async function reqUpdateUserInfo(params){
+  return request('/user/updateUserInfo',{
+    method:'post',
+    data:params
+  })
+}

@@ -24,7 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
+import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
 import styles from './style.less';
 
@@ -108,6 +108,13 @@ class TableList extends Component {
       ,
       onFilter: (value, record) => record.experimentType === value,
 
+    },
+    {
+      title:'开放性',
+      dataIndex:'isOpenTopic',
+      render:(val)=>{
+        return openType[val]
+      }
     },
  
     {

@@ -9,8 +9,12 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL = 'http://10.20.0.57:8083' 
-const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file','/permission','/amount','/timeLimit','/user']
+const proxyURL ='http://220.167.105.201:8083' //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
+const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file','/permission','/amount','/timeLimit',
+'/user/getMyInfo',
+'/user/getUserInfoByUserId',
+'/user/updateUserInfo',
+]
 const proxyOptions = {
   target: proxyURL,
   changeOrigin: true,
@@ -158,6 +162,7 @@ export default {
               path: '/tproject',
               name: '项目管理(老师)',
               icon: 'project',
+              authority:[3],
               routes: [
                 {
                   name: '项目申报',
@@ -213,6 +218,7 @@ export default {
               path: '/sproject',
               name: '项目管理(学生)',
               icon: 'project',
+              authority:[1,2],
               routes: [
                 {
                   name: '项目申请',
@@ -277,6 +283,7 @@ export default {
                 {
                   name: '实验室审批',
                   path: '/auth/lab',
+                  authority:[4],
                   routes:[
                     {
                       name: '立项审批',
@@ -310,6 +317,7 @@ export default {
                 {
                   name: '二级单位审批',
                   path: '/auth/second',
+                  authority:[5],
                   routes:[
                     {
                       name: '立项审批',
@@ -354,6 +362,7 @@ export default {
                 {
                   name: '职能部门审批',
                   path: 'auth/equipment',
+                  authority:[6,7],
                   routes:[
                     {
                       name: '立项审批',
@@ -390,53 +399,67 @@ export default {
               path: '/funds',
               name: '资金管理',
               component: './funds',
-              icon: 'account-book'
+              icon: 'account-book',
+              authority:[6,7]
             },
             {
               path: '/achievement',
               name: '成果统计',
               component: './achievement',
-              icon: 'bar-chart'
+              icon: 'bar-chart',
+              authority:[6,7]
             },
             {
-              path: '/settings',
-              name: '系统设置',
-              icon: 'setting',
-              routes: [
+              path: '/selfInformation/edit',
+              name: '完善个人信息',
+              component: './user-information',
+              icon: 'bar-chart'
+            },
+            // {
+            //   path: '/settings',
+            //   name: '系统设置',
+            //   icon: 'setting',
+            //   authority:[5,6,7],
+            //   routes: [
                 {
                   name: '基本设置',
                   path: '/settings/basic',
                   component: './settings/basic',
-                  icon: 'profile'
+                  icon: 'profile',
+                  authority:[6,7],
                 },
                 {
                   name: '权限设置',
                   path: '/settings/authority',
                   component: './settings/authority',
-                  icon: 'safety-certificate'
+                  icon: 'safety-certificate',
+                  authority:[6,7],
                 },
                 {
                   name: '公告管理',
                   path: '/settings/announcement',
                   component: './settings/announcement/announcements',
-                  icon: 'file-text'
+                  icon: 'file-text',
+                  authority:[5,6,7],
                 },
                 {
                   name: '新增公告',
                   path: '/settings/announcement/append',
                   component: './settings/announcement/append',
                   icon: 'file-text',
-                  hideInMenu:true
+                  hideInMenu:true,
+                  authority:[5,6,7],
                 },
                 {
                   name: '公告详情',
                   path: '/settings/announcement/detail',
                   component: './settings/announcement/detail',
                   icon: 'file-text',
-                  hideInMenu:true
+                  hideInMenu:true,
+                  authority:[5,6,7],
                 },
-              ],
-            },
+            //   ],
+            // },
             // {
             //   path: '/dashboard',
             //   name: 'dashboard',

@@ -42,11 +42,12 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['终止', '审核', '立项', '驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading,studentProjects,detail }) => ({
-  listTableList,
+@connect(({  loading,studentProjects,detail }) => ({
+
   loading: loading.models.studentProjects,
   projects:studentProjects.projects,
-  process:detail.process
+  process:detail.process,
+  tabActiveKey:studentProjects.tabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -126,6 +127,19 @@ class TableList extends Component {
       ),
     },
   ];
+  onTabChange = tabActiveKey => {
+    const {dispatch} = this.props
+    dispatch({
+      type:'studentProjects/fetchProjects',
+      payload:{
+        joinStatus:tabActiveKey
+      }
+    })
+    dispatch({
+      type:'studentProjects/changeTabActiveKey',
+      payload:tabActiveKey
+    })
+  };
   editWarning = ()=>{
     Modal.warning({
       title: '提醒',
@@ -139,6 +153,9 @@ class TableList extends Component {
     const { dispatch } = this.props;
     dispatch({
       type: 'studentProjects/fetchProjects',
+      payload:{
+        joinStatus:'2'
+      }
     });
   }
   handleFormReset = () => {
@@ -315,7 +332,8 @@ class TableList extends Component {
     
       loading,
       projects,
-      process
+      process,
+      tabActiveKey
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const btnDisable = selectedRows.length===0
@@ -354,6 +372,19 @@ class TableList extends Component {
 
     return (
       <PageHeaderWrapper
+      tabList={[
+        {
+          key: '2',
+          tab: '已通过',
+        },
+        {
+          key: '3',
+          tab: '已驳回',
+        }
+        
+      ]}
+      onTabChange={this.onTabChange}
+      tabActiveKey={tabActiveKey}
       >
         <Card bordered={false}>
           <div className={styles.tableList}>
@@ -365,7 +396,7 @@ class TableList extends Component {
               {selectedRows.length >= 0 && (
                 <span>
                   <Button>上传材料</Button>
-                  <Button>修改申请书</Button>
+                  {/* <Button>修改申请书</Button> */}
                   <Button disabled={btnDisable} onClick={()=>this.handleKeyApply()}>重点项目申请</Button>
                   <Dropdown overlay={menu}>
                     <Button>

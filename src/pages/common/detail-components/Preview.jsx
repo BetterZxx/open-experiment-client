@@ -2,11 +2,15 @@ import React, { Component } from 'react';
 import { Card, Button, Upload, Icon } from 'antd';
 import {connect} from 'dva'
 import {saveAs} from 'file-saver'
+import {applyModel} from '@/utils/constant'
+import baidu from 'baidu-template-pro'
 @connect(({
-  detail
+  detail,
+  loading
 })=>({
   detail:detail.baseInfo,
-  fileList:detail.fileList
+  fileList:detail.fileList,
+  loading:loading.models.detail
 }))
 class Preview extends Component {
   constructor(props) {
@@ -24,7 +28,23 @@ class Preview extends Component {
     
   }
   downloadApplyModel = ()=>{
-    saveAs('http://10.20.0.78:8083/material/附件3-课外开放实验校级重点项目申请书(2017版).doc','www.doc')
+    const {detail} = this.props
+    const students = detail.list.filter(item=>item.memberRole!==1)
+    const teachers = detail.list.filter(item=>item.memberRole===1)
+    const major = [...new Set(...detail.list.map(item=>major))].join('、')
+    const grade = [...new Set(...detail.list.map(item=>grade))].join('、')
+    const data = {
+      projectName:detail.projectName,
+      projectType:detail.projectType===1?'普通':'重点',
+      applyFunds:detail.applyFunds,
+      major,
+      grade,
+      students,
+      teachers
+    }
+    let html = baidu.template(applyModel,data)
+    var blob = new Blob([html], {type: "application/msword;charset=utf-8"});
+    saveAs(blob,'重点项目申请书.doc')
   }
   render() {
     // const props = {
@@ -45,7 +65,7 @@ class Preview extends Component {
     //   ],
     // };
     const { isPreview } = this.state;
-    const {detail,fileList} = this.props
+    const {detail,fileList,loading} = this.props
     console.log(detail.applyurl)
     const props = {
       beforeUpload: file => {
@@ -75,7 +95,7 @@ class Preview extends Component {
       >
         <div style={{ width: '50%', float: 'left' }}>
           <Upload {...props} style={{ width: '200', float: 'left' }}>
-            <Button>
+            <Button loading={loading}>
               <Icon type="upload" /> {detail.applyurl?'重新上传':'上传'}
             </Button>
           </Upload>

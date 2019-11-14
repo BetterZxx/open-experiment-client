@@ -32,7 +32,7 @@ class Authority extends Component {
       title:'学院',
       dataIndex:'college',
       render:(college)=>{
-        return majorCollege[college].cName
+        return majorCollege.find(item=>item.cId==college).cName
       }
     },
     {
@@ -50,6 +50,7 @@ class Authority extends Component {
         return limit?limit.maxAmount:0
       }
     },
+    
     {
       title: '申报时间',
       render: limit => <span>{moment(limit.startTime).format('YYYY-MM-DD')+'~'+moment(limit.endTime).format('YYYY-MM-DD')}</span>,

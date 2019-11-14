@@ -53,8 +53,8 @@ function getHeaderStatus(num) {
   }
 }
 
-@connect(({ detail }) => ({
- 
+@connect(({ detail,loading }) => ({
+  loading:loading.models.detail,  
   detail: detail.baseInfo,
   role: detail.role,
   process: detail.process,
@@ -165,7 +165,13 @@ class Advanced extends Component {
       text,
       isPreview,
     } = this.state;
-    const {  loading, detail, process } = this.props;
+    const {  loading, detail, process,unit } = this.props;
+    const {status} = detail
+    const agreeBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
+    const rejectBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
+    const reportBtnDisable = !(unit==='0'&&status===1||unit==='1'&&status===3 )
+    const keyApplyBtnDisable = !!detail.whetherCommitKeyApply
+
     console.log(detail);
     const extra = (
       <div className={styles.moreInfo}>
@@ -176,26 +182,28 @@ class Advanced extends Component {
     );
     const action = (
       <div>
-        <Button
+        {unit==='4'?<Button
           type="primary"
           style={{ marginRight: 15 }}
           onClick={() => this.handleKeyProjectApply()}
+          disabled={keyApplyBtnDisable}
         >
           提交重点申请
-        </Button>
-        <Button
+        </Button>:''}
+        {['0','1','2','3'].indexOf(unit)>=0?<Button
           type="primary"
           style={{ marginRight: 15 }}
           onClick={() => this.handleApprovalClick(1)}
+          disabled={agreeBtnDisable}
         >
           审批通过
-        </Button>
-        <Button style={{ marginRight: 15 }} onClick={() => this.handleReportClick()}>
+        </Button>:''}
+        {['0','1'].indexOf(unit)>=0?<Button style={{ marginRight: 15 }} disabled={reportBtnDisable} onClick={() => this.handleReportClick()}>
           上报
-        </Button>
-        <Button style={{ marginRight: 15 }} onClick={() => this.handleApprovalClick(0)}>
+        </Button>:''}
+        {['0','1','2','3'].indexOf(unit)>=0?<Button style={{ marginRight: 15 }} disabled={rejectBtnDisable} onClick={() => this.handleApprovalClick(0)}>
           驳回
-        </Button>
+        </Button>:''}
         <Button onClick={() => this.props.history.goBack()}>返回</Button>
       </div>
     );

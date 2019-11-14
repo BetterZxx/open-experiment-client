@@ -4,7 +4,8 @@ import { message } from 'antd';
 const Model = {
   namespace: 'studentProjects',
   state: {
-    projects:[]
+    projects:[],
+    tabActiveKey:'2'
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
@@ -54,7 +55,11 @@ const Model = {
   reducers: {
     save(state, action) {
       return { ...state, projects: action.payload };
-    },
+    }
+    ,
+    changeTabActiveKey(state,{payload}){
+      return {...state,tabActiveKey:payload}
+    }
   },
 };
 export default Model;

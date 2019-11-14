@@ -114,7 +114,7 @@ class TableList extends Component {
     },
     {
       title: '预申请金额',
-      dataIndex:'fundsApplyAmount',
+      dataIndex:'applyFunds',
       filters:[
         {
           text:'500',
@@ -134,7 +134,7 @@ class TableList extends Component {
         }
 
       ],
-      onFilter: (value, record) => record.fundsApplyAmount === value,
+      onFilter: (value, record) => record.applyFunds === value,
       render:(funds)=> {
         return (
           <div>

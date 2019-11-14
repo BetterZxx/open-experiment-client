@@ -117,7 +117,7 @@ class TableList extends Component {
         }
 
       ],
-      onFilter: (value, record) => record.fundsApplyAmount === value,
+      onFilter: (value, record) => record.applyFunds === value,
       render:(funds)=> {
         return (
           <div>
@@ -325,7 +325,7 @@ class TableList extends Component {
   handleReportClick = ()=>{
     const {selectedRows,text,approvalType} = this.state
     const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.id)
+    const data = selectedRows.map(item=>({projectId:item.id,reason:''}))
     dispatch({
       type:'approval/key',
       payload:{

@@ -88,7 +88,7 @@ class TableList extends Component {
     },
     {
       title: '预申请金额',
-      dataIndex:'fundsApplyAmount',
+      dataIndex:'applyFunds',
       render:(funds)=> {
         return (
           <div>

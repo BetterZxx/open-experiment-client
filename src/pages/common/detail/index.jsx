@@ -53,7 +53,7 @@ const mobileMenu = (
     <Menu.Item key="">选项三</Menu.Item>
   </Menu>
 );
-const status = ['申请项目','立项审核','中期检查','结题','已驳回','已终止']
+
 
 function getHeaderStatus(num){
   if(num===-2){
@@ -290,9 +290,14 @@ class Advanced extends Component {
   }
   render() {
     const { operationKey, tabActiveKey,mVisible,projectId,approvalType,text } = this.state;
-    const {  loading,detail,process=[] } = this.props;
+    const {  loading,detail,process=[] ,unit} = this.props;
+    const {status} = detail
+
     console.log(detail)
-    
+    const agreeBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
+    const rejectBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
+    const reportBtnDisable = !(unit==='0'&&status===1||unit==='1'&&status===3 )
+    console.log(unit,status,agreeBtnDisable)
     const extra = (
       <div className={styles.moreInfo}>
         <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />
@@ -300,9 +305,9 @@ class Advanced extends Component {
       </div>
     );
     const action = (<div>
-      <Button type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(1)}>审批通过</Button>
-      <Button style={{marginRight:15}} onClick={()=>this.handleReportClick()}>上报</Button>
-      <Button style={{marginRight:15}} onClick={()=>this.handleApprovalClick(0)}>驳回</Button>
+      {['0','1','2'].indexOf(unit)>=0?<Button disabled={agreeBtnDisable} type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(1)}>审批通过</Button>:''}
+      {['0','1'].indexOf(unit)>=0?<Button style={{marginRight:15}} disabled={reportBtnDisable} onClick={()=>this.handleReportClick()}>上报</Button>:''}
+      {['0','1','2'].indexOf(unit)>=0?<Button style={{marginRight:15}} disabled={reportBtnDisable} onClick={()=>this.handleApprovalClick(0)}>驳回</Button>:''}
       <Button onClick={()=>this.props.history.goBack()}>返回</Button>
     </div>)
     console.log(process)
