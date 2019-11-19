@@ -141,7 +141,10 @@ class TableList extends Component {
       type: 'applyStudents/fetch',
     });
     dispatch({
-      type:'tprojects/fetch'
+      type:'tprojects/fetch',
+      payload:{
+        joinStatus:1
+      }
     })
   }
 

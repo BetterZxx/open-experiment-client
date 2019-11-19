@@ -26,7 +26,7 @@ export async function updateRule(params) {
 export async function reqOwnProjects(params) {
   return request('/project/getOwnProjects', {
     method: 'GET',
-    data: { ...params},
+    params: { ...params},
   });
 }
 export async function reqProjectProcess(params) {

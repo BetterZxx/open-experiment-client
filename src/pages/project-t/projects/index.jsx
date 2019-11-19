@@ -178,7 +178,10 @@ class TableList extends Component {
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
-      type:'tprojects/fetch'
+      type:'tprojects/fetch',
+      payload:{
+        joinStatus:1
+      }
     })
   }
 
