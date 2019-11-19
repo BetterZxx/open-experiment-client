@@ -1,6 +1,7 @@
 import { routerRedux } from 'dva/router';
 import { fakeAccountLogin, getFakeCaptcha,reqToken ,reqCaptchaP,reqUserInfo} from './service';
 import { getPageQuery, setAuthority,setToken } from './utils/utils';
+import router from 'umi/router';
 import {message} from 'antd'
 
 const Model = {
@@ -12,14 +13,14 @@ const Model = {
   },
   effects: {
     *login({ payload }, { call, put }) {
-      const response = yield call(fakeAccountLogin, payload);
-      yield put({
-        type: 'changeLoginStatus',
-        payload: response,
-      }); // Login successfully
+     // const response = yield call(fakeAccountLogin, payload);
+      // yield put({
+      //   type: 'changeLoginStatus',
+      //   payload: response,
+      // }); // Login successfully
       const res = yield call(reqToken,payload)
       if(res.code===0){
-        setAuthority(['admin',res.data.roles.id]);
+        setAuthority([res.data.roles.id]);
         setToken(res.data.token)
         yield put({
           type:'save',
@@ -27,10 +28,10 @@ const Model = {
         })
         message.success('登录成功')
       }else{
-        message.error('登录失败')
+        message.error(`登录失败:${res.msg}`)
       }
       const res1 = yield call(reqUserInfo)
-      if (response.status === 'ok'&&res.code===0) {
+      if (res.code===0) {
         const urlParams = new URL(window.location.href);
         const params = getPageQuery();
         let { redirect } = params;
@@ -49,8 +50,9 @@ const Model = {
             return;
           }
         }
-
-        yield put(routerRedux.replace(redirect || '/'));
+        window.location.href = urlParams.origin
+        //yield put(routerRedux.replace(redirect || '/'));
+        
       }
     },
 
@@ -60,6 +62,7 @@ const Model = {
     //获取图片验证码
     *getCaptchaP({ payload },{ call,put }) {
       const res = yield call(reqCaptchaP);
+      
       yield put({
         type: 'setImgSrc',
         payload: res,

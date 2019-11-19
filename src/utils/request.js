@@ -52,6 +52,10 @@ const request = extend({
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
+// request.interceptors.response.use((response, options) => {
+//   response.json().then(data=>{console.log('data',data)})
+//   return response;
+// });
 request.use(async function(ctx,next){
   const token = localStorage.getItem('token')||''
   const {req} = ctx

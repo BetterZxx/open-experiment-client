@@ -22,10 +22,7 @@ class Authority extends Component {
     })
   }
   columns = [
-    {
-      title:'ID',
-      dataIndex:'id'
-    },
+    
     {
       title:'工号',
       dataIndex:'code'

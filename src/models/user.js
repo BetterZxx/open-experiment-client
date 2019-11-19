@@ -15,7 +15,15 @@ const UserModel = {
           type: 'saveCurrentUser',
           payload: response.data,
         });
-      }else{
+      }else if(response.code===1401||response.code===1403){
+        yield put({
+          type:'login/logout',
+
+        })
+        message.warning(`您的登录已过期，请重新登录`)
+
+      }
+      else{
         message.error(`获取用户信息出错${response.msg}`)
       } 
     },

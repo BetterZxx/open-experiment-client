@@ -17,7 +17,7 @@ const GlobalHeaderRight = props => {
 
   return (
     <div className={className}>
-      <HeaderSearch
+      {/* <HeaderSearch
         className={`${styles.action} ${styles.search}`}
         placeholder="站内搜索"
         dataSource={['搜索提示一', '搜索提示二', '搜索提示三']}
@@ -27,16 +27,11 @@ const GlobalHeaderRight = props => {
         onPressEnter={value => {
           console.log('enter', value);
         }}
-      />
+      /> */}
       <Tooltip title="使用文档">
-        <a
-          target="_blank"
-          href="https://pro.ant.design/docs/getting-started"
-          rel="noopener noreferrer"
-          className={styles.action}
-        >
+        
           <Icon type="question-circle-o" />
-        </a>
+       
       </Tooltip>
       <NoticeIconView />
       <Avatar menu />

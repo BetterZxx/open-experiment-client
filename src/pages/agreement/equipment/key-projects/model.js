@@ -12,6 +12,7 @@ const Model = {
     *fetchProjects({ payload }, { call, put }) {
       const response = payload.status==='0'?yield call(reqEquipmentKeyProjects, payload.data):yield call(reqRejectedKeyProjects,payload.data);
       if(response.code===0){
+        console.log(11111111111111111111111111)
         yield put({
           type: 'save',
           payload: response.data,
