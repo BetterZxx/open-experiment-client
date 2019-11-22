@@ -16,7 +16,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import moment from 'moment'
-import {majorCollege,grade,suggestGroupType,experimentType, funds} from '@/utils/constant'
+import {majorCollege,grade,suggestGroupType,experimentType, funds,major} from '@/utils/constant'
 import styles from './style.less';
 
 
@@ -28,7 +28,12 @@ const { TreeNode } = TreeSelect;
 let id = 0;
 
 class BasicForm extends Component {
-  state={}
+  state={
+    data: [],
+    value: undefined,
+    timeout:null,
+    currentValue:undefined
+  }
   handleSubmit = e => {
     const { dispatch, form } = this.props;
     e.preventDefault();
@@ -104,10 +109,47 @@ class BasicForm extends Component {
 
 
   }
+  handleSearch = value => {
+    const {dispatch} = this.props
+    if (value) {
+      this.fetchStudents(value);
+    } else {
+      dispatch({
+        type:'applyForm/saveStudents',
+        payload:[]
+      })
+    }
+  };
+
+  fetchStudents = (value)=> {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+    this.currentValue = value;
+    const {dispatch} = this.props
+    this.timeout = setTimeout(()=>{
+      dispatch({
+        type:'applyForm/fetchStudents',
+        payload:{
+          keyWord:value,
+          isTeacher:false
+        }
+      })
+    }, 300);
+  }
+  handleSelect = (value)=>{
+    const {form} = this.props
+    console.log(value)
+   // form.setFieldValue('')
+
+  }
+  
   render() {
     const { submitting } = this.props;
     const {
       form: { getFieldDecorator, getFieldValue },
+      students
     } = this.props;
     const formItemLayout = {
       labelCol: {
@@ -160,10 +202,15 @@ class BasicForm extends Component {
     };
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
+    const options = students.map((s,index) => <Option key={index} value={s.code}>
+          <span>{s.realName}</span>
+          <span style={{margin:'0 30px'}}>{s.code}</span>
+          <span>{(major.find(item=>item.mId===s.major)||{}).mName}</span>
+         </Option>);
     const formItems = keys.map((k, index) => (
       <Form.Item
         
-        label={index === 0 ? '学生学号' : ''}
+        label={index === 0 ? '学生关键字' : ''}
         required={false}
         key={index}
       >
@@ -173,10 +220,26 @@ class BasicForm extends Component {
             {
               required: true,
               whitespace: true,
-              message: "请输入添加成员的学号或者删除该项",
+              message: "请选择成员或者删除该项",
             },
           ],
-        })(<Input placeholder="请输入学生学号" style={{width:'80%',marginRight:8}} />)}
+        })(
+          <Select
+            showSearch    
+            defaultActiveFirstOption={false}
+            showArrow={false}
+            filterOption={false}
+            onSearch={this.handleSearch}
+            notFoundContent={null}
+            onSelect ={this.handleSelect}
+            style={{
+              width:'80%'
+            }}
+            placeholder='姓名或学号'
+          >
+            {options}
+          </Select>
+        )}
         {keys.length > 1 ? (
           <Icon
             className={styles.dynamicDeleteButton}
@@ -491,7 +554,8 @@ class BasicForm extends Component {
 }
 
 export default Form.create()(
-  connect(({ loading }) => ({
+  connect(({ loading ,applyForm}) => ({
     submitting: loading.effects['formBasicForm/submitRegularForm'],
+    students:applyForm.students
   }))(BasicForm),
 );

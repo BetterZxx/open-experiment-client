@@ -6,3 +6,9 @@ export async function reqApplyForm(params) {
     data: params,
   });
 }
+export async function reqSearchStudents(params) {
+  return request('/user/keyWord', {
+    method: 'POST',
+    params,
+  });
+}

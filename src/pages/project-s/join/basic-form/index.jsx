@@ -181,7 +181,7 @@ class BasicForm extends Component {
             <Descriptions.Item label="实验时间">{moment(detail.startTime).format('YYYY-MM-DD')+'~'+moment(detail.endTime).format('YYYY-MM-DD')}</Descriptions.Item>
             <Descriptions.Item label="项目级别">{detail.projectType===1?"重点":"普通"}</Descriptions.Item>
             <Descriptions.Item label="建议审分组">{suggestGroupType[detail.suggestGroupType]}</Descriptions.Item>
-            <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item-1].mName).join('、')}</Descriptions.Item>
+            {/* <Descriptions.Item label="适应专业">{JSON.parse(detail.limitMajor).map(item=>major[item-1].mName).join('、')}</Descriptions.Item> */}
             <Descriptions.Item label="限定人数">{detail.fitPeopleNum}</Descriptions.Item>
             <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
             <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>

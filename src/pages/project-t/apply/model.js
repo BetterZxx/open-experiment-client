@@ -1,9 +1,11 @@
 import { message } from 'antd';
-import { reqApplyForm } from './service';
+import { reqApplyForm,reqSearchStudents } from './service';
 
 const Model = {
   namespace: 'applyForm',
-  state: {},
+  state: {
+    students:[]
+  },
   effects: {
     *submitRegularForm({ payload }, { call }) {
 
@@ -16,6 +18,24 @@ const Model = {
       
       //window.location.href
     },
+    *fetchStudents({payload},{call,put}){
+      const res = yield call(reqSearchStudents,payload)
+      if(res.code===0){
+        yield put({
+          type:'saveStudents',
+          payload:res.data
+        })
+      }else{
+        message.error(`请求失败：${res.msg}`)
+      }
+
+    }
   },
+  reducers:{
+    saveStudents(state,{payload}){
+    return {...state,students:payload}
+
+    }
+  }
 };
 export default Model;
