@@ -13,6 +13,12 @@ export async function reqSetProjectLeader(params) {
     data:params,
   });
 }
+export async function reqSearchStudents(params) {
+  return request('/user/keyWord', {
+    method: 'POST',
+    params,
+  });
+}
 export async function reqRejectStudent(params) {
   return request('/project/rejectJoin', {
     method: 'post',

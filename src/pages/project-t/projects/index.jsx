@@ -180,7 +180,7 @@ class TableList extends Component {
     dispatch({
       type:'tprojects/fetch',
       payload:{
-        joinStatus:1
+        
       }
     })
   }

@@ -1,10 +1,11 @@
-import { reqApplyStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent, reqFilterStudent } from './service';
+import { reqApplyStudents,reqSearchStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent, reqFilterStudent } from './service';
 import { message } from 'antd';
 
 const Model = {
   namespace: 'applyStudents',
   state: {
-    data:[]
+    data:[],
+    searchStudents:[]
   },
   effects: {
     *fetch({ payload }, { call, put }) {
@@ -26,6 +27,18 @@ const Model = {
       }
     }
     ,
+    *fetchStudents({payload},{call,put}){
+      const res = yield call(reqSearchStudents,payload)
+      if(res.code===0){
+        yield put({
+          type:'saveStudents',
+          payload:res.data
+        })
+      }else{
+        message.error(`请求失败：${res.msg}`)
+      }
+
+    },
     *reject({payload},{call,put}){
       const res = yield call(reqRejectStudent,payload)
       if(res.code===0){
@@ -34,7 +47,7 @@ const Model = {
           type:'fetch',
         })
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     },
     *remove({payload},{call,put}){
@@ -45,7 +58,7 @@ const Model = {
           type:'fetch',
         })
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     }
     ,
@@ -57,7 +70,7 @@ const Model = {
           type:'fetch',
         })
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     },
     *setLeader({payload},{call,put}){
@@ -68,7 +81,7 @@ const Model = {
           type:'fetch',
         })
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     },
     *add({payload},{call,put}){
@@ -79,18 +92,10 @@ const Model = {
           type:'fetch',
         })
       }else{
-        message.error('操作失败')
+        message.error(`操作失败:${res.msg}`)
       }
     },
 
-    *update({ payload, callback }, { call, put }) {
-      const response = yield call(updateRule, payload);
-      yield put({
-        type: 'save',
-        payload: response,
-      });
-      if (callback) callback();
-    },
   },
   reducers: {
     save(state, action) {
@@ -103,6 +108,10 @@ const Model = {
       })
       return { ...state, data };
     },
+    saveStudents(state,{payload}){
+      return {...state,searchStudents:payload}
+  
+    }
   },
 };
 export default Model;

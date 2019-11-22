@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,memberRole, experimentType} from '@/utils/constant'
+import {projectType,memberRole, experimentType,major} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -44,7 +44,8 @@ const status = ['待审核','已通过','已拒绝'];
 @connect(({ loading,applyStudents,tprojects }) => ({
   loading: loading.models.applyStudents,
   students:applyStudents.data,
-  projects:tprojects.projects
+  projects:tprojects.projects,
+  searchStudents:applyStudents.searchStudents
 }))
 class TableList extends Component {
   state = {
@@ -143,7 +144,7 @@ class TableList extends Component {
     dispatch({
       type:'tprojects/fetch',
       payload:{
-        joinStatus:1
+        
       }
     })
   }
@@ -153,10 +154,6 @@ class TableList extends Component {
     form.resetFields();
     this.setState({
       formValues: {},
-    });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
     });
   };
   handleSelectRows = rows => {
@@ -203,19 +200,6 @@ class TableList extends Component {
     });
   };
 
-  handleUpdate = fields => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'listTableList/update',
-      payload: {
-        name: fields.name,
-        desc: fields.desc,
-        key: fields.key,
-      },
-    });
-    message.success('配置成功');
-    this.handleUpdateModalVisible();
-  };
 
   renderSimpleForm() {
     const { form,projects } = this.props;
@@ -372,12 +356,48 @@ class TableList extends Component {
       payload
     })
   }
+  handleSearch = value => {
+    const {dispatch} = this.props
+    if (value) {
+      this.fetchStudents(value);
+    } else {
+      dispatch({
+        type:'applyStudents/saveStudents',
+        payload:[]
+      })
+    }
+  };
+
+  fetchStudents = (value)=> {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
+    }
+    this.currentValue = value;
+    const {dispatch} = this.props
+    this.timeout = setTimeout(()=>{
+      dispatch({
+        type:'applyStudents/fetchStudents',
+        payload:{
+          keyWord:value,
+          isTeacher:false
+        }
+      })
+    }, 300);
+  }
+  handleSelect = (value)=>{
+    const {form} = this.props
+    console.log(value)
+   // form.setFieldValue('')
+
+  }
   render() {
     const {
       loading,
       students,
       form,
-      projects
+      projects,
+      searchStudents
     } = this.props;
     const {getFieldDecorator} = form
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible,apply } = this.state;
@@ -387,6 +407,11 @@ class TableList extends Component {
         <Menu.Item key="approval" onClick={this.handleRemove} >删除成员</Menu.Item>
       </Menu>
     );
+    const options = searchStudents.map((s,index) => <Option key={index} value={s.code}>
+    <span>{s.realName}</span>
+    <span style={{margin:'0 30px'}}>{s.code}</span>
+    <span>{(major.find(item=>item.mId===s.major)||{}).mName}</span>
+   </Option>).slice(0,50);
     return (
       <PageHeaderWrapper>
         <Card 
@@ -451,9 +476,20 @@ class TableList extends Component {
                 </Select>,
               )}
             </FormItem>
-            <FormItem label="学生学号">
+            <FormItem label="学生">
               {getFieldDecorator('userId')(
-                <Input></Input>
+                <Select
+                showSearch    
+                defaultActiveFirstOption={false}
+                showArrow={false}
+                filterOption={false}
+                onSearch={this.handleSearch}
+                notFoundContent={null}
+                onSelect ={this.handleSelect}
+                placeholder='姓名或学号'
+              >
+                {options}
+              </Select>
               )}
             </FormItem>
             </Form>  

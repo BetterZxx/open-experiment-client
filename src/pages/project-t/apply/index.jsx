@@ -48,7 +48,7 @@ class BasicForm extends Component {
           limitMajor:JSON.stringify(values.limitMajor),
           startTime:values.time[0].format('YYYY-MM-DD'),
           endTime:values.time[1].format('YYYY-MM-DD'),
-          stuCodes:values.names,
+          stuCodes:values.names.filter(item=>item),
           
         }
         delete payload.names
@@ -396,7 +396,7 @@ class BasicForm extends Component {
                 ]
               })(<Select
                 mode="multiple"
-                placeholder="请选择适应学院"
+                placeholder="请选择限选年级"
               >
                 {grade.map(item=>{
                   return <Option key={item} value={item}>{item}级</Option>
