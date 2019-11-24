@@ -28,13 +28,18 @@ export const roleNames={
   '7':'职能部门领导',
 
 }
+export const memberRole={
+  '1':'指导老师',
+  '2':'组长',
+  '3':'普通成员'
+}
 export const operationUnit = {
   '3':'指导老师',
   '4':'实验室主任',
   '5':'二级单位',
   '6':'职能部门'}
 export const grade = [2016,2017,2018,2019]
-export const memberRole = ['指导老师','项目组长','普通成员']
+
 export const statusType = {
   '-4':'重点申请',
   '-3':'项目已被终止',
@@ -1865,211 +1870,6 @@ normal'><span lang=EN-US style='font-size:14.0pt;font-family:宋体;mso-hansi-fo
  </tr>  
  <![endif]>  
 </table>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:14.0pt;font-family:宋体'>二、报告正文</span></b><b style='mso-bidi-font-weight:  
-normal'><span lang=EN-US style='font-size:14.0pt;font-family:宋体;mso-hansi-font-family:  
-"Times New Roman"'><o:p></o:p></span></b></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>(</span></b><b style='mso-bidi-font-weight:  
-normal'><span style='font-size:12.0pt;font-family:仿宋_GB2312'>一<span lang=EN-US>)</span>立项依据<span  
-lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>1</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、国内外现状分析<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>2</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、本项目研究的目的、意义<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>（二）项目主要内容、目标和拟解决的关键问题<span  
-lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>1</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、主要内容<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>2</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、目标<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>3</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、拟解决的关键问题<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>（三）项目特色或创新点<span lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>（四）项目研究的技术方案<span lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></b></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>（五）、时间安排<span lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>1</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、总体时间安排<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'>2</span><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>、分阶段时间安排<span lang=EN-US>(</span>标志性成果<span  
-lang=EN-US>)<o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal><span lang=EN-US style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></p>  
-  
-<p class=MsoNormal style='line-height:150%;layout-grid-mode:char;mso-layout-grid-align:  
-none'><b style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;  
-line-height:150%;font-family:仿宋_GB2312'>（六）预期标志性成果（</span></b><span  
-style='font-size:12.0pt;line-height:150%;font-family:仿宋_GB2312'>预期标志性成果仅指如下形式之一：<i  
-style='mso-bidi-font-style:normal'><span lang=EN-US>1</span>、</i></span><i  
-style='mso-bidi-font-style:normal'><span style='mso-bidi-font-size:10.5pt;  
-line-height:150%;font-family:宋体;mso-hansi-font-family:"Times New Roman"'>授权专利，<span  
-lang=EN-US>2</span>、公开刊物发表论文<span lang=EN-US>,3</span>、参加学科竞赛获省级三等奖及以上奖励<span  
-lang=EN-US>,4</span>、创新实验教学项目<span lang=EN-US>&lt;</span>该项目列入实验教学大纲<span  
-lang=EN-US>&gt;</span>，<span lang=EN-US>5</span>、用于教学的自研自制仪器或设备功能改进<span  
-lang=EN-US>&lt;</span>该设备需承担实验教学任务<span lang=EN-US>&gt;</span>等</span></i><span  
-style='mso-bidi-font-size:10.5pt;line-height:150%;font-family:宋体;mso-hansi-font-family:  
-"Times New Roman"'>。专利证书、发表的论文、个人获奖证书必须有学生署名。</span><span style='font-size:  
-12.0pt;line-height:150%;font-family:仿宋_GB2312'>）<span lang=EN-US><o:p></o:p></span></span></p>  
-  
-<p class=MsoNormal style='text-indent:24.0pt;line-height:150%;layout-grid-mode:  
-char;mso-layout-grid-align:none'><span lang=EN-US style='font-size:12.0pt;  
-line-height:150%;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:12.0pt;font-family:仿宋_GB2312'>（七）经费及使用说明</span></b><span  
-style='mso-bidi-font-size:10.5pt;font-family:宋体;mso-hansi-font-family:"Times New Roman"'>（经费使用需按照文件中“</span><span  
-style='mso-bidi-font-size:10.5pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-mso-hansi-font-family:"Times New Roman"'>开放实验基金及管理”相关规定</span><b  
-style='mso-bidi-font-weight:normal'><span style='font-size:12.0pt;font-family:  
-仿宋_GB2312'>）<span lang=EN-US><o:p></o:p></span></span></b></p>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-style='font-size:12.0pt;font-family:仿宋_GB2312'><o:p>&nbsp;</o:p></span></b></p>  
-  
-<b style='mso-bidi-font-weight:normal'><span lang=EN-US style='font-size:14.0pt;  
-font-family:宋体;mso-hansi-font-family:"Times New Roman";mso-bidi-font-family:  
-"Times New Roman";mso-font-kerning:1.0pt;mso-ansi-language:EN-US;mso-fareast-language:  
-ZH-CN;mso-bidi-language:AR-SA'><br clear=all style='page-break-before:always'>  
-</span></b>  
-  
-<p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-style='font-size:14.0pt;font-family:宋体'>三、审核意见</span></b><b style='mso-bidi-font-weight:  
-normal'><span lang=EN-US style='font-size:14.0pt;font-family:宋体;mso-hansi-font-family:  
-"Times New Roman"'><o:p></o:p></span></b></p>  
-  
-<table class=MsoNormalTable border=1 cellspacing=0 cellpadding=0  
- style='border-collapse:collapse;border:none;mso-border-alt:solid windowtext .5pt;  
- mso-yfti-tbllook:1184;mso-padding-alt:0cm 5.4pt 0cm 5.4pt;mso-border-insideh:  
- .5pt solid windowtext;mso-border-insidev:.5pt solid windowtext'>  
- <tr style='mso-yfti-irow:0;mso-yfti-firstrow:yes;height:76.85pt'>  
-  <td width=711 valign=top style='width:426.4pt;border:solid windowtext 1.0pt;  
-  mso-border-alt:solid windowtext .5pt;padding:0cm 5.4pt 0cm 5.4pt;height:76.85pt'>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-  style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>二级单位意见：</span></b><b  
-  style='mso-bidi-font-weight:normal'><span lang=EN-US style='font-size:14.0pt'><o:p></o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal style='text-indent:14.0pt;mso-char-indent-count:1.0'><span  
-  style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>负责人（签章）</span><span lang=EN-US  
-  style='font-size:14.0pt'><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-  </span></span><span style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:  
-  "Times New Roman";mso-hansi-font-family:"Times New Roman"'>院（系）盖章</span><span  
-  lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-  </span></span><span style='font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>年</span><span lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span style='font-family:  
-  宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:"Times New Roman"'>月</span><span  
-  lang=EN-US><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span  
-  style='font-family:宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:  
-  "Times New Roman"'>日</span></p>  
-  </td>  
- </tr>  
- <tr style='mso-yfti-irow:1'>  
-  <td width=711 valign=top style='width:426.4pt;border:solid windowtext 1.0pt;  
-  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;  
-  padding:0cm 5.4pt 0cm 5.4pt'>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-  style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>专家组审查意见：</span></b><b  
-  style='mso-bidi-font-weight:normal'><span lang=EN-US style='font-size:14.0pt'><o:p></o:p></span></b></p>  
-  <p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:  
-  12.0pt'><o:p>&nbsp;</o:p></span></p>  
-  <p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:  
-  12.0pt'><o:p>&nbsp;</o:p></span></p>  
-  <p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:  
-  12.0pt'><o:p>&nbsp;</o:p></span></p>  
-  <p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:  
-  12.0pt'><o:p>&nbsp;</o:p></span></p>  
-  <p class=MsoNormal><span lang=EN-US style='font-size:14.0pt;mso-bidi-font-size:  
-  12.0pt'><o:p>&nbsp;</o:p></span></p>  
-  <p class=MsoNormal style='text-indent:14.0pt;mso-char-indent-count:1.0'><span  
-  style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>负责人（签章）</span><span lang=EN-US  
-  style='font-size:14.0pt'><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-  </span></span><span lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span></span><span  
-  style='font-family:宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:  
-  "Times New Roman"'>年</span><span lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span style='font-family:  
-  宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:"Times New Roman"'>月</span><span  
-  lang=EN-US><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span  
-  style='font-family:宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:  
-  "Times New Roman"'>日</span></p>  
-  </td>  
- </tr>  
- <tr style='mso-yfti-irow:2;mso-yfti-lastrow:yes'>  
-  <td width=711 valign=top style='width:426.4pt;border:solid windowtext 1.0pt;  
-  border-top:none;mso-border-top-alt:solid windowtext .5pt;mso-border-alt:solid windowtext .5pt;  
-  padding:0cm 5.4pt 0cm 5.4pt'>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span  
-  style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>实验室与设备管理处意见：</span></b><b  
-  style='mso-bidi-font-weight:normal'><span lang=EN-US style='font-size:14.0pt'><o:p></o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><b style='mso-bidi-font-weight:normal'><span lang=EN-US  
-  style='font-size:14.0pt'><o:p>&nbsp;</o:p></span></b></p>  
-  <p class=MsoNormal><span style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:  
-  "Times New Roman";mso-hansi-font-family:"Times New Roman"'>负责人（签章）</span><span  
-  lang=EN-US style='font-size:14.0pt'><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-  </span></span><span style='font-size:14.0pt;font-family:宋体;mso-ascii-font-family:  
-  "Times New Roman";mso-hansi-font-family:"Times New Roman"'>单位盖章</span><span  
-  lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  
-  </span></span><span style='font-family:宋体;mso-ascii-font-family:"Times New Roman";  
-  mso-hansi-font-family:"Times New Roman"'>年</span><span lang=EN-US><span  
-  style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span style='font-family:  
-  宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:"Times New Roman"'>月</span><span  
-  lang=EN-US><span style='mso-spacerun:yes'>&nbsp;&nbsp; </span></span><span  
-  style='font-family:宋体;mso-ascii-font-family:"Times New Roman";mso-hansi-font-family:  
-  "Times New Roman"'>日</span><b style='mso-bidi-font-weight:normal'><span  
-  lang=EN-US style='font-size:14.0pt'><o:p></o:p></span></b></p>  
-  </td>  
- </tr>  
-</table>  
-  
 <p class=MsoNormal><span lang=EN-US style='font-size:12.0pt'><o:p>&nbsp;</o:p></span></p>  
   
 </div>  

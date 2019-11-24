@@ -7,8 +7,10 @@ import moment from 'moment'
 
 const {Option} = Select
 const {RangePicker} = DatePicker
-@connect(({secondSetting})=>({
-  timeLimits:secondSetting.timeLimits
+@connect(({secondSetting,user,global})=>({
+  timeLimits:secondSetting.timeLimits,
+  user:user.currentUser,
+  amountLimit:global.amountLimit
 }))
 class Settings extends Component {
   constructor(props) {
@@ -20,10 +22,11 @@ class Settings extends Component {
      }
   }
   componentDidMount(){
-    const {dispatch} = this.props
+    const {dispatch,user:{institute}} = this.props
     dispatch({
       type:'secondSetting/fetch'
     })
+   
   }
   columns = [
     {
@@ -72,7 +75,7 @@ class Settings extends Component {
     })
   }
   handleModalOk = ()=>{
-    const {form,dispatch} = this.props
+    const {form,dispatch,user:{institute}} = this.props
     const {isUpdate,limit} = this.state
     form.validateFields((err,values,rr)=>{
       console.log(err)
@@ -86,7 +89,8 @@ class Settings extends Component {
             payload:{
               startTime,
               endTime,
-              timeLimitType
+              timeLimitType,
+              college:institute
             }
           })
         }else{
@@ -96,7 +100,8 @@ class Settings extends Component {
             payload:{
               startTime,
               endTime,
-              timeLimitType
+              timeLimitType,
+              college:institute
             }
           })
         }

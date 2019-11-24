@@ -1,11 +1,25 @@
 import { queryNotices } from '@/services/user';
+import {reqAmountLimit} from '@/services/limit'
+import { message } from 'antd';
 const GlobalModel = {
   namespace: 'global',
   state: {
     collapsed: false,
     notices: [],
+    amountLimit:[]
   },
   effects: {
+    *fetchAmountLimit({payload},{call,put}){
+      const res = yield call(reqAmountLimit,payload)
+      if(res.code===0){
+        yield put({
+          type:'saveAmountLimit',
+          payload:res.data
+        })
+      }else{
+        message.error(`请求失败:${res.msg}`)
+      }
+    },
     *fetchNotices(_, { call, put, select }) {
       const data = yield call(queryNotices);
       yield put({
@@ -68,6 +82,9 @@ const GlobalModel = {
     },
   },
   reducers: {
+    saveAmountLimit(state,{payload}){
+      return {...state,amountLimit:payload}
+    },
     changeLayoutCollapsed(
       state = {
         notices: [],

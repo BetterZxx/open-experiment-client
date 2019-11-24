@@ -300,8 +300,8 @@ class Advanced extends Component {
     console.log(unit,status,agreeBtnDisable)
     const extra = (
       <div className={styles.moreInfo}>
-        <Statistic style={{textAlign:"left"}} title="状态" value={statusType[detail.status]} />
-        <Statistic title="参与人数" value={detail.stuMembers?detail.stuMembers.length:0}/>
+        <Statistic style={{textAlign:"left"}} title="项目状态" value={statusType[detail.status]} />
+        {/* <Statistic title="参与人数" value={detail.stuMembers?detail.stuMembers.length:0}/> */}
       </div>
     );
     const action = (<div>

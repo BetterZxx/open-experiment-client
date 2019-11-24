@@ -170,14 +170,14 @@ class Advanced extends Component {
     const agreeBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
     const rejectBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
     const reportBtnDisable = !(unit==='0'&&status===1||unit==='1'&&status===3 )
-    const keyApplyBtnDisable = !!detail.whetherCommitKeyApply
+    const keyApplyBtnDisable = !!detail.whetherCommitKeyApply||detail.status!==1
 
     console.log(detail);
     const extra = (
       <div className={styles.moreInfo}>
-        <Statistic style={{ textAlign: 'left', marginRight: 30 }} title="状态" value={'未提交'} />
-        <Statistic style={{ textAlign: 'left' }} title="状态" value={statusType[detail.status]} />
-        <Statistic title="参与人数" value={detail.stuMembers ? detail.stuMembers.length : 0} />
+        <Statistic style={{ textAlign: 'left', marginRight: 30 }} title="重点申请书状态" value={detail.whetherCommitKeyApply?'已提交':'未提交'} />
+        <Statistic style={{ textAlign: 'left' }} title="项目状态" value={statusType[detail.status]} />
+        {/* <Statistic title="参与人数" value={detail.stuMembers ? detail.stuMembers.length : 0} /> */}
       </div>
     );
     const action = (

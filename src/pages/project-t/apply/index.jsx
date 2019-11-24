@@ -44,7 +44,7 @@ class BasicForm extends Component {
         let payload = {
           ...values,
           limitCollege:JSON.stringify(values.limitCollege),
-          limitGrade:JSON.stringify(values.limitGrade),
+          limitGrade:values.limitGrade.length>0?JSON.stringify(values.limitGrade):null,
           limitMajor:JSON.stringify(values.limitMajor),
           startTime:values.time[0].format('YYYY-MM-DD'),
           endTime:values.time[1].format('YYYY-MM-DD'),
@@ -370,13 +370,7 @@ class BasicForm extends Component {
             </FormItem>
             <FormItem {...formItemLayout} label="适应专业">
               {getFieldDecorator('limitMajor', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应专业',
-                  },
-                ],
-                initialValue:this.state.value
+                
               })(<TreeSelect                     
                 placeholder="请选择适应专业"
                 allowClear
@@ -388,12 +382,7 @@ class BasicForm extends Component {
             </FormItem>
             <FormItem {...formItemLayout} label="限选年级">
               {getFieldDecorator('limitGrade', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应年级',
-                  },
-                ]
+               
               })(<Select
                 mode="multiple"
                 placeholder="请选择限选年级"
@@ -405,12 +394,7 @@ class BasicForm extends Component {
             </FormItem>
             <FormItem {...formItemLayout} label="限选学院">
               {getFieldDecorator('limitCollege', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应学院',
-                  },
-                ],
+               
               })(<Select
                 mode="multiple"
                 placeholder="请选择适应学院"

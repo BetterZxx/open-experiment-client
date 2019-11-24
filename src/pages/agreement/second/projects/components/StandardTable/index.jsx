@@ -91,6 +91,7 @@ class StandardTable extends Component {
         disabled: record.disabled,
       }),
     };
+    
     return (
       <div className={styles.standardTable}>
         {/* <div className={styles.tableAlert}>
@@ -139,7 +140,7 @@ class StandardTable extends Component {
           />
         </div> */}
         <Table
-          rowKey={rowKey || 'key'}
+          rowKey={(item,index)=>index}
           rowSelection={rowSelection}
           dataSource={list}
           pagination={paginationProps}

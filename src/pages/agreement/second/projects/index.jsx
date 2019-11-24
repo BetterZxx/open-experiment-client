@@ -26,7 +26,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
+import {experimentType,majorCollege} from '@/utils/constant'
 import {saveAs} from 'file-saver'
 import styles from './style.less';
 
@@ -44,10 +44,12 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({  loading,second }) => ({
+@connect(({  loading,second,global,user }) => ({
   loading: loading.models.second,
   projects:second.secondProjects,
-  tabActiveKey:second.tabActiveKey
+  tabActiveKey:second.tabActiveKey,
+  user:user.currentUser,
+  amountLimit:global.amountLimit
 }))
 class TableList extends Component {
   state = {
@@ -183,13 +185,20 @@ class TableList extends Component {
   
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch ,user:{institute}} = this.props;
     dispatch({
       type: 'second/fetchProjects',
       payload:{
         status:'0'
       }
     });
+    dispatch({
+      type:'global/fetchAmountLimit',
+      payload:{
+        college:institute,
+        projectType:1
+      }
+    })
   }
 
   
@@ -293,6 +302,9 @@ class TableList extends Component {
     dispatch({
       type:'second/changeTabActiveKey',
       payload:tabActiveKey
+    })
+    this.setState({
+      selectedRows:[]
     })
   };
   handleModalCancel = ()=>{
@@ -415,15 +427,19 @@ class TableList extends Component {
     const {
       loading,
       projects,
-      tabActiveKey
+      tabActiveKey,
+      amountLimit,
+      user
     } = this.props;
     console.log(111,tabActiveKey)
     const { selectedRows, modalVisible,fundsModalVisible,funds, updateModalVisible, stepFormValues ,approvalType,mVisible,text} = this.state;
     const btnDisable = selectedRows.length===0
+    console.log('selectted',selectedRows)
+    const hasSelected = selectedRows.length > 0;
     const content =<RouteContext.Consumer>
     {({ isMobile }) => (
       <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-        <Descriptions.Item label="实验室待审批数">56</Descriptions.Item>
+        <Descriptions.Item label={`${majorCollege[user.institute-1]?majorCollege[user.institute-1].cName:''}可申报普通项目数`}>{amountLimit.length>0?amountLimit[0].list[0].maxAmount:''}</Descriptions.Item>
         <Descriptions.Item label="重点项目待审批数">45</Descriptions.Item>
         <Descriptions.Item label="重点项目特殊资助项目数">
           <Statistic value={8} suffix="/ 24" />
@@ -510,7 +526,13 @@ class TableList extends Component {
               </span>}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
               <Button disabled={btnDisable} onClick={()=>this.showModifyFundsModal()}>修改金额</Button>
-            </div>}
+              
+            </div>
+            
+            }
+            <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
+              </span>
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}

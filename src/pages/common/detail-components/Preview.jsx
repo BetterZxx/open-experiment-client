@@ -29,22 +29,7 @@ class Preview extends Component {
   }
   downloadApplyModel = ()=>{
     const {detail} = this.props
-    const students = detail.list.filter(item=>item.memberRole!==1)
-    const teachers = detail.list.filter(item=>item.memberRole===1)
-    const major = [...new Set(...detail.list.map(item=>major))].join('、')
-    const grade = [...new Set(...detail.list.map(item=>grade))].join('、')
-    const data = {
-      projectName:detail.projectName,
-      projectType:detail.projectType===1?'普通':'重点',
-      applyFunds:detail.applyFunds,
-      major,
-      grade,
-      students,
-      teachers
-    }
-    let html = baidu.template(applyModel,data)
-    var blob = new Blob([html], {type: "application/msword;charset=utf-8"});
-    saveAs(blob,'重点项目申请书.doc')
+   
   }
   render() {
     // const props = {
@@ -66,11 +51,29 @@ class Preview extends Component {
     // };
     const { isPreview } = this.state;
     const {detail,fileList,loading} = this.props
+    const students = detail.list.filter(item=>item.memberRole!==1)
+    const teachers = detail.list.filter(item=>item.memberRole===1)
+    const major = [...new Set(...detail.list.map(item=>major))].join('、')
+    const grade = [...new Set(...detail.list.map(item=>grade))].join('、')
+    const data = {
+      projectName:detail.projectName,
+      projectType:detail.projectType===1?'普通':'重点',
+      applyFunds:detail.applyFunds,
+      major,
+      grade,
+      students,
+      teachers
+    }
+    let html = baidu.template(applyModel,data)
+    var blob = new Blob([html], {type: "application/msword"});
+    //saveAs(blob,'重点项目申请书.doc')
     console.log(detail.applyurl)
     const props = {
       beforeUpload: file => {
         const {dispatch} = this.props
         const formData = new FormData()
+        const headFile = new File([blob], '111.doc', {type: "application/msword", lastModified: Date.now()});
+        formData.append('headFile',headFile)
         formData.append('file',file)
         formData.append('projectGroupId',detail.id)
         dispatch({

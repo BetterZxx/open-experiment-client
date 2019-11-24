@@ -25,7 +25,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,operationUnit, experimentType,statusType} from '@/utils/constant'
+import {projectType,operationUnit, experimentType,statusType, roleNames, memberRole} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -82,7 +82,8 @@ class TableList extends Component {
     },
     {
       title: '项目角色',
-      render:()=>'成员'
+      dataIndex:'memberRole',
+      render:(role)=>memberRole[role]
     },
     {
       title: '实验类型',
@@ -140,15 +141,6 @@ class TableList extends Component {
       payload:tabActiveKey
     })
   };
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
-  }
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -164,14 +156,11 @@ class TableList extends Component {
     this.setState({
       formValues: {},
     });
-    dispatch({
-      type: 'listTableList/fetch',
-      payload: {},
-    });
   };
 
   
   handleSelectRows = rows => {
+    console.log(rows)
     this.setState({
       selectedRows: rows,
     });
