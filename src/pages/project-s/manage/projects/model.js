@@ -20,7 +20,7 @@ const Model = {
       if(res.code===0){
         message.success('申请成功')
       }else{
-        message.error('申请失败')
+        message.error(`申请失败:${res.msg}`)
       }
     }
     ,

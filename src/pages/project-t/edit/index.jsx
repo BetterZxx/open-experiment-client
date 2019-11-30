@@ -16,7 +16,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import moment from 'moment'
-import {majorCollege } from '@/utils/constant'
+import {majorCollege,grade } from '@/utils/constant'
 import styles from './style.less';
 
 
@@ -44,7 +44,7 @@ class BasicForm extends Component {
           startTime:values.time[0].format('YYYY-MM-DD'),
           endTime:values.time[1].format('YYYY-MM-DD'),
           teacherCodes:['31'],
-          projectGroupId:detail.projectGroupId
+          projectGroupId:detail.id
         }
         delete payload.names
         delete payload.keys
@@ -187,7 +187,9 @@ class BasicForm extends Component {
       </Form.Item>
     ));
     return (
-      <PageHeaderWrapper content="此表单为立项申请表，由指导老师填写">
+      <PageHeaderWrapper content="此表单为立项申请表，由指导老师填写"
+        extra={<Button onClick={()=>this.props.history.goBack()}>返回</Button>}      
+      >
         <Card bordered={false}>
           <Form
             onSubmit={this.handleSubmit}
@@ -195,6 +197,7 @@ class BasicForm extends Component {
             style={{
               marginTop: 8,
             }}
+            
           >
             
             <FormItem {...formItemLayout} label="项目名称">
@@ -313,16 +316,9 @@ class BasicForm extends Component {
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="适应专业">
+            <FormItem {...formItemLayout} label="限选专业">
               {getFieldDecorator('limitMajor', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应专业',
-                  },
-                  
-                ],
-                initialValue:JSON.parse(detail.limitMajor)
+                initialValue:detail.limitMajor?JSON.parse(detail.limitMajor):undefined
               })(<TreeSelect                     
                 placeholder="请选择适应专业"
                 allowClear
@@ -334,32 +330,21 @@ class BasicForm extends Component {
             </FormItem>
             <FormItem {...formItemLayout} label="限选年级">
               {getFieldDecorator('limitGrade', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应年级',
-                  },
-                ],
+    
                 initialValue:detail.limitGrade?JSON.parse(detail.limitGrade):undefined
               })(<Select
                 mode="multiple"
                 placeholder="请选择适应学院"
               >
-                <Option value="2016">2016级</Option>
-                <Option value="2017">2017级</Option> 
-                <Option value="2018">2018级</Option>
-                <Option value="2019">2019级</Option>
+                {grade.map(item=>{
+                  return <Option key={item} value={item}>{item}级</Option>
+                })}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="限选学院">
               {getFieldDecorator('limitCollege', {
-                rules: [
-                  {
-                    required: true,
-                    message: '请输入适应学院',
-                  },
-                ],
-                initialValue:JSON.parse(detail.limitCollege)
+            
+                initialValue:detail.limitCollege?JSON.parse(detail.limitCollege):undefined
               })(<Select
                 mode="multiple"
                 placeholder="请选择适应学院"
@@ -483,14 +468,14 @@ class BasicForm extends Component {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 提交
               </Button>
-              <Button
+              {/* <Button
                 onClick={this.handleSubmit}
                 style={{
                   marginLeft: 8,
                 }}
               >
                 保存
-              </Button>
+              </Button> */}
             </FormItem>
           </Form>
         </Card>

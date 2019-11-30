@@ -28,12 +28,12 @@ const GlobalHeaderRight = props => {
           console.log('enter', value);
         }}
       /> */}
-      <Tooltip title="使用文档">
+      {/* <Tooltip title="使用文档">
         
           <Icon type="question-circle-o" />
        
-      </Tooltip>
-      <NoticeIconView />
+      </Tooltip> */}
+      {/* <NoticeIconView /> */}
       <Avatar menu />
       {/* <SelectLang className={styles.action} /> */}
     </div>

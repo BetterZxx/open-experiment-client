@@ -1,4 +1,4 @@
-import { reqSecondProjects,reqUpdateFunds,reqExportApplyExcel} from './service';
+import { reqSecondProjects,reqUpdateFunds,reqExportApplyExcel,reqExportProjectInfoExcel} from './service';
 import { message } from 'antd';
 import {saveAs} from 'file-saver'
 
@@ -31,6 +31,11 @@ const Model = {
       const res = yield call(reqExportApplyExcel)
       console.log(res)
       saveAs(res,'立项一览表.xlsx')
+    },
+    *exportProjects({payload},{call,put}){
+      const res = yield call(reqExportProjectInfoExcel)
+      console.log(res)
+      saveAs(res,'项目信息总览表.xlsx')
     }
     ,
     *updateFunds({payload},{call,put}){

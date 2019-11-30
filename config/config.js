@@ -9,7 +9,7 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL ='http://10.20.0.51:8083'//'http://220.167.105.201:8083' //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
+const proxyURL ='http://192.168.43.153:8083'//'http://220.167.105.201:8083' //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
 const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file','/permission','/amount','/timeLimit',
 '/user/getMyInfo',
 '/user/getUserInfoByUserId',
@@ -145,6 +145,13 @@ export default {
               component:'./home'
             },
             {
+              path: '/timeLimit/detail',
+              name: '项目时间限制',
+              icon: 'home',
+              component:'./agreement/second/time-check',
+              hideInMenu:true
+            },
+            {
               path: '/openProjects/detail',
               name: '详情',
               icon: 'home',
@@ -158,16 +165,17 @@ export default {
               component:'./settings/announcement/detail',
               hideInMenu:true
             },
-            {
-              path: '/tproject',
-              name: '项目管理(老师)',
-              icon: 'project',
-              authority:[3],
-              routes: [
+            // {
+            //   path: '/tproject',
+            //   name: '项目管理',
+            //   icon: 'project',
+            //   authority:[3],
+            //   routes: [
                 {
                   name: '项目申报',
                   path: '/tproject/apply',
                   component: './project-t/apply',
+                  authority:[3],
                   icon: 'file-add'
                 },
                 {
@@ -175,12 +183,14 @@ export default {
                   path: '/tproject/manage/edit',
                   component: './project-t/edit',
                   hideInMenu:true,
+                  authority:[3],
                   icon: 'file-add'
                 },
                 {
                   name: '项目详情',
                   path: '/tproject/manage/detail',
                   component: './common/detail',
+                  authority:[3],
                   hideInMenu:true,
                   icon: 'file-add'
                 },
@@ -188,6 +198,7 @@ export default {
                   name: '重点项目申请',
                   path: '/tproject/manage/key-detail',
                   component: './common/key-detail',
+                  authority:[3],
                   hideInMenu:true,
                   icon: 'file-add'
                 },
@@ -195,6 +206,7 @@ export default {
                   name: '已报项目',
                   path: '/tproject/manage',
                   component: './project-t/projects',
+                  authority:[3],
                   icon: 'file-done',
                   
                 },
@@ -202,6 +214,7 @@ export default {
                   name: '重点项目审批',
                   path: '/tproject/manage/key-projects',
                   component: './project-t/key-projects',
+                  authority:[3],
                   icon: 'file-done',
                   hideInMenu:true
                   
@@ -210,26 +223,29 @@ export default {
                   name: '成员审批',
                   path: '/tproject/members',
                   component: './project-t/members',
+                  authority:[3],
                   icon: 'usergroup-add'
                 },
-              ],
-            },
-            {
-              path: '/sproject',
-              name: '项目管理(学生)',
-              icon: 'project',
-              authority:[1,2],
-              routes: [
+            //   ],
+            // },
+            // {
+            //   path: '/sproject',
+            //   name: '项目管理',
+            //   icon: 'project',
+            //   authority:[1,2],
+            //   routes: [
                 {
                   name: '项目申请',
                   path: '/sproject/join/all',
                   component: './project-s/join/projects',
+                  authority:[1,2],
                   icon: 'file-add'
                 },
                 {
                   name: '项目申请表',
                   path: '/sproject/join/all/apply',
                   component: './project-s/join/basic-form',
+                  authority:[1,2],
                   icon: 'file-add',
                   hideInMenu:true
                 },
@@ -237,12 +253,14 @@ export default {
                   name: '已选项目',
                   path: '/sproject/manage',
                   component: './project-s/manage/projects',
+                  authority:[1,2],
                   icon: 'file-done'
                 },
                 {
                   name: '重点项目申请',
                   path: '/sproject/manage/keyProject',
                   component: './project-s/manage/key-project',
+                  authority:[1,2],
                   icon: 'file-add',
                   hideInMenu:true
                 },
@@ -250,6 +268,7 @@ export default {
                   name: '重点项目申请',
                   path: '/sproject/manage/key-detail',
                   component: './common/key-detail',
+                  authority:[1,2],
                   icon: 'file-add',
                   hideInMenu:true
                 },
@@ -257,6 +276,7 @@ export default {
                   name: '项目详情',
                   path: '/sproject/join/all/detail',
                   component: './common/detail',
+                  authority:[1,2],
                   hideInMenu:true,
                   icon: 'file-add'
                 },
@@ -264,17 +284,19 @@ export default {
                   name: '项目详情',
                   path: '/sproject/manage/detail',
                   component: './common/detail',
+                  authority:[1,2],
                   hideInMenu:true,
                   icon: 'file-add'
                 },
-                {
-                  name: '证书申领',
-                  path: '/sproject/certificate',
-                  component: './project-s/certificate',
-                  icon: 'read'
-                },
-              ],
-            },
+                // {
+                //   name: '证书申领',
+                //   path: '/sproject/certificate',
+                //   component: './project-s/certificate',
+                //   authority:[1,2],
+                //   icon: 'read'
+                // },
+            //   ],
+            // },
             // {
             //   path: '/projects/auth',
             //   name: '项目审批',
@@ -289,13 +311,13 @@ export default {
                       name: '立项审批',
                       path: '/auth/lab/projects',
                       component: './agreement/lab/projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '重点实验审批',
                       path: '/auth/lab/key-projects',
                       component: './agreement/lab/key-projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '项目详情',
@@ -323,19 +345,19 @@ export default {
                       name: '普通项目审批',
                       path: '/auth/second/projects',
                       component: './agreement/second/projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '系统设置',
                       path: '/auth/second/settings',
                       component: './agreement/second/settings',
-                      icon: 'team'
+                      icon: 'setting'
                     },
                     {
                       name: '重点项目审批',
                       path: '/auth/second/key-projects',
                       component: './agreement/second/key-projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '项目详情',
@@ -368,13 +390,13 @@ export default {
                       name: '立项审批',
                       path: '/auth/equipment/projects',
                       component: './agreement/equipment/projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '重点项目审批',
                       path: '/auth/equipment/key-projects',
                       component: './agreement/equipment/key-projects',
-                      icon: 'team'
+                      icon: 'solution'
                     },
                     {
                       name: '项目详情',
@@ -413,7 +435,8 @@ export default {
               path: '/selfInformation/edit',
               name: '完善个人信息',
               component: './user-information',
-              icon: 'bar-chart'
+              hideInMenu:true,
+              icon: 'user'
             },
             // {
             //   path: '/settings',

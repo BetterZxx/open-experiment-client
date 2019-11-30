@@ -17,6 +17,7 @@ import { connect } from 'dva';
 import moment from 'moment'
 import {majorCollege } from '@/utils/constant'
 import styles from './style.less';
+import { router } from 'umi';
 
 
 const FormItem = Form.Item;
@@ -95,8 +96,9 @@ class BasicForm extends Component {
         sm: { span: 20, offset: 4 },
       },
     };
+    const extra = <Button onClick={()=>{router.goBack()}}>返回</Button>
     return (
-      <PageHeaderWrapper content="完善基本信息">
+      <PageHeaderWrapper content="完善基本信息" extra={extra}>
         <Card bordered={false}>
           <Form
             onSubmit={this.handleSubmit}

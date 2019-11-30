@@ -4,6 +4,7 @@ import { connect } from 'dva';
 import router from 'umi/router';
 import HeaderDropdown from '../HeaderDropdown';
 import styles from './index.less';
+import userImg from '@/assets/user.png'
 
 class AvatarDropdown extends React.Component {
   onMenuClick = event => {
@@ -18,6 +19,10 @@ class AvatarDropdown extends React.Component {
         });
       }
 
+      return;
+    }
+    if (key === 'center') {
+      router.push(`/selfInformation/edit`);
       return;
     }
 
@@ -42,15 +47,15 @@ class AvatarDropdown extends React.Component {
         {menu && (
           <Menu.Item key="center">
             <Icon type="user" />
-            个人中心
+            个人信息
           </Menu.Item>
         )}
-        {menu && (
+        {/* {menu && (
           <Menu.Item key="settings">
             <Icon type="setting" />
             个人设置
           </Menu.Item>
-        )}
+        )} */}
         {menu && <Menu.Divider />}
 
         <Menu.Item key="logout">
@@ -62,7 +67,7 @@ class AvatarDropdown extends React.Component {
     return (
       <HeaderDropdown overlay={menuHeaderDropdown}>
         <span className={`${styles.action} ${styles.account}`}>
-          <Avatar size="small" className={styles.avatar} style={{color:'green',backgroundColor:'green'}} src={currentUser.avatar} alt="avatar" />
+          <Avatar size="small" className={styles.avatar}  src={userImg} alt="avatar" />
           <span className={styles.name}>{currentUser.realName}</span>
         </span>
       </HeaderDropdown>

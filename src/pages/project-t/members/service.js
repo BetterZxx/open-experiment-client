@@ -32,8 +32,9 @@ export async function reqAgreeStudent(params) {
   });
 }
 export async function reqRemoveStudent(params) {
-  return request('/project/removeStudentFromProject', {
+  return request('/project/deleteMemberFromProject', {
     method: 'post',
+    requestType:'form',
     data:params,
   });
 }

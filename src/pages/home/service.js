@@ -7,7 +7,7 @@ export async function reqCanApplyProjects(){
   return request('/project/getAllOpenTopicByStudent')
 }
 export async function reqfilterProjects(params){
-  return request('/project/conditionallyQueryOfCheckedProjectByFunctionalDepartment',{
+  return request('/project/getAllOpenTopicByStudentByCondition',{
     method:'post',
     data:params
   })

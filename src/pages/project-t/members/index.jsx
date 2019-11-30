@@ -78,6 +78,7 @@ class TableList extends Component {
     {
       title: '专业',
       dataIndex: 'major',
+      render:(m)=>major[m-1].mName
     },
     {
       title: '年级',
@@ -91,7 +92,7 @@ class TableList extends Component {
       title: '项目角色',
       dataIndex: 'memberRole',
       render:(val)=>{
-        return memberRole[val-1]
+        return memberRole[val]
       }
     },
     {
@@ -127,15 +128,6 @@ class TableList extends Component {
       ),
     },
   ];
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
-  }
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch({
@@ -162,7 +154,7 @@ class TableList extends Component {
     });
   };
 
-  handleSearch = e => {
+  handleFilter = e => {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
@@ -205,7 +197,7 @@ class TableList extends Component {
     const { form,projects } = this.props;
     const { getFieldDecorator } = form;
     return (
-      <Form onSubmit={this.handleSearch} layout="inline">
+      <Form onSubmit={this.handleFilter} layout="inline">
         <Row
           gutter={{
             md: 8,
@@ -231,9 +223,9 @@ class TableList extends Component {
             </FormItem>
           </Col>
           <Col md={8} sm={24}>
-            <FormItem label="状态">
+            <FormItem label="审核状态">
               {getFieldDecorator('status',{
-                initialValue:'1'
+                initialValue:''
               })(
                 <Select
                   placeholder="请选择"
@@ -251,7 +243,7 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <span className={styles.submitButtons}>
-              <Button type="primary" onClick={this.handleSearch}>
+              <Button type="primary" onClick={this.handleFilter}>
                 查询
               </Button>
               <Button
@@ -330,8 +322,7 @@ class TableList extends Component {
     const {dispatch} = this.props
     
     let payload = {
-        projectGroupId:selectedRows[0].id,
-        reason:'',
+        projectId:selectedRows[0].id,
         userId:selectedRows[0].code
     }
     dispatch({
@@ -341,8 +332,10 @@ class TableList extends Component {
   }
   handleSetLeader = ()=>{
     const {selectedRows} = this.state
-    if(selectedRows.length>1)
-    message.warning('不能设置多个项目组长')
+    if(selectedRows.length>1){
+      message.warning('不能设置多个项目组长')
+      return;
+    }
     const {dispatch} = this.props
     
     let payload = {
@@ -401,6 +394,7 @@ class TableList extends Component {
     } = this.props;
     const {getFieldDecorator} = form
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible,apply } = this.state;
+    const btnDisable = selectedRows.length===0
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove" onClick={this.handleSetLeader}>设为组长</Menu.Item>
@@ -423,17 +417,19 @@ class TableList extends Component {
               <Button icon="plus" type="primary" onClick={this.showModal}>
                 增添成员
               </Button>
-              {selectedRows.length > 0 && (
+             
                 <span>
-                  <Button type='primary' onClick={this.handleAgree}>通过</Button>
-                  <Button onClick={this.handleReject}>拒绝</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
+                  <Button type='primary' disabled={btnDisable} onClick={this.handleAgree}>通过</Button>
+                  <Button onClick={this.handleReject} disabled={btnDisable}>拒绝</Button>
+                  <Button  onClick={this.handleSetLeader} disabled={btnDisable}>设为组长</Button>
+                  <Button type='danger' onClick={this.handleRemove} disabled={btnDisable}>删除成员</Button>
+                  {/* <Dropdown overlay={menu} disabled={btnDisable}>
+                    <Button disabled={btnDisable}>
                       更多操作 <Icon type="down" />
                     </Button>
-                  </Dropdown>
+                  </Dropdown> */}
                 </span>
-              )}
+              
             </div>
             <StandardTable
               selectedRows={selectedRows}
@@ -497,6 +493,7 @@ class TableList extends Component {
           <Modal
           visible={detailModalVisible}
           onCancel={this.hideDetailModal}
+          onOk={this.hideDetailModal}
           width={700}
           >
             <Descriptions column={2} >

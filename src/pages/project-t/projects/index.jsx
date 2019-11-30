@@ -24,7 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
+import {experimentType, statusType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -104,19 +104,10 @@ class TableList extends Component {
     {
       title: '状态',
       render:(project) => {
-        let val = 0
-        if(project.status>=0&&project.status<=4){
-          val = 1
-        }else if(project.status>4){
-          val = 2
-        }else if(project.status===-3){
-          val = 0
-        }else if(project.status===-2){
-          val = 3
-        }
+        
         return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} href="javasctipt:">详情</a>
+          <span>{statusType[project.status]}</span>
+          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} >详情</a>
         </span>;
       },
     },
@@ -276,7 +267,8 @@ class TableList extends Component {
               <Button type="primary" onClick={() =>{this.props.history.push('/tproject/manage/key-projects')}}>
                 重点项目审批
               </Button>
-              {selectedRows.length > 0 && (
+              <Button disabled={true}>取消项目</Button>
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button>取消项目</Button>
                   <Dropdown overlay={menu}>
@@ -285,7 +277,7 @@ class TableList extends Component {
                     </Button>
                   </Dropdown>
                 </span>
-              )}
+              )} */}
             </div>
             <StandardTable
               selectedRows={selectedRows}

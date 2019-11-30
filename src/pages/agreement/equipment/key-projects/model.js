@@ -18,7 +18,7 @@ const Model = {
           payload: response.data,
         });
       }else{
-        message.error('请求审批项目出错')
+        message.error(`请求审批项目出错${res.msg}`)
       }
       
     },

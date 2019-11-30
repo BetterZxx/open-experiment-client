@@ -14,6 +14,7 @@ import {
 
 } from 'antd';
 import React, { Component } from 'react';
+import BaseInfo from './cpmponents/BaseInfo'
 import { PageHeaderWrapper,RouteContext } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import styles from './style.less';
@@ -193,7 +194,7 @@ class BasicForm extends Component {
     );
     return (
       <PageHeaderWrapper
-      content={content}
+      content={<BaseInfo detail={detail}/>}
       extra={<Button onClick={()=>{this.props.history.goBack()}}>返回</Button>}
       >
         <Card

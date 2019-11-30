@@ -72,7 +72,7 @@ class Preview extends Component {
       beforeUpload: file => {
         const {dispatch} = this.props
         const formData = new FormData()
-        const headFile = new File([blob], '111.doc', {type: "application/msword", lastModified: Date.now()});
+        const headFile = new File([blob], 'headFile.html', {type: "text/html;charset=utf-8", lastModified: Date.now()});
         formData.append('headFile',headFile)
         formData.append('file',file)
         formData.append('projectGroupId',detail.id)

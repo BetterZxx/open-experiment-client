@@ -175,8 +175,8 @@ class Advanced extends Component {
     console.log(detail);
     const extra = (
       <div className={styles.moreInfo}>
-        <Statistic style={{ textAlign: 'left', marginRight: 30 }} title="重点申请书状态" value={detail.whetherCommitKeyApply?'已提交':'未提交'} />
-        <Statistic style={{ textAlign: 'left' }} title="项目状态" value={statusType[detail.status]} />
+        <Statistic style={{ textAlign: 'left', marginRight: 30 }} title="重点申请书状态" valueStyle={{fontSize:19}} value={detail.whetherCommitKeyApply?'已提交':'未提交'} />
+        <Statistic style={{ textAlign: 'left' }} title="项目状态" valueStyle={{fontSize:19}} value={statusType[detail.status]} />
         {/* <Statistic title="参与人数" value={detail.stuMembers ? detail.stuMembers.length : 0} /> */}
       </div>
     );

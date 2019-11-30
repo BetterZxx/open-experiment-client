@@ -40,7 +40,7 @@ class Member extends Component {
       title:'专业',
       dataIndex:'major',
       render:(m)=>{
-        return m===null?'\\':major[m-1].mName
+        return m===null||+m!==+m?'\\':major[m-1].mName
       }
     },
     {

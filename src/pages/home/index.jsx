@@ -4,6 +4,7 @@ import { GridContent } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import PageLoading from './components/PageLoading';
 import { getTimeDistance } from './utils/utils';
+import OpenProjects from '../common/OpenProjects'
 import styles from './style.less';
 import Projects from '@/pages/account/center/components/Projects';
 
@@ -11,7 +12,7 @@ const IntroduceRow = React.lazy(() => import('./components/IntroduceRow'));
 const SalesCard = React.lazy(() => import('./components/SalesCard'));
 const Announcement = React.lazy(() => import('./components/Announcement'));
 const ProportionSales = React.lazy(() => import('./components/ProportionSales'));
-const OfflineData = React.lazy(() => import('./components/OfflineData'));
+// const OfflineData = React.lazy(() => import('./components/OfflineData'));
 const salePieData = [
   {
     x:'科研',
@@ -181,9 +182,9 @@ class Analysis extends Component {
       <GridContent>
         <React.Fragment>
           
-          <Suspense fallback={<PageLoading />}>
+          {/* <Suspense fallback={<PageLoading />}>
             <IntroduceRow loading={loading}  />
-          </Suspense>
+          </Suspense> */}
           <Suspense fallback={null}>
             {/* <SalesCard
               rangePickerValue={rangePickerValue}
@@ -229,10 +230,11 @@ class Analysis extends Component {
             </Col>
           </Row>
           <Suspense fallback={null}>
-            <OfflineData
+            {/* <OfflineData
               
               loading={loading}
-            />
+            /> */}
+            <OpenProjects/>
           </Suspense>
         </React.Fragment>
       </GridContent>

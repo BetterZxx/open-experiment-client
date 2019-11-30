@@ -24,7 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
+import {experimentType, statusType} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -109,19 +109,9 @@ class TableList extends Component {
     {
       title: '状态',
       render:(project) => {
-        let val = 0
-        if(project.status>=0&&project.status<=4){
-          val = 1
-        }else if(project.status>4){
-          val = 2
-        }else if(project.status===-3){
-          val = 0
-        }else if(project.status===-2){
-          val = 3
-        }
         return <span>
-          <Badge status={statusMap[val]} text={status[val]} />
-          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)} href="javasctipt:">详情</a>
+          {statusType[project.status]}
+          <a style={{marginLeft:15}} onClick={()=>this.showProcessModal(project.id)}>详情</a>
         </span>;
       },
     },
@@ -134,7 +124,7 @@ class TableList extends Component {
       dataIndex:'id',
       render: (id) => (
         <Fragment>
-          <a onClick={() => this.editWarning()}>编辑</a>
+          <a onClick={() => this.handleEdit(id)}>编辑</a>
           
           <Divider type="vertical" />
           <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
@@ -142,6 +132,17 @@ class TableList extends Component {
       ),
     },
   ];
+  handleEdit = (id)=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'detail/fetchDetail',
+      payload:{
+        projectGroupId:id,
+        role:8
+      }
+    })
+
+  }
   handleDetailClick = (id)=>{
     const {history,dispatch} = this.props
     dispatch({
@@ -204,11 +205,13 @@ class TableList extends Component {
     })
   }
   showProcessModal = (id)=>{
-    console.log(id)
     const {dispatch} = this.props
     dispatch({
       type:'detail/fetchProcess',
-      payload:id
+      payload:{
+        role:5,
+        projectId:id
+      }
     })
     this.setState({
       modalVisible:true
@@ -348,12 +351,12 @@ class TableList extends Component {
               <Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准
               </Button>
-                <Button disabled={btnDisable}  onClick={()=>{}}>
+                {/* <Button disabled={btnDisable}  onClick={()=>{}}>
                   修改审批意见
-                </Button>
+                </Button> */}
               
               <Button disabled={btnDisable}  onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
-              {selectedRows.length > 0 && (
+              {/* {selectedRows.length > 0 && (
                 <span>
                   <Button>取消项目</Button>
                   <Dropdown overlay={menu}>
@@ -362,7 +365,7 @@ class TableList extends Component {
                     </Button>
                   </Dropdown>
                 </span>
-              )}
+              )} */}
             </div>
             <StandardTable
               selectedRows={selectedRows}
@@ -377,7 +380,7 @@ class TableList extends Component {
           <Modal
             visible={modalVisible}
             onCancel={this.hideModal}
-            footer={<Button type='primary'>确认修改</Button>}
+            footer={''}
             
           >
             {/*01 实验室 23二级单位 45职能部门*/}

@@ -14,15 +14,15 @@ import {
   Row,
   Select,
   message,
-  TreeSelect
+  TreeSelect,
+  Statistic
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import CreateForm from './components/CreateForm';
 import StandardTable from './components/StandardTable';
-import UpdateForm from './components/UpdateForm';
 import {projectType,major,college,grade,suggestGroupType, experimentType, majorCollege} from '@/utils/constant'
+import router from 'umi/router'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -35,13 +35,9 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['关闭', '运行中', '已上线', '异常'];
-
 /* eslint react/no-multi-comp:0 */
-@connect(({ listTableList, loading,openProjects }) => ({
-  listTableList,
-  loading: loading.models.listTableList,
+@connect(({loading,openProjects }) => ({
+  loading: loading.models.openProjects,
   projects:openProjects.projects
 }))
 class TableList extends Component {
@@ -73,8 +69,8 @@ class TableList extends Component {
     },
     {
       title: '指导老师',
-      dataIndex: 'guidanceTeachers',
-      render:(t)=>'XX老师'//t[0].userName
+      dataIndex: 'teachers',
+      render:(teachers)=>teachers[0].realName
     },
     {
       title: '项目级别',
@@ -82,9 +78,8 @@ class TableList extends Component {
       render: val => val===1?'普通':'重点'
     },
     {
-      title: '已选学生数',
-      dataIndex: 'memberStudents',
-      render:(students)=>students?students.length:0
+      title: '已加入学生数/限选',
+      render:(p)=><Statistic valueStyle={{fontSize:18}} value={p.amountOfSelected-1} suffix={`/ ${p.fitPeopleNum}`} />
     },
     {
       title: '计划实验时间',
@@ -116,26 +111,25 @@ class TableList extends Component {
   }
   handleDetailClick = (id)=>{
     const {dispatch} = this.props
-    dispatch({
-      type:'detail/fetchDetail',
-      payload:{
-        projectGroupId:id,
-        role:3
-      }
-    })
-    dispatch({
-      type:'detail/fetchProcess',
-      payload:{
-        projectId:id,
-        role:3
-      }
-    })
+    let role = window.location.pathname==='/'?3:6
+      dispatch({
+        type:'detail/fetchDetail',
+        payload:{
+          projectGroupId:id,
+          role
+        }
+      })
+      dispatch({
+        type:'detail/fetchProcess',
+        payload:{
+          projectId:id,
+          role
+        }
+      })
+    
+    
   }
 
-  componentDidMount() {
-  }
-
-  
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
@@ -188,16 +182,6 @@ class TableList extends Component {
       modalVisible: !!flag,
     });
   };
-
-  handleUpdateModalVisible = (flag, record) => {
-    this.setState({
-      updateModalVisible: !!flag,
-      stepFormValues: record || {},
-    });
-  };
-
-
-
   renderSimpleForm() {
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -307,7 +291,7 @@ class TableList extends Component {
             <FormItem label="计划实验时间">
               {getFieldDecorator('date')(
                 <RangePicker
-                  
+                  allowClear={false}
                   style={{
                     width: '100%',
                   }}
@@ -394,7 +378,7 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="普通/重点项目">
-              {getFieldDecorator('experimentType')(
+              {getFieldDecorator('projectType')(
                 <Select
                   placeholder="请选择"
                   style={{
@@ -466,39 +450,11 @@ class TableList extends Component {
       projects
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
-    const menu = (
-      <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">删除</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
-      </Menu>
-    );
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
+    const extra = <Button onClick={()=>router.push('/timeLimit/detail')}>时间限制查询</Button>
     return (
-        <Card bordered={false} title='项目公示'>
+        <Card bordered={false} title='项目公示' extra={extra} style={{marginTop:32}}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
-            {/* <div className={styles.tableListOperator}>
-              <Button icon="plus" type="primary" onClick={() => this.handleModalVisible(true)}>
-                新建
-              </Button>
-              {selectedRows.length > 0 && (
-                <span>
-                  <Button>批量操作</Button>
-                  <Dropdown overlay={menu}>
-                    <Button>
-                      更多操作 <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </span>
-              )}
-            </div> */}
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
@@ -509,14 +465,6 @@ class TableList extends Component {
               onChange={this.handleStandardTableChange}
             />
           </div>
-          <CreateForm {...parentMethods} modalVisible={modalVisible} />
-          {stepFormValues && Object.keys(stepFormValues).length ? (
-            <UpdateForm
-              {...updateMethods}
-              updateModalVisible={updateModalVisible}
-              values={stepFormValues}
-            />
-          ) : null}
         </Card>
     );
   }

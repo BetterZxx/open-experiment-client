@@ -142,11 +142,11 @@ class TableList extends Component {
     })
   };
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch ,tabActiveKey} = this.props;
     dispatch({
       type: 'studentProjects/fetchProjects',
       payload:{
-        joinStatus:'2'
+        joinStatus:tabActiveKey
       }
     });
   }
@@ -328,8 +328,8 @@ class TableList extends Component {
     const btnDisable = selectedRows.length===0
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove">申请终止/延期</Menu.Item>
-        <Menu.Item key="approval">批量审批</Menu.Item>
+        <Menu.Item key="remove">申请终止</Menu.Item>
+        <Menu.Item key="approval">申请延期</Menu.Item>
       </Menu>
     );
     const timeLines = process.map((item,index)=>{
@@ -369,6 +369,10 @@ class TableList extends Component {
         {
           key: '3',
           tab: '已驳回',
+        },
+        {
+          key: '1',
+          tab: '待审批',
         }
         
       ]}
@@ -378,23 +382,23 @@ class TableList extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
-            <div className={styles.tableListOperator}>
-            <Button icon="plus" type="primary" onClick={() => this.props.history.push('/sproject/join/all ')}>
+            {tabActiveKey ==='2'?<div className={styles.tableListOperator}>
+            <Button icon="plus" type="primary" onClick={() => this.props.history.push('/sproject/join/all')}>
                 申请项目
               </Button>
               {selectedRows.length >= 0 && (
                 <span>
-                  <Button>上传材料</Button>
+                  {/* <Button>上传材料</Button> */}
                   {/* <Button>修改申请书</Button> */}
                   <Button disabled={btnDisable} onClick={()=>this.handleKeyApply()}>重点项目申请</Button>
-                  <Dropdown overlay={menu}>
+                  <Dropdown disabled overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
                     </Button>
                   </Dropdown>
                 </span>
               )}
-            </div>
+            </div>:''}
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}

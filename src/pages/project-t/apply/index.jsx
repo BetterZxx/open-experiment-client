@@ -44,11 +44,11 @@ class BasicForm extends Component {
         let payload = {
           ...values,
           limitCollege:JSON.stringify(values.limitCollege),
-          limitGrade:values.limitGrade.length>0?JSON.stringify(values.limitGrade):null,
+          limitGrade:values.limitGrade?JSON.stringify(values.limitGrade):null,
           limitMajor:JSON.stringify(values.limitMajor),
           startTime:values.time[0].format('YYYY-MM-DD'),
           endTime:values.time[1].format('YYYY-MM-DD'),
-          stuCodes:values.names.filter(item=>item),
+          stuCodes:values.names?values.names.filter(item=>item):[],
           
         }
         delete payload.names
@@ -151,6 +151,7 @@ class BasicForm extends Component {
       form: { getFieldDecorator, getFieldValue },
       students
     } = this.props;
+    const topFiftyStudents = students.slice(0,50)
     const formItemLayout = {
       labelCol: {
         xs: {
@@ -202,7 +203,7 @@ class BasicForm extends Component {
     };
     getFieldDecorator('keys', { initialValue: [] });
     const keys = getFieldValue('keys');
-    const options = students.map((s,index) => <Option key={index} value={s.code}>
+    const options = topFiftyStudents.map((s,index) => <Option key={index} value={s.code}>
           <span>{s.realName}</span>
           <span style={{margin:'0 30px'}}>{s.code}</span>
           <span>{(major.find(item=>item.mId===s.major)||{}).mName}</span>
@@ -521,14 +522,14 @@ class BasicForm extends Component {
               <Button type="primary" htmlType="submit" loading={submitting}>
                 提交
               </Button>
-              <Button
+              {/* <Button
                 onClick={this.handleSubmit}
                 style={{
                   marginLeft: 8,
                 }}
               >
                 保存
-              </Button>
+              </Button> */}
             </FormItem>
           </Form>
         </Card>

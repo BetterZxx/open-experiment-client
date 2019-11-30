@@ -217,12 +217,20 @@ const Model = {
             },
           ]
         })
+        yield put({
+          type:'saveApplyUrl',
+          payload:res.data.url
+        })
       }else{
         message.error('上传失败')
       }
     }
   },
   reducers: {
+    saveApplyUrl(state,{payload}){
+      return {...state,baseInfo:{...state.baseInfo,applyurl:payload}}
+    }
+    ,
     saveProcess(state, { payload }) {
       return { ...state, process: payload };
     },

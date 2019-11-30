@@ -159,13 +159,22 @@ class TableList extends Component {
       onOk:()=>{this.props.history.push('/tproject/manage/edit')}
     });
   }
-
+  handleExportExcel = ()=>{
+    const {dispatch} = this.props
+    dispatch({
+      type:'second/export'
+    })
+  }
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,tabActiveKey } = this.props;
     dispatch({
       type:'lab/fetchProjects',
       payload:{
-        status:0
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey,
+          operationUnit:4
+        }
       }
 
     })
@@ -362,7 +371,18 @@ class TableList extends Component {
       text:e.target.value
     })
   }
-
+  handleExportExcel = (isInfo)=>{
+    const {dispatch} = this.props
+    if(!isInfo)
+    dispatch({
+      type:'second/export'
+    })
+    else{
+      dispatch({
+        type:'second/exportProjects'
+      })
+    }
+  }
   render() {
     const {
      
@@ -376,12 +396,19 @@ class TableList extends Component {
    }).filter(item=>{
     return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
    })
+   const extra  = (
+    <div>
+      <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
+      <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel(1)}>导出项目信息表</Button>
+    </div>
+    
+  );
     const btnDisable = selectedRows.length===0
     return (
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
-      extra="计算机科学学院"
+      extra={extra}
       tabList={[
         {
           key: '0',

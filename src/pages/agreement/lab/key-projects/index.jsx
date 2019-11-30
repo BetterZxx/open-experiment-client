@@ -44,7 +44,7 @@ const status = ['待审核', '待上报', '已上报', '已驳回'];
 /* eslint react/no-multi-comp:0 */
 @connect(({ lab, loading,labKeyProjects }) => ({
   labProjects:labKeyProjects.labProjects,
-  loading: loading.models.lab,
+  loading: loading.models.labKeyProjects,
   tabActiveKey:labKeyProjects.tabActiveKey
 }))
 class TableList extends Component {
@@ -156,11 +156,15 @@ class TableList extends Component {
   }
 
   componentDidMount() {
-    const { dispatch } = this.props;
+    const { dispatch,tabActiveKey } = this.props;
     dispatch({
       type:'labKeyProjects/fetchProjects',
       payload:{
-        status:0,
+        status:tabActiveKey,
+        data:{
+          operationType:tabActiveKey,
+          operationUnit:4
+        }
       }
 
     })
@@ -352,7 +356,18 @@ class TableList extends Component {
       text:e.target.value
     })
   }
-
+  handleExportExcel = (isInfo)=>{
+    const {dispatch} = this.props
+    if(!isInfo)
+    dispatch({
+      type:'second/export'
+    })
+    else{
+      dispatch({
+        type:'second/exportProjects'
+      })
+    }
+  }
   render() {
     const {
      
@@ -375,11 +390,18 @@ class TableList extends Component {
       handleUpdate: this.handleUpdate,
     };
     const btnDisable = selectedRows.length===0
+    const extra  = (
+      <div>
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel(1)}>导出项目信息表</Button>
+      </div>
+      
+    );
     return (
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
-      extra="计算机科学学院"
+      extra={extra}
       tabList={[
         {
           key: '0',

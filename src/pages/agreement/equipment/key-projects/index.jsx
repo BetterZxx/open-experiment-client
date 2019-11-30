@@ -45,7 +45,7 @@ const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
 @connect(({  loading ,equipmentKeyProjects}) => ({
-  loading: loading.models.listTableList,
+  loading: loading.models.equipmentKeyProjects,
   projects:equipmentKeyProjects.projects,
   tabActiveKey:equipmentKeyProjects.tabActiveKey
 }))
@@ -273,7 +273,7 @@ class TableList extends Component {
             <FormItem label="申报日期">
               {getFieldDecorator('date')(
                 <RangePicker
-                  
+                  allowClear={false}
                   style={{
                     width: '100%',
                   }}
@@ -284,17 +284,17 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="预申请资金">
-              {getFieldDecorator('status3')(
+              {getFieldDecorator('applyFunds')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="500">500元</Option>
-                  <Option value="2500">2500元</Option>
-                  <Option value="3000">3000元</Option>
-                  <Option value="5000">5000元</Option>
+                  <Option value={500}>500元</Option>
+                  <Option value={2500}>2500元</Option>
+                  <Option value={3000}>3000元</Option>
+                  <Option value={5000}>5000元</Option>
                 </Select>,
               )}
             </FormItem>
@@ -438,7 +438,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch} = this.props
+    const {dispatch,tabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {
         reason:text,
@@ -446,7 +446,7 @@ class TableList extends Component {
       }
     })
     let payload={
-      unit:0,
+      unit:2,
       data,
       type:approvalType,
       isDetail:true
@@ -455,10 +455,11 @@ class TableList extends Component {
     dispatch({
       type:'approval/key',
       payload:{
-        unit:0,
+        unit:2,
         data,
         type:approvalType,
-        isDetail:false
+        isDetail:false,
+        status:tabActiveKey
       }
     })
     this.setState({mVisible:false,
@@ -472,7 +473,7 @@ class TableList extends Component {
     dispatch({
       type:'approval/key',
       payload:{
-        unit:0,
+        unit:2,
         data,
         type:2,
         isDetail:false,
@@ -495,9 +496,9 @@ class TableList extends Component {
   render() {
     const action = (
       <div>
-        <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span>
+        {/* <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span> */}
         <Button icon='export' type='primary' style={{marginRight:15}} onClick={this.handleExport}>导出结题验收一览表</Button>
-        <Button >关闭/开启学院审核</Button>
+        {/* <Button >关闭/开启学院审核</Button> */}
       </div>
       
     );
@@ -537,8 +538,8 @@ class TableList extends Component {
     return (
       <PageHeaderWrapper
       extra={action}
-      content={content}
-      extraContent={extraContent}
+      //content={content}
+      //extraContent={extraContent}
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
       tabList={[
@@ -612,14 +613,6 @@ class TableList extends Component {
             </Timeline>,
 
           </Modal>
-          {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
-          {stepFormValues && Object.keys(stepFormValues).length ? (
-            <UpdateForm
-              {...updateMethods}
-              updateModalVisible={updateModalVisible}
-              values={stepFormValues}
-            />
-          ) : null} */}
         </Card>
       </PageHeaderWrapper>
     );

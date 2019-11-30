@@ -268,7 +268,7 @@ class TableList extends Component {
             <FormItem label="申报日期">
               {getFieldDecorator('date')(
                 <RangePicker
-                  
+                  allowClear={false}
                   style={{
                     width: '100%',
                   }}
@@ -279,16 +279,16 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="预申请资金">
-              {getFieldDecorator('funds')(
+              {getFieldDecorator('applyFunds')(
                 <Select
                   placeholder="请选择"
                   style={{
                     width: '100%',
                   }}
                 >
-                  <Option value="2500">2500元</Option>
-                  <Option value='3000'>3000元</Option>
-                  <Option value='5000'>5000元</Option>
+                  <Option value={2500}>2500元</Option>
+                  <Option value={3000}>3000元</Option>
+                  <Option value={5000}>5000元</Option>
                 </Select>,
               )}
             </FormItem>
@@ -451,9 +451,9 @@ class TableList extends Component {
   render() {
     const action = (
       <div>
-        <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span>
+        
         <Button icon='export' type='primary' style={{marginRight:15}} onClick={this.handleExport}>导出结题验收一览表</Button>
-        <Button >关闭/开启学院审核</Button>
+        {/* <Button >关闭/开启学院审核</Button> */}
       </div>
       
     );
@@ -501,8 +501,8 @@ class TableList extends Component {
     return (
       <PageHeaderWrapper
       extra={action}
-      content={content}
-      extraContent={extraContent}
+      //content={content}
+      //extraContent={extraContent}
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
       tabList={[

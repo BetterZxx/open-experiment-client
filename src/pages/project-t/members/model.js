@@ -1,4 +1,4 @@
-import { reqApplyStudents,reqSearchStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqRemoveStudent,reqAddStudent, reqFilterStudent } from './service';
+import { reqRemoveStudent,reqApplyStudents,reqSearchStudents,reqAgreeStudent,reqRejectStudent,reqSetProjectLeader,reqAddStudent, reqFilterStudent } from './service';
 import { message } from 'antd';
 
 const Model = {
@@ -51,7 +51,7 @@ const Model = {
       }
     },
     *remove({payload},{call,put}){
-      const res = yield call(reqRmoveStudent,payload)
+      const res = yield call(reqRemoveStudent,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({

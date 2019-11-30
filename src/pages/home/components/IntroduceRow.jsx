@@ -1,4 +1,4 @@
-import { Col, Icon, Row, Tooltip } from 'antd';
+import { Col, Icon, Row, Tooltip,Statistic } from 'antd';
 import React from 'react';
 import numeral from 'numeral';
 import { ChartCard, MiniArea, MiniBar, MiniProgress, Field } from './Charts';
@@ -80,18 +80,21 @@ const IntroduceRow = ({ loading, visitData }) => (
     <Col {...topColResponsiveProps}>
       <ChartCard
         bordered={false}
-        title="项目申报数"
+        title="项目申报数/学院限报"
         action={
           <Tooltip title="指标说明">
             <Icon type="info-circle-o" />
           </Tooltip>
         }
         loading={loading}
-        total={() => <span>{numeral(12423).format('0,0')}</span>}
-        
+        // total={() => <span>{numeral(12423).format('0,0')}</span>}
+        footer={
+          <Field label="计算机科学学院"  />
+        }
         contentHeight={46}
       >
-        {/* <MiniProgress percent={78} strokeWidth={8} target={80} color="#13C2C2" /> */}
+        <span style={{float:'left'}}>普通:</span><Statistic style={{float:'left',margin:'0 8px'}} valueStyle={{fontSize:18}} value={156} suffix={`/ 164`} />
+        <span style={{float:'left'}}>重点:</span><Statistic style={{float:'left',margin:'0 8px'}} valueStyle={{fontSize:18}} value={159} suffix={`/ 165`} />
       </ChartCard>
     </Col>
   </Row>

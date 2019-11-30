@@ -33,7 +33,7 @@ const keyApprovalUrl = [
  * 0-实验室，1-二级单位，2-职能部门，3-指导老师
  */
 const approvalType = ['lab/fetchProjects','second/fetchProjects','equipment/fetchProjects','tproject/fetch']
-const keyApprovalType = ['labKeyProjects/fetchProjects','secondKeyProjects/fetchProjects','equipmentKeyProjects/fetchProjects','tprojectKeyProjects/fetch']
+const keyApprovalType = ['labKeyProjects/fetchProjects','secondKeyProjects/fetchProjects','equipmentKeyProjects/fetchProjects','tprojectsKeyProjects/fetch']
 
 const Model = {
   namespace: 'approval',

@@ -19,3 +19,9 @@ export async function reqExportApplyExcel() {
     responseType:'blob'
   });
 }
+export async function reqExportProjectInfoExcel() {
+  return request('/file/generateProjectInfoExcel', {
+    method: 'POST',
+    responseType:'blob'
+  });
+}

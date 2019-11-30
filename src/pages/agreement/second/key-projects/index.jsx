@@ -123,8 +123,8 @@ class TableList extends Component {
       render:(funds)=> {
         return (
           <div>
-            <span>{funds}</span>
-            <a style={{marginLeft:15}} onClick={this.showModal} href="javasctipt:">修改</a>
+            <span>{funds+'元'}</span>
+            {/* <a style={{marginLeft:15}} onClick={()=>this.showModifyFundsModal()} >修改</a> */}
           </div>
           
         );
@@ -317,7 +317,8 @@ class TableList extends Component {
       }
     })
     this.setState({mVisible:false,
-    text:''
+    text:'',
+    selectedRows:[]
     })
   }
   showApprovalModal = (type)=>{
@@ -364,7 +365,7 @@ class TableList extends Component {
     console.log(selectedRows)
     const projectIdList = selectedRows.map(item=>item.id)
     dispatch({
-      type:'second/updateFunds',
+      type:'secondKeyProjects/updateFunds',
       payload:{
         data:{
           fundsMount:funds,
@@ -387,18 +388,24 @@ class TableList extends Component {
       fundsModalVisible:true
     })
   }
-  handleExportExcel = ()=>{
+  handleExportExcel = (isInfo)=>{
     const {dispatch} = this.props
+    if(!isInfo)
     dispatch({
       type:'second/export'
     })
+    else{
+      dispatch({
+        type:'second/exportProjects'
+      })
+    }
   }
   render() {
     const action = (
       <div>
-        <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span>
-        <Button icon='export' type='primary' style={{marginRight:15}} onClick={this.handleExportExcel}>导出立项一览表</Button>
-        <Button >关闭/开启学院审核</Button>
+        {/* <span style={{marginRight:15}}>状态: <Badge status='processing'/>审核中</span> */}
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
+        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel(1)}>导出项目信息表</Button>
       </div>
       
     );
@@ -416,14 +423,14 @@ class TableList extends Component {
     const content =<RouteContext.Consumer>
     {({ isMobile }) => (
       <Descriptions className={styles.headerList} size="small" column={isMobile ? 1 : 2}>
-  <Descriptions.Item label={`${majorCollege[user.institute-1].cName}可申报重点项目数`}>{amountLimit.length>0?amountLimit[0].list[0].maxAmount:''}</Descriptions.Item>
-        <Descriptions.Item label="重点项目待审批数">45</Descriptions.Item>
+  <Descriptions.Item label={`${user.institute?majorCollege[user.institute-1].cName:''}可申报重点项目数`}>{amountLimit.length>0?amountLimit[0].list[0].maxAmount:''}</Descriptions.Item>
+        {/* <Descriptions.Item label="重点项目待审批数">45</Descriptions.Item>
         <Descriptions.Item label="重点项目特殊资助项目数">
           <Statistic value={8} suffix="/ 24" />
         </Descriptions.Item>
         <Descriptions.Item label="普通项目待审批数">
           35
-        </Descriptions.Item>
+        </Descriptions.Item> */}
        
       </Descriptions>
     )}
@@ -440,7 +447,7 @@ class TableList extends Component {
       <PageHeaderWrapper
       extra={action}
       content={content}
-      extraContent={extraContent}
+      //extraContent={extraContent}
       tabActiveKey={tabActiveKey}
       onTabChange={this.onTabChange}
       tabList={[

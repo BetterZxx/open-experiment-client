@@ -11,7 +11,7 @@ export async function reqExportConclusionExcel() {
   });
 }
 export async function reqfilterProjects(params){
-  return request('/project/conditionallyQueryOfCheckedProjectByFunctionalDepartment',{
+  return request('/project/conditionallyQueryOfKeyProject',{
     method:'post',
     data:params
   })
