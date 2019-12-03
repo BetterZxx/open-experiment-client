@@ -462,6 +462,7 @@ class TableList extends Component {
               rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
+              
               onChange={this.handleStandardTableChange}
             />
           </div>
