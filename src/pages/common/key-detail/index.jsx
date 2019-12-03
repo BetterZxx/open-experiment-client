@@ -170,7 +170,7 @@ class Advanced extends Component {
     const agreeBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
     const rejectBtnDisable = !(unit==='0'&&status===0||unit==='1'&&status===2||unit==='2'&&status===4||unit==='3'&&status===-4)
     const reportBtnDisable = !(unit==='0'&&status===1||unit==='1'&&status===3 )
-    const keyApplyBtnDisable = !!detail.whetherCommitKeyApply||detail.status!==1
+    const keyApplyBtnDisable = detail.status!==1&&detail.status!==-2
 
     console.log(detail);
     const extra = (

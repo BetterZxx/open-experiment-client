@@ -3,6 +3,7 @@ import { message } from 'antd';
 import router from 'umi/router';
 /**
  * 获取详情后跳转的路由地址-普通立项
+ * 由传入role参数决定
  * 0-实验室详情，
  * 1-二级单位详情，
  * 2-职能部门详情，
@@ -24,6 +25,13 @@ const roleURL = [
   '/sproject/manage/detail',
   '/tproject/manage/edit'
 ];
+/**
+ * 将传入role映射为对应身份unit(查看普通项目)
+ * 0-实验室
+ * 1-二级单位
+ * 2-职能部门
+ * 9-其他
+ */
 const roleToUnitMap = {
   '0':'0',
   '1':'1',
@@ -35,6 +43,7 @@ const roleToUnitMap = {
   '7':'9',
   '8':'9',
 }
+
 
 /**
  * 获取详情后跳转的路由地址-重点立项
@@ -54,7 +63,14 @@ const keyRoleURL = [
   '/sproject/join/all/detail',
   '/sproject/manage/key-detail'
 ];
-
+/**
+ * 将传入role映射为对应身份unit(查看重点项目)
+ * 0-实验室
+ * 1-二级单位
+ * 2-职能部门
+ * 3-指导老师
+ * 4-学生
+ */
 const roleToUnitKeyMap = {
   '0':'0',
   '1':'1',
@@ -222,7 +238,7 @@ const Model = {
           payload:res.data.url
         })
       }else{
-        message.error('上传失败')
+        message.error(`${res.msg}`)
       }
     }
   },

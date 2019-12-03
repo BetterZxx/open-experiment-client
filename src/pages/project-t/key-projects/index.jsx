@@ -24,7 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType, statusType} from '@/utils/constant'
+import {experimentType, statusType,operationType,operationUnit} from '@/utils/constant'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -37,10 +37,6 @@ const getValue = obj =>
     .map(key => obj[key])
     .join(',');
 
-const statusMap = ['default', 'processing', 'success', 'error'];
-const status = ['已终止', '审核中', '已立项', '已驳回','待确认'];
-const operationType = ['同意','拒绝','上报','修改']
-const operationUnit = [,,,,'实验室主任','二级单位','职能部门']
 
 /* eslint react/no-multi-comp:0 */
 @connect(({ loading,detail,tprojectsKeyProjects }) => ({

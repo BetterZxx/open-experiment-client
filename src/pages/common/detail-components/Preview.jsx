@@ -29,7 +29,7 @@ class Preview extends Component {
   }
   downloadApplyModel = ()=>{
     const {detail} = this.props
-   saveAs('http://220.167.105.201:8666/document/附件3-课外开放实验校级重点项目申请书(2017版).doc','重点申请书模板-正文.doc')
+   saveAs('http://220.167.105.201:8666/document/开放实验重点项目申请书正文参考模板.doc','开放实验重点项目申请书正文参考模板.doc')
   }
   render() {
     // const props = {
