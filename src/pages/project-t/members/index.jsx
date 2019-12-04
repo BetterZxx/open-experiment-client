@@ -78,7 +78,7 @@ class TableList extends Component {
     {
       title: '专业',
       dataIndex: 'major',
-      render:(m)=>major[m-1].mName
+      render:(m)=>major[m-1]?major[m-1].mName:null
     },
     {
       title: '年级',

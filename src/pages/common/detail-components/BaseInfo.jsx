@@ -13,7 +13,7 @@ export default ({detail})=>(
             experimentType[detail.experimentType]
           }
         </Descriptions.Item>
-        <Descriptions.Item label="实验时间">{`${moment(detail.startTime).format('YYYY-MM-DD')}~${moment(detail.startTime).format('YYYY-MM-DD')}`}</Descriptions.Item>
+        <Descriptions.Item label="实验时间">{`${moment(detail.startTime).format('YYYY-MM-DD')}~${moment(detail.endTime).format('YYYY-MM-DD')}`}</Descriptions.Item>
         <Descriptions.Item label="项目级别">{detail.projectType===1?'普通':'重点'}</Descriptions.Item>
         <Descriptions.Item label="建议审分组">
           {

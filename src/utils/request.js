@@ -52,6 +52,15 @@ const request = extend({
   // 默认错误处理
   credentials: 'include', // 默认请求是否带上cookie
 });
+
+request.interceptors.request.use((url, options) => {
+  return (
+    {
+      url: `/api${url}`,
+      options: { ...options},
+    }
+  );
+});
 // request.interceptors.response.use((response, options) => {
 //   response.json().then(data=>{console.log('data',data)})
 //   return response;

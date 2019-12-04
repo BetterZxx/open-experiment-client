@@ -16,7 +16,7 @@ import React, { Component } from 'react';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import { connect } from 'dva';
 import moment from 'moment'
-import {majorCollege,grade } from '@/utils/constant'
+import {majorCollege,grade,suggestGroupType,experimentType, funds,major} from '@/utils/constant'
 import styles from './style.less';
 
 
@@ -34,16 +34,17 @@ class BasicForm extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-       
+        let limitCollege = values.limitCollege?(values.limitCollege.indexOf(null)>=0?null:JSON.stringify(values.limitCollege)):null
+        let limitMajor = values.limitMajor?(values.limitMajor.indexOf(null)>=0?null:JSON.stringify(values.limitMajor)):null
         console.log(values)
         let payload = {
           ...values,
-          limitCollege:JSON.stringify(values.limitCollege),
-          limitGrade:JSON.stringify(values.limitGrade),
-          limitMajor:JSON.stringify(values.limitMajor),
-          startTime:values.time[0].format('YYYY-MM-DD'),
-          endTime:values.time[1].format('YYYY-MM-DD'),
-          teacherCodes:['31'],
+          limitCollege,
+          limitGrade:values.limitGrade&&values.limitGrade[0]?JSON.stringify(values.limitGrade):null,
+          limitMajor,
+          //startTime:values.time[0].format('YYYY-MM-DD'),
+         // endTime:values.time[1].format('YYYY-MM-DD'),
+          //teacherCodes:['31'],
           projectGroupId:detail.id
         }
         delete payload.names
@@ -91,7 +92,7 @@ class BasicForm extends Component {
     });
   };
   renderTreeNode = (majorCollege)=>{
-    return majorCollege.map(item=>{
+    let nodes = majorCollege.map(item=>{
       return <TreeNode value={item.cId+'c'} title={item.cName} key={item.cId+'c'} selectable={false}>
         {
           item.majors.map(element=>{
@@ -100,9 +101,12 @@ class BasicForm extends Component {
           })
         }
       </TreeNode>
+   
     })
-
-
+    let notLimitNode = <TreeNode value={null} title='不限专业' key='all'>
+    </TreeNode>
+    nodes.unshift(notLimitNode)
+    return nodes
   }
   render() {
     const { submitting,detail } = this.props;
@@ -186,6 +190,7 @@ class BasicForm extends Component {
         ) : null}
       </Form.Item>
     ));
+    const Label = ({children})=><span><span style={{color:'red'}}>*</span>{children}</span>
     return (
       <PageHeaderWrapper content="此表单为立项申请表，由指导老师填写"
         extra={<Button onClick={()=>this.props.history.goBack()}>返回</Button>}      
@@ -200,7 +205,7 @@ class BasicForm extends Component {
             
           >
             
-            <FormItem {...formItemLayout} label="项目名称">
+            <FormItem {...formItemLayout} label={<Label>项目名称</Label>}>
               {getFieldDecorator('projectName', {
                 rules: [
                   {
@@ -211,7 +216,7 @@ class BasicForm extends Component {
                 initialValue:detail.projectName
               })(<Input placeholder="项目名称" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="起止日期">
+            {/* <FormItem {...formItemLayout} label="起止日期">
               {getFieldDecorator('time', {
                 rules: [
                   {
@@ -228,8 +233,8 @@ class BasicForm extends Component {
                   placeholder={['开始日期', '结束日期']}
                 />,
               )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="实验室名称">
+            </FormItem> */}
+            <FormItem {...formItemLayout} label={<Label>实验室名称</Label>}>
               {getFieldDecorator('labName', {
                 rules: [
                   {
@@ -240,7 +245,7 @@ class BasicForm extends Component {
                 initialValue:detail.labName
               })(<Input placeholder="请输入实验室名称" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="地点">
+            <FormItem {...formItemLayout} label={<Label>地点</Label>}>
               {getFieldDecorator('address', {
                 rules: [
                   {
@@ -251,7 +256,7 @@ class BasicForm extends Component {
                 initialValue:detail.address
               })(<Input placeholder="请输入项目地点" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="开放实验条件">
+            <FormItem {...formItemLayout} label={<Label>开放实验条件</Label>}>
               {getFieldDecorator('experimentCondition', {
                 rules: [
                   {
@@ -270,47 +275,44 @@ class BasicForm extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="实验类型">
+            <FormItem {...formItemLayout} label={<Label>实验类型</Label>}>
               <div>
                 {getFieldDecorator('experimentType', {
-                  initialValue:detail.experimentType
+                  initialValue:detail.experimentType+''
                 })(
                   <Radio.Group>
-                    <Radio value={1}>科研</Radio>
-                    <Radio value={2}>科技活动</Radio>
-                    <Radio value={3}>自选课题</Radio>
-                    <Radio value={4}>计算机应用</Radio>
-                    <Radio value={5}>人文素质</Radio>
+                     {Object.keys(experimentType).map(item=>{
+                      return <Radio key={item} value={item}>{experimentType[item]}</Radio>
+                    })}
                   </Radio.Group>,
                 )}
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="建议审分组">
+            <FormItem {...formItemLayout} label={<Label>建议审分组</Label>}>
               <div>
                 {getFieldDecorator('suggestGroupType', {
-                  initialValue:detail.suggestGroupType
+                  initialValue:detail.suggestGroupType+''
                 })(
                   <Radio.Group>
-                    <Radio value={1}>A组-石工地勘</Radio>
-                    <Radio value={2}>B组-化工材料</Radio>
-                    <Radio value={3}>C组-机械力学</Radio>
-                    <Radio value={4}>D组-电气及制作</Radio>
-                    <Radio value={5}>E组-软件与数学</Radio>
-                    <Radio value={6}>F组-经管法艺体人文</Radio>
+                    {Object.keys(suggestGroupType).map(item=>{
+                      return <Radio value={item} key={item}>
+                        {suggestGroupType[item]}
+                      </Radio>
+                    })}
                   </Radio.Group>,
                 )}
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="项目级别">
+            <FormItem {...formItemLayout} label={<Label>项目级别</Label>}>
               <div>
                 {getFieldDecorator('projectType', {
-                  initialValue:detail.projectType
+                  initialValue:detail.projectType+''
                 })(
                   <Radio.Group>
-                    <Radio value={1}>普通</Radio>
-                    <Radio value={2}>重点</Radio>
+                    <Radio value="1">普通</Radio>
+                    <Radio value="2">重点</Radio>
                   </Radio.Group>,
                 )}
                 
@@ -320,7 +322,7 @@ class BasicForm extends Component {
               {getFieldDecorator('limitMajor', {
                 initialValue:detail.limitMajor?JSON.parse(detail.limitMajor):undefined
               })(<TreeSelect                     
-                placeholder="请选择适应专业"
+                placeholder="请选择适应专业 (选填)"
                 allowClear
                 multiple={true}
                 onChange={this.onChange}
@@ -334,11 +336,11 @@ class BasicForm extends Component {
                 initialValue:detail.limitGrade?JSON.parse(detail.limitGrade):undefined
               })(<Select
                 mode="multiple"
-                placeholder="请选择适应学院"
+                placeholder="请选择限选年级 (选填)"
               >
-                {grade.map(item=>{
+                 {[<Option key='all' value={null}>不限年级</Option>,...grade.map(item=>{
                   return <Option key={item} value={item}>{item}级</Option>
-                })}
+                })]}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="限选学院">
@@ -347,14 +349,14 @@ class BasicForm extends Component {
                 initialValue:detail.limitCollege?JSON.parse(detail.limitCollege):undefined
               })(<Select
                 mode="multiple"
-                placeholder="请选择适应学院"
+                placeholder="请选择适应学院 (选填)"
               >
-                {majorCollege.map(item=>{
+                {[<Option key='all' value={null}>不限学院</Option>,...majorCollege.map(item=>{
                   return <Option value={item.cId} key={item.cId}>{item.cName}</Option>
-                })}
+                })]}
               </Select>)}
             </FormItem>
-            <FormItem {...formItemLayout} label="适宜学生数">
+            <FormItem {...formItemLayout} label={<Label>限选人数</Label>}>
               {getFieldDecorator('fitPeopleNum', {
                 rules: [
                   {
@@ -365,7 +367,7 @@ class BasicForm extends Component {
                 initialValue:detail.fitPeopleNum
               })(<Input placeholder="请输入适宜学生数" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="预申请金额">
+            <FormItem {...formItemLayout} label={<Label>预申请金额</Label>}>
               {getFieldDecorator('applyFunds', {
                 rules: [
                   {
@@ -377,13 +379,12 @@ class BasicForm extends Component {
               })(<Select
                 placeholder="请选择预申请金额"
               >
-                <Option value={500}>500元</Option>
-                <Option value={2500}>2500元</Option> 
-                <Option value={3000}>3000元</Option>
-                <Option value={5000}>5000元</Option>
+                {funds.map(item=>{
+                  return <Option key={item} value={item}>{item}元</Option>
+                })}
               </Select>)}
             </FormItem>
-            <FormItem {...formItemLayout} label="计划实验时间/h">
+            <FormItem {...formItemLayout} label={<Label>计划实验时间/h</Label>}>
               {getFieldDecorator('totalHours', {
                 rules: [
                   {
@@ -394,7 +395,7 @@ class BasicForm extends Component {
                 initialValue:detail.totalHours
               })(<Input placeholder="请输入计划实验时间" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="成果形式及考核方式">
+            <FormItem {...formItemLayout} label={<Label>成果及考核方式</Label>}>
               {getFieldDecorator('achievementCheck', {
                 rules: [
                   {
@@ -413,7 +414,7 @@ class BasicForm extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="主要内容">
+            <FormItem {...formItemLayout} label={<Label>主要内容</Label>}>
               {getFieldDecorator('mainContent', {
                 rules: [
                   {
@@ -433,15 +434,15 @@ class BasicForm extends Component {
               )}
             </FormItem>
   
-            <FormItem {...formItemLayout} label="目标公开">
+            <FormItem {...formItemLayout} label={<Label>是否开放选题</Label>}>
               <div>
                 {getFieldDecorator('isOpenTopic', {
-                  initialValue:detail.isOpenTopic
+                  initialValue:detail.isOpenTopic+''
                 })(
                   <Radio.Group>
-                    <Radio value={1}>公开</Radio>
-                    <Radio value={2}>不公开</Radio>
-                    <Radio value={3}>部分公开</Radio>
+                    <Radio value="1">公开</Radio>
+                    <Radio value="2">不公开</Radio>
+                    <Radio value="3">部分公开</Radio>
                   </Radio.Group>,
                 )}
                 

@@ -125,9 +125,10 @@ class Authority extends Component {
             <Form.Item label='角色'>
               {getFieldDecorator('roleId')(
                 <Select>
-                  <Option value='0'>超级管理员</Option>
-                  <Option value='7'>职能部门领导</Option>
                   <Option value='4'>实验室主任</Option>
+                  <Option value='5'>二级单位领导</Option>
+                  <Option value='7'>职能部门领导</Option>
+                  
                 </Select>
               )}
             </Form.Item>

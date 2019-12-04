@@ -82,7 +82,8 @@ class TableList extends Component {
     },
     {
       title: '已选学生数',
-      render:()=>('12')
+      dataIndex:'numberOfTheSelected',
+      render:(num)=>num
     },
     {
       title: '限选',
@@ -260,7 +261,7 @@ class TableList extends Component {
                   新建
               </Button>
               <Button type="primary" onClick={() =>{this.props.history.push('/tproject/manage/key-projects')}}>
-                重点项目审批
+                重点项目审核
               </Button>
               <Button disabled={true}>取消项目</Button>
               {/* {selectedRows.length > 0 && (

@@ -97,6 +97,7 @@ class BasicForm extends Component {
       },
     };
     const extra = <Button onClick={()=>{router.goBack()}}>返回</Button>
+    const Label = ({children})=><span><span style={{color:'red'}}>*</span>{children}</span>
     return (
       <PageHeaderWrapper content="完善基本信息" extra={extra}>
         <Card bordered={false}>
@@ -107,7 +108,7 @@ class BasicForm extends Component {
               marginTop: 8,
             }}
           >
-            <FormItem {...formItemLayout} label="学号">
+            <FormItem {...formItemLayout} label={<Label>学号</Label>}>
               {getFieldDecorator('userId', {
                 rules: [
                   {
@@ -120,7 +121,7 @@ class BasicForm extends Component {
                 
               })(<Input placeholder="学号" disabled />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="姓名">
+            <FormItem {...formItemLayout} label={<Label>姓名</Label>}>
               {getFieldDecorator('realName', {
                 rules: [
                   {
@@ -131,7 +132,7 @@ class BasicForm extends Component {
                 initialValue:currentUser.realName
               })(<Input placeholder="姓名" disabled />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="性别">
+            <FormItem {...formItemLayout} label={<Label>性别</Label>}>
               {getFieldDecorator('sex', {
                 rules: [
                   {
@@ -150,7 +151,7 @@ class BasicForm extends Component {
                 </Radio>
               </Radio.Group>)}
             </FormItem>
-            <FormItem {...formItemLayout} label="身份证号">
+            {/* <FormItem {...formItemLayout} label="身份证号">
               {getFieldDecorator('idCard', {
                 rules: [
                   {
@@ -167,14 +168,10 @@ class BasicForm extends Component {
               })(
                 <Input placeholder='请输入身份证号码'/>
               )}
-            </FormItem>
+            </FormItem> */}
             <FormItem {...formItemLayout} label="email">
               {getFieldDecorator('email', {
                 rules: [
-                  {
-                    required: true,
-                    message: '电子邮箱',
-                  },
                   {
                     type:'email',
                     message:'请输入正确格式的邮箱'
@@ -182,9 +179,9 @@ class BasicForm extends Component {
                 ],
                 initialValue:currentUser.email
                 
-              })(<Input placeholder="email" />)}
+              })(<Input placeholder="email (选填)" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="手机号码">
+            <FormItem {...formItemLayout} label={<Label>手机号码</Label>}>
               {getFieldDecorator('mobilePhone', {
                 rules: [
                   {
@@ -207,22 +204,26 @@ class BasicForm extends Component {
                 rules: [
                   {
                     pattern:/^\d*$/,
-                    message:'请输入正确的手机号码'
+                    message:'请输入正确的号码'
                   }
                 ],
                 initialValue:currentUser.fixPhone
                 
               })(
-                <Input placeholder='请输入固定电话'/>
+                <Input placeholder='请输入固定电话 (选填)'/>
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="qq号码">
+            <FormItem {...formItemLayout} label={<Label>qq号</Label>}>
               {getFieldDecorator('qqNum', {
                 rules: [
                   {
                     pattern:/^\d*$/,
                     message:'请输入正确的qq号码'
-                  }
+                  },
+                  {
+                    required: true,
+                    message: '手机号码不能为空',
+                  },
                 ],
                 initialValue:currentUser.qqNum
                 
@@ -230,18 +231,17 @@ class BasicForm extends Component {
                 <Input placeholder='请输入qq号码'/>
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="新密码">
+            <FormItem {...formItemLayout} label={<Label>新密码</Label>}>
               {getFieldDecorator('password', {
                 rules: [
                   {
                     required:true,
-                    message:'请输入密码'
+                    message:'请输入新密码'
                   }
                 ],
-                initialValue:currentUser.fixPhone
                 
               })(
-                <Input placeholder='请输入密码'/>
+                <Input placeholder='请输入新密码'/>
               )}
             </FormItem>
             

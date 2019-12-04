@@ -172,7 +172,7 @@ export default {
             //   authority:[3],
             //   routes: [
                 {
-                  name: '项目申报',
+                  name: '项目拟题',
                   path: '/tproject/apply',
                   component: './project-t/apply',
                   authority:[3],
@@ -211,7 +211,7 @@ export default {
                   
                 },
                 {
-                  name: '重点项目审批',
+                  name: '拟题审批',
                   path: '/tproject/manage/key-projects',
                   component: './project-t/key-projects',
                   authority:[3],
@@ -308,13 +308,13 @@ export default {
                   authority:[4],
                   routes:[
                     {
-                      name: '立项审批',
+                      name: '拟题审批',
                       path: '/auth/lab/projects',
                       component: './agreement/lab/projects',
                       icon: 'solution'
                     },
                     {
-                      name: '重点实验审批',
+                      name: '立项审批',
                       path: '/auth/lab/key-projects',
                       component: './agreement/lab/key-projects',
                       icon: 'solution'
@@ -337,24 +337,26 @@ export default {
                   icon: 'experiment'
                 },
                 {
+                  name: '时限设置',
+                  authority:[4],
+                  path: '/auth/second/settings',
+                  component: './agreement/second/settings',
+                  icon: 'setting'
+                },
+                {
                   name: '二级单位审批',
                   path: '/auth/second',
                   authority:[5],
                   routes:[
                     {
-                      name: '普通项目审批',
+                      name: '拟题审批',
                       path: '/auth/second/projects',
                       component: './agreement/second/projects',
                       icon: 'solution'
                     },
+                    
                     {
-                      name: '系统设置',
-                      path: '/auth/second/settings',
-                      component: './agreement/second/settings',
-                      icon: 'setting'
-                    },
-                    {
-                      name: '重点项目审批',
+                      name: '立项审批',
                       path: '/auth/second/key-projects',
                       component: './agreement/second/key-projects',
                       icon: 'solution'
@@ -387,13 +389,13 @@ export default {
                   authority:[6,7],
                   routes:[
                     {
-                      name: '立项审批',
+                      name: '拟题审批',
                       path: '/auth/equipment/projects',
                       component: './agreement/equipment/projects',
                       icon: 'solution'
                     },
                     {
-                      name: '重点项目审批',
+                      name: '立项审批',
                       path: '/auth/equipment/key-projects',
                       component: './agreement/equipment/key-projects',
                       icon: 'solution'
@@ -463,7 +465,7 @@ export default {
                   path: '/settings/announcement',
                   component: './settings/announcement/announcements',
                   icon: 'file-text',
-                  authority:[5,6,7],
+                  authority:[4,6,7],
                 },
                 {
                   name: '新增公告',
@@ -471,7 +473,7 @@ export default {
                   component: './settings/announcement/append',
                   icon: 'file-text',
                   hideInMenu:true,
-                  authority:[5,6,7],
+                  authority:[4,6,7],
                 },
                 {
                   name: '公告详情',
@@ -479,7 +481,7 @@ export default {
                   component: './settings/announcement/detail',
                   icon: 'file-text',
                   hideInMenu:true,
-                  authority:[5,6,7],
+                  authority:[4,6,7],
                 },
             //   ],
             // },

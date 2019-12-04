@@ -39,15 +39,16 @@ class BasicForm extends Component {
     e.preventDefault();
     form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-       
+       let limitCollege = values.limitCollege?(values.limitCollege.indexOf(null)>=0?null:JSON.stringify(values.limitCollege)):null
+       let limitMajor = values.limitMajor?(values.limitMajor.indexOf(null)>=0?null:JSON.stringify(values.limitMajor)):null
         console.log(values)
         let payload = {
           ...values,
-          limitCollege:JSON.stringify(values.limitCollege),
-          limitGrade:values.limitGrade?JSON.stringify(values.limitGrade):null,
-          limitMajor:JSON.stringify(values.limitMajor),
-          startTime:values.time[0].format('YYYY-MM-DD'),
-          endTime:values.time[1].format('YYYY-MM-DD'),
+          limitCollege,
+          limitGrade:values.limitGrade&&values.limitGrade[0]?JSON.stringify(values.limitGrade):null,
+          limitMajor,
+          //startTime:values.time[0].format('YYYY-MM-DD'),
+          //endTime:values.time[1].format('YYYY-MM-DD'),
           stuCodes:values.names?values.names.filter(item=>item):[],
           
         }
@@ -96,7 +97,7 @@ class BasicForm extends Component {
     });
   };
   renderTreeNode = (majorCollege)=>{
-    return majorCollege.map(item=>{
+    let nodes = majorCollege.map(item=>{
       return <TreeNode value={item.cId+'c'} title={item.cName} key={item.cId+'c'} selectable={false}>
         {
           item.majors.map(element=>{
@@ -105,9 +106,12 @@ class BasicForm extends Component {
           })
         }
       </TreeNode>
+   
     })
-
-
+    let notLimitNode = <TreeNode value={null} title='不限专业' key='all'>
+    </TreeNode>
+    nodes.unshift(notLimitNode)
+    return nodes
   }
   handleSearch = value => {
     const {dispatch} = this.props
@@ -250,6 +254,7 @@ class BasicForm extends Component {
         ) : null}
       </Form.Item>
     ));
+    const Label = ({children})=><span><span style={{color:'red'}}>*</span>{children}</span>
     return (
       <PageHeaderWrapper content="此表单为立项申请表，由指导老师填写">
         <Card bordered={false}>
@@ -261,7 +266,7 @@ class BasicForm extends Component {
             }}
           >
             
-            <FormItem {...formItemLayout} label="项目名称">
+            <FormItem {...formItemLayout} label={<Label>项目名称</Label>}>
               {getFieldDecorator('projectName', {
                 rules: [
                   {
@@ -271,7 +276,7 @@ class BasicForm extends Component {
                 ],
               })(<Input placeholder="项目名称" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="起止日期">
+            {/* <FormItem {...formItemLayout} label="起止日期">
               {getFieldDecorator('time', {
                 rules: [
                   {
@@ -287,8 +292,8 @@ class BasicForm extends Component {
                   placeholder={['开始日期', '结束日期']}
                 />,
               )}
-            </FormItem>
-            <FormItem {...formItemLayout} label="实验室名称">
+            </FormItem> */}
+            <FormItem {...formItemLayout} label={<Label>实验室名称</Label>}>
               {getFieldDecorator('labName', {
                 rules: [
                   {
@@ -298,7 +303,7 @@ class BasicForm extends Component {
                 ],
               })(<Input placeholder="请输入实验室名称" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="地点">
+            <FormItem {...formItemLayout} label={<Label>地点</Label>}>
               {getFieldDecorator('address', {
                 rules: [
                   {
@@ -308,7 +313,7 @@ class BasicForm extends Component {
                 ],
               })(<Input placeholder="请输入项目地点" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="开放实验条件">
+            <FormItem {...formItemLayout} label={<Label>开放实验条件</Label>}>
               {getFieldDecorator('experimentCondition', {
                 rules: [
                   {
@@ -326,7 +331,7 @@ class BasicForm extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="实验类型">
+            <FormItem {...formItemLayout} label={<Label>实验类型</Label>}>
               <div>
                 {getFieldDecorator('experimentType', {
                  
@@ -340,7 +345,7 @@ class BasicForm extends Component {
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="建议审分组">
+            <FormItem {...formItemLayout} label={<Label>建议审分组</Label>}>
               <div>
                 {getFieldDecorator('suggestGroupType', {
                   
@@ -356,7 +361,7 @@ class BasicForm extends Component {
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="项目级别">
+            <FormItem {...formItemLayout} label={<Label>项目级别</Label>}>
               <div>
                 {getFieldDecorator('projectType', {
                   initialValue: '1',
@@ -369,11 +374,11 @@ class BasicForm extends Component {
                 
               </div>
             </FormItem>
-            <FormItem {...formItemLayout} label="适应专业">
+            <FormItem {...formItemLayout} label="限选专业">
               {getFieldDecorator('limitMajor', {
                 
               })(<TreeSelect                     
-                placeholder="请选择适应专业"
+                placeholder="请选择适应专业 (选填)"
                 allowClear
                 multiple={true}
                 onChange={this.onChange}
@@ -386,11 +391,11 @@ class BasicForm extends Component {
                
               })(<Select
                 mode="multiple"
-                placeholder="请选择限选年级"
+                placeholder="请选择限选年级 (选填)"
               >
-                {grade.map(item=>{
+                {[<Option key='all' value={null}>不限年级</Option>,...grade.map(item=>{
                   return <Option key={item} value={item}>{item}级</Option>
-                })}
+                })]}
               </Select>)}
             </FormItem>
             <FormItem {...formItemLayout} label="限选学院">
@@ -398,14 +403,14 @@ class BasicForm extends Component {
                
               })(<Select
                 mode="multiple"
-                placeholder="请选择适应学院"
+                placeholder="请选择适应学院 (选填)"
               >
-                {majorCollege.map(item=>{
+                {[<Option key='all' value={null}>不限学院</Option>,...majorCollege.map(item=>{
                   return <Option value={item.cId} key={item.cId}>{item.cName}</Option>
-                })}
+                })]}
               </Select>)}
             </FormItem>
-            <FormItem {...formItemLayout} label="适宜学生数">
+            <FormItem {...formItemLayout} label={<Label>限选人数</Label>}>
               {getFieldDecorator('fitPeopleNum', {
                 rules: [
                   {
@@ -419,7 +424,7 @@ class BasicForm extends Component {
                 ],
               })(<Input placeholder="请输入适宜学生数" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="预申请金额">
+            <FormItem {...formItemLayout} label={<Label>预申请金额</Label>}>
               {getFieldDecorator('applyFunds', {
                 rules: [
                   {
@@ -435,7 +440,7 @@ class BasicForm extends Component {
                 })}
               </Select>)}
             </FormItem>
-            <FormItem {...formItemLayout} label="计划实验时间/h">
+            <FormItem {...formItemLayout} label={<Label>计划实验时间/h</Label>}>
               {getFieldDecorator('totalHours', {
                 rules: [
                   {
@@ -450,7 +455,7 @@ class BasicForm extends Component {
                 ],
               })(<Input placeholder="请输入计划实验时间" />)}
             </FormItem>
-            <FormItem {...formItemLayout} label="成果形式及考核方式">
+            <FormItem {...formItemLayout} label={<Label>成果及考核方式</Label>}>
               {getFieldDecorator('achievementCheck', {
                 rules: [
                   {
@@ -468,7 +473,7 @@ class BasicForm extends Component {
                 />,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="主要内容">
+            <FormItem {...formItemLayout} label={<Label>主要内容</Label>}>
               {getFieldDecorator('mainContent', {
                 rules: [
                   {
@@ -487,7 +492,7 @@ class BasicForm extends Component {
               )}
             </FormItem>
   
-            <FormItem {...formItemLayout} label="目标公开">
+            <FormItem {...formItemLayout} label={<Label>是否开放选题</Label>}>
               <div>
                 {getFieldDecorator('isOpenTopic', {
                   initialValue: '1',

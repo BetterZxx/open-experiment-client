@@ -192,6 +192,7 @@ class BasicForm extends Component {
         )}
       </RouteContext.Consumer>
     );
+    const Label = ({children})=><span><span style={{color:'red'}}>*</span>{children}</span>
     return (
       <PageHeaderWrapper
       content={<BaseInfo detail={detail}/>}
@@ -294,7 +295,7 @@ class BasicForm extends Component {
               })(<Input placeholder="请输入联系电话" />)}
             </FormItem> */}
             
-            <FormItem {...formItemLayout} label="个人特长">
+            <FormItem {...formItemLayout} label={<Label>个人特长</Label>}>
               {getFieldDecorator('personalJudge', {
                 rules: [
                   {
@@ -313,7 +314,7 @@ class BasicForm extends Component {
               )}
             </FormItem>
             
-            <FormItem {...formItemLayout} label="已修课程及具备知识">
+            <FormItem {...formItemLayout} label={<Label>已修课程及具备知识</Label>}>
               {getFieldDecorator('technicalRole', {
                 rules: [
                   {
