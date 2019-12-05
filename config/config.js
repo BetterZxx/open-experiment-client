@@ -9,7 +9,7 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL ='http://172.23.252.212:8666'//'http://220.167.105.201:8083'//172.23.252.212 //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
+const proxyURL ='http://220.167.105.201:8000'//'http://220.167.105.201:8083'//172.23.252.212 //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
 const proxyKeys = ['/anon','user/getMyInfo','/project/','/funds','/announcemen','/file','/permission','/amount','/timeLimit',
 '/user/getMyInfo',
 '/user/getUserInfoByUserId',
@@ -349,14 +349,14 @@ export default {
                   authority:[5],
                   routes:[
                     {
-                      name: '拟题审批',
+                      name: '普通项目审批',
                       path: '/auth/second/projects',
                       component: './agreement/second/projects',
                       icon: 'solution'
                     },
                     
                     {
-                      name: '立项审批',
+                      name: '重点项目审批',
                       path: '/auth/second/key-projects',
                       component: './agreement/second/key-projects',
                       icon: 'solution'
@@ -389,13 +389,13 @@ export default {
                   authority:[6,7],
                   routes:[
                     {
-                      name: '拟题审批',
+                      name: '普通项目审批',
                       path: '/auth/equipment/projects',
                       component: './agreement/equipment/projects',
                       icon: 'solution'
                     },
                     {
-                      name: '立项审批',
+                      name: '重点项目审批',
                       path: '/auth/equipment/key-projects',
                       component: './agreement/equipment/key-projects',
                       icon: 'solution'

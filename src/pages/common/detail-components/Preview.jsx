@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Card, Button, Upload, Icon } from 'antd';
 import {connect} from 'dva'
-import {saveAs} from 'file-saver'
+//import {saveAs} from 'file-saver'
 import {applyModel} from '@/utils/constant'
-import baidu from 'baidu-template-pro'
+//import baidu from 'baidu-template-pro'
 @connect(({
   detail,
   loading

@@ -57,6 +57,7 @@ class BasicForm extends Component {
           type: 'editApplyForm/submitUpdateForm',
           payload,
         });
+        form.resetFields()
         console.log(payload)
       }
     });

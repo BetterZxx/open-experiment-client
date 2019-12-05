@@ -62,6 +62,7 @@ class BasicForm extends Component {
           type: 'applyForm/submitRegularForm',
           payload,
         });
+        form.resetFields()
         console.log(payload)
       }
     });
