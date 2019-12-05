@@ -49,7 +49,7 @@ class Authority extends Component {
     {
       title:'操作',
       render:(user)=>{
-        return <Popconfirm placement="topLeft" title={`确认删除该公告?`} onConfirm={()=>this.handleDelete(user)} okText="确认" cancelText="取消">
+        return <Popconfirm placement="topLeft" title={`确认删除该角色?`} onConfirm={()=>this.handleDelete(user)} okText="确认" cancelText="取消">
                   <a style={{color:'red'}}>删除</a>
               </Popconfirm>
       }
