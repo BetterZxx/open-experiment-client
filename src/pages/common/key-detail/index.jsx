@@ -32,7 +32,6 @@ import Advice from '../detail-components/Advice';
 import Member from '../detail-components/Member';
 import Process from '../detail-components/Process'
 import { statusType, operationType, operationUnit, suggestGroupType } from '@/utils/constant';
-import { Document, Page, Text, View, StyleSheet, PDFViewer } from '@react-pdf/renderer';
 import Preview from '../detail-components/Preview';
 import History from '../detail-components/History'
 
