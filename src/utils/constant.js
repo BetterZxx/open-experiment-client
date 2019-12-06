@@ -16,7 +16,7 @@ export const suggestGroupType = {
   '3':'C组-机械力学',
   '4':'E组-软件与数学',
   '5':'F组-经管法艺体人文'}
-export const operationType = ['同意','拒绝','上报','修改']
+export const operationType = ['拒绝','通过','上报','修改']
 export const roleNames={
   '0':'超级管理员',
   '1':'学生',
@@ -46,7 +46,7 @@ export const statusType = {
   '-2':'驳回修改',
   '-1':'待指导老师确认',
   '0':'实验室待审核',
-  '1':'实验室待上报',
+  '1':'拟题审核通过',//'实验室待上报',
   '2':'实验室已上报',
   '3':'二级单位待上报',
   '4':'二级单位已上报',
@@ -625,39 +625,31 @@ export const applyModel = `
         <p><span>QQ</span><span>号</span>
         </p>
       </td>
-      <td>
-        <p><span>本人签名</span>
-        </p>
-      </td>
     </tr>
 	<%for(var i = 0;i<students.length;i++){%>
     <tr>
       <td>
-        <p><span><%=students[i].realName%></span>
+        <p><span><%=students[i].realName||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=students[i].sex%></span>
+        <p><span><%=students[i].sex||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=students[i].major%><%=students[i].grade%></span>
+        <p><span><%=MAJOR[students[i].major].mName%><%=students[i].grade+'级'%></span>
         </p>
       </td>
       <td>
-        <p><span><%=students[i].code%></span>
+        <p><span><%=students[i].code||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=students[i].mobilePhone%></span>
+        <p><span><%=students[i].mobilePhone||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=students[i].qqNum%></span>
-        </p>
-      </td>
-      <td>
-        <p><span></span>
+        <p><span><%=students[i].qqNum||''%></span>
         </p>
       </td>
     </tr>
@@ -683,7 +675,7 @@ export const applyModel = `
       </td>
     </tr>
     <tr>
-      <td rowspan="<%=students.length+1%>">
+      <td rowspan="<%=teachers.length+1%>">
         <p><span>指导教师<span></span></span>
         </p>
       </td>
@@ -709,39 +701,32 @@ export const applyModel = `
         <p><span>联系电话<span></span></span>
         </p>
       </td>
-      <td>
-        <p><span>本人签名<span></span></span>
-        </p>
-      </td>
+     
     </tr>
  <%for(var i=0;i<teachers.length;i++){%>
     <tr>
       <td>
-        <p><span><%=teachers[i].realName%></span>
+        <p><span><%=teachers[i].realName||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].sex%></span>
+        <p><span><%=teachers[i].sex||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].technicalRole%></span>
+        <p><span><%=teachers[i].technicalRole||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].code%></span>
+        <p><span><%=teachers[i].code||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].realName%></span>
+        <p><span><%=teachers[i].realName||''%></span>
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].mobilePhone%></span>
-        </p>
-      </td>
-      <td>
-        <p><span>11111</span>
+        <p><span><%=teachers[i].mobilePhone||''%></span>
         </p>
       </td>
     </tr>

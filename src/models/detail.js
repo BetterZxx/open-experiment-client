@@ -23,7 +23,7 @@ const roleURL = [
   '/tproject/manage/detail',
   '/sproject/join/all/detail',
   '/sproject/manage/detail',
-  '/tproject/manage/edit'
+  '/tproject/manage/edit',
 ];
 /**
  * 将传入role映射为对应身份unit(查看普通项目)
@@ -91,7 +91,8 @@ const Model = {
     projectType:1, //项目类型-普通，重点
     role:0 ,  //0-实验室，1-学院，2-职能部门，3-指导老师
     fileList:[],
-    unit:9
+    unit:9,
+    reportToAgree:false
 
   },
   effects: {
@@ -167,7 +168,7 @@ const Model = {
      */
     *fetchDetail({ payload }, { call, put }) {
       console.log('fetchDetail', payload);
-      const {projectType,role} = payload
+      const {projectType,role,reportToAgree} = payload
       const res = yield call(reqProjectDetail, { id:payload.projectGroupId});
       if (res.code === 0) {
         yield put({
@@ -184,6 +185,12 @@ const Model = {
             payload: projectType,
           });
           
+        }
+        if(typeof reportToAgree !== 'undefined'){
+          yield put({
+            type:'saveReportToAgree',
+            payload:reportToAgree
+          })
         }
         yield put({
           type:'saveUnit',
@@ -265,6 +272,9 @@ const Model = {
     saveUnit(state,{payload}){
       return {...state,unit:payload}
 
+    },
+    saveReportToAgree(state,{payload}){
+      return {...state,reportToAgree:payload}
     }
   },
 };

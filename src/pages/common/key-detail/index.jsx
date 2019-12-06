@@ -197,7 +197,7 @@ class Advanced extends Component {
         >
           审批通过
         </Button>:''}
-        {['0','1'].indexOf(unit)>=0?<Button style={{ marginRight: 15 }} disabled={reportBtnDisable} onClick={() => this.handleReportClick()}>
+        {['1'].indexOf(unit)>=0?<Button style={{ marginRight: 15 }} disabled={reportBtnDisable} onClick={() => this.handleReportClick()}>
           上报
         </Button>:''}
         {['0','1','2','3'].indexOf(unit)>=0?<Button style={{ marginRight: 15 }} disabled={rejectBtnDisable} onClick={() => this.handleApprovalClick(0)}>

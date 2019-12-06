@@ -2,10 +2,11 @@ import { addRule, queryRule, removeRule, updateRule ,reqLabProjects,reqLabKeyPro
 import { message } from 'antd';
 
 const Model = {
-  namespace: 'lab2',
+  namespace: 'lab',
   state: {
     labProjects:[],
-    tabActiveKey:'0'
+    tabActiveKey:'1',
+    preTabActiveKey:'0'
   },
   effects: {
     *fetchProjects({ payload }, { call, put }) {
@@ -28,6 +29,9 @@ const Model = {
     },
     changeTabActiveKey(state,{payload}){
       return {...state,tabActiveKey:payload}
+    },
+    changePreTabActiveKey(state,{payload}){
+      return {...state,preTabActiveKey:payload}
     }
   },
 };

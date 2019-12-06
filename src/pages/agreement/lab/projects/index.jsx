@@ -140,7 +140,8 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:0
+        role:0,
+        reportToAgree:true
       }
     })
     dispatch({
@@ -317,7 +318,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch} = this.props
+    const {dispatch,tabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {
         reason:text,
@@ -337,29 +338,30 @@ class TableList extends Component {
         unit:0,
         data,
         type:approvalType,
-        isDetail:false
+        isDetail:false,
+        status:tabActiveKey
       }
     })
     this.setState({mVisible:false,
     text:''
     })
   }
-  handleReportClick = ()=>{
-    const {selectedRows,text,approvalType} = this.state
-    const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>item.id)
-    dispatch({
-      type:'approval/normal',
-      payload:{
-        unit:0,
-        data,
-        type:2,
-        isDetail:false,
-        status:tabActiveKey
-      }
-    })
+  // handleReportClick = ()=>{
+  //   const {selectedRows,text,approvalType} = this.state
+  //   const {dispatch,tabActiveKey} = this.props
+  //   const data = selectedRows.map(item=>item.id)
+  //   dispatch({
+  //     type:'approval/normal',
+  //     payload:{
+  //       unit:0,
+  //       data,
+  //       type:2,
+  //       isDetail:false,
+  //       status:tabActiveKey
+  //     }
+  //   })
 
-  }
+  // }
   showApprovalModal = (type)=>{
     this.setState({
       approvalType:type,
@@ -410,21 +412,21 @@ class TableList extends Component {
       onTabChange={this.onTabChange}
       extra={extra}
       tabList={[
+        // {
+        //   key: '0',
+        //   tab: '待审批',
+        // },
         {
-          key: '0',
+          key: '1',
           tab: '待审批',
         },
         {
-          key: '1',
-          tab: '待上报',
+          key: '3',
+          tab: '已通过',
         },
         {
           key: '2',
           tab: '已驳回',
-        },
-        {
-          key: '3',
-          tab: '已上报',
         }
         
       ]}
@@ -443,17 +445,17 @@ class TableList extends Component {
             {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
             {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
-              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
+              {tabActiveKey==='1'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(2)}}>
                 批准
               </Button>}
-              {tabActiveKey==='1'&&<span> 
+              {/* {tabActiveKey==='1'&&<span> 
                 <Button disabled={btnDisable} type="primary" onClick={()=>{this.handleReportClick()}}>
                   上报
                 </Button>
                 <Button disabled={btnDisable} onClick={()=>{}}>
                   修改审批意见
                 </Button>
-              </span>}
+              </span>} */}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
             </div>}
             <StandardTable

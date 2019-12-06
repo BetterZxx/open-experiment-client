@@ -24,7 +24,7 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {experimentType} from '@/utils/constant'
+import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
 import styles from './style.less';
 
@@ -42,10 +42,10 @@ const statusMap = ['default', 'processing', 'success', 'error'];
 const status = ['待审核', '待上报', '已上报', '已驳回'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ lab, loading,labKeyProjects }) => ({
-  labProjects:labKeyProjects.labProjects,
-  loading: loading.models.labKeyProjects,
-  tabActiveKey:labKeyProjects.tabActiveKey
+@connect(({ lab, loading }) => ({
+  labProjects:lab.labProjects,
+  loading: loading.models.lab,
+  preTabActiveKey:lab.preTabActiveKey
 }))
 class TableList extends Component {
   state = {
@@ -55,7 +55,7 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    tabActiveKey:'0',
+    preTabActiveKey:'0',
     approvalType:1,
     mVisible:false,
     experimentType:undefined,
@@ -109,6 +109,13 @@ class TableList extends Component {
       onFilter: (value, record) => record.experimentType === value,
 
     },
+    {
+      title:'开放性',
+      dataIndex:'isOpenTopic',
+      render:(val)=>{
+        return openType[val]
+      }
+    },
  
     {
       title: '计划实验时间',
@@ -133,16 +140,14 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:0,
-        projectType:2
+        role:0
       }
     })
     dispatch({
       type:'detail/fetchProcess',
       payload:{
         projectId:id,
-        role:0,
-        projectType:2
+        role:0
       }
     })
   }
@@ -154,15 +159,20 @@ class TableList extends Component {
       onOk:()=>{this.props.history.push('/tproject/manage/edit')}
     });
   }
-
-  componentDidMount() {
-    const { dispatch,tabActiveKey } = this.props;
+  handleExportExcel = ()=>{
+    const {dispatch} = this.props
     dispatch({
-      type:'labKeyProjects/fetchProjects',
+      type:'second/export'
+    })
+  }
+  componentDidMount() {
+    const { dispatch,preTabActiveKey } = this.props;
+    dispatch({
+      type:'lab/fetchProjects',
       payload:{
-        status:tabActiveKey,
+        status:preTabActiveKey,
         data:{
-          operationType:tabActiveKey,
+          operationType:preTabActiveKey,
           operationUnit:4
         }
       }
@@ -170,15 +180,15 @@ class TableList extends Component {
     })
     
   }
-
-
   handleFormReset = () => {
     const { form, dispatch } = this.props;
     form.resetFields();
     this.setState({
       formValues: {},
-    });
+    })
   };
+
+  
 
   handleSelectRows = rows => {
     console.log(rows)
@@ -186,6 +196,8 @@ class TableList extends Component {
       selectedRows: rows,
     });
   };
+
+
 
   handleSearchClick = ()=>{
     const {form} = this.props
@@ -235,8 +247,8 @@ class TableList extends Component {
                   }}
                   
                 >
-                  {Object.keys(experimentType).map((item)=>{
-                    return <Option key={item} value={item}>{experimentType[item]}</Option>
+                  {experimentType.map((item,index)=>{
+                    return <Option key={index} value={index+1}>{item}</Option>
                   })}
                 </Select>,
               )} 
@@ -267,22 +279,25 @@ class TableList extends Component {
     return expandForm ? this.renderAdvancedForm() : this.renderSimpleForm();
   }
 
-  onTabChange = tabActiveKey => {
+  onTabChange = preTabActiveKey => {
     const {dispatch} = this.props
+    this.setState({
+      selectedRows:[]
+    })
     dispatch({
-      type:'labKeyProjects/fetchProjects',
+      type:'lab/fetchProjects',
       payload:{
-        status:tabActiveKey,
+        status:preTabActiveKey,
         data:{
-          operationType:tabActiveKey,
+          operationType:preTabActiveKey,
           operationUnit:4
         }
       }
       
     })
     dispatch({
-      type:'labKeyProjects/changeTabActiveKey',
-      payload:tabActiveKey
+      type:'lab/changePreTabActiveKey',
+      payload:preTabActiveKey
     })
   };
   hideModal = ()=>{
@@ -302,7 +317,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch} = this.props
+    const {dispatch,preTabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {
         reason:text,
@@ -317,9 +332,10 @@ class TableList extends Component {
     }
     console.log(payload)
     dispatch({
-      type:'approval/key',
+      type:'approval/normal',
       payload:{
         unit:0,
+        status:preTabActiveKey,
         data,
         type:approvalType,
         isDetail:false
@@ -331,16 +347,16 @@ class TableList extends Component {
   }
   handleReportClick = ()=>{
     const {selectedRows,text,approvalType} = this.state
-    const {dispatch,tabActiveKey} = this.props
-    const data = selectedRows.map(item=>({projectId:item.id,reason:''}))
+    const {dispatch,preTabActiveKey} = this.props
+    const data = selectedRows.map(item=>item.id)
     dispatch({
-      type:'approval/key',
+      type:'approval/normal',
       payload:{
         unit:0,
         data,
         type:2,
         isDetail:false,
-        status:tabActiveKey
+        status:preTabActiveKey
       }
     })
 
@@ -373,7 +389,7 @@ class TableList extends Component {
      
       loading,
       labProjects,
-      tabActiveKey
+      preTabActiveKey
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,approvalType,mVisible,text,formValues } = this.state;
    let projects = labProjects.filter(item=>{
@@ -381,25 +397,17 @@ class TableList extends Component {
    }).filter(item=>{
     return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
    })
-    const parentMethods = {
-      handleAdd: this.handleAdd,
-      handleModalVisible: this.handleModalVisible,
-    };
-    const updateMethods = {
-      handleUpdateModalVisible: this.handleUpdateModalVisible,
-      handleUpdate: this.handleUpdate,
-    };
+   const extra  = (
+    <div>
+      <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
+      <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel(1)}>导出项目信息表</Button>
+    </div>
+    
+  );
     const btnDisable = selectedRows.length===0
-    const extra  = (
-      <div>
-        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
-        <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel(1)}>导出项目信息表</Button>
-      </div>
-      
-    );
     return (
       <PageHeaderWrapper
-      tabActiveKey={tabActiveKey}
+      tabActiveKey={preTabActiveKey}
       onTabChange={this.onTabChange}
       extra={extra}
       tabList={[
@@ -407,18 +415,18 @@ class TableList extends Component {
           key: '0',
           tab: '待审批',
         },
-        // {
-        //   key: '1',
-        //   tab: '待上报',
-        // },
         {
-          key: '3',
+          key: '1',
           tab: '已通过',
         },
         {
           key: '2',
           tab: '已驳回',
-        }
+        },
+        // {
+        //   key: '3',
+        //   tab: '已上报',
+        // }
         
       ]}
       >
@@ -434,12 +442,12 @@ class TableList extends Component {
         <Card bordered={false}>
           <div className={styles.tableList}>
             {/* <div className={styles.tableListForm}>{this.renderForm()}</div> */}
-            {tabActiveKey!=='2'&&tabActiveKey!=='3'&&<div className={styles.tableListOperator}>
+            {preTabActiveKey!=='2'&&preTabActiveKey!=='3'&&<div className={styles.tableListOperator}>
              
-              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
+              {preTabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(1)}}>
                 批准
               </Button>}
-              {/* {tabActiveKey==='1'&&<span> 
+              {/* {preTabActiveKey==='1'&&<span> 
                 <Button disabled={btnDisable} type="primary" onClick={()=>{this.handleReportClick()}}>
                   上报
                 </Button>
@@ -447,7 +455,7 @@ class TableList extends Component {
                   修改审批意见
                 </Button>
               </span>} */}
-              <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
+            {preTabActiveKey==='0'&&<Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button>} 
             </div>}
             <StandardTable
               selectedRows={selectedRows}

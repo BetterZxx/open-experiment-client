@@ -202,7 +202,8 @@ const columns = [
   role:detail.role,
   process:detail.process,
   text:'',
-  unit:detail.unit
+  unit:detail.unit,
+  reportToAgree:detail.reportToAgree
 }))
 class Advanced extends Component {
   state = {
@@ -290,7 +291,7 @@ class Advanced extends Component {
   }
   render() {
     const { operationKey, tabActiveKey,mVisible,projectId,approvalType,text } = this.state;
-    const {  loading,detail,process=[] ,unit} = this.props;
+    const {  loading,detail,process=[] ,unit,reportToAgree} = this.props;
     const {status} = detail
 
     console.log(detail)
@@ -305,8 +306,8 @@ class Advanced extends Component {
       </div>
     );
     const action = (<div>
-      {['0','1','2'].indexOf(unit)>=0?<Button disabled={agreeBtnDisable} type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(1)}>审批通过</Button>:''}
-      {['0','1'].indexOf(unit)>=0?<Button style={{marginRight:15}} disabled={reportBtnDisable} onClick={()=>this.handleReportClick()}>上报</Button>:''}
+      {['0','1','2'].indexOf(unit)>=0?<Button disabled={agreeBtnDisable} type='primary'style={{marginRight:15}} onClick={()=>this.handleApprovalClick(reportToAgree?2:1)}>审批通过</Button>:''}
+      {['1'].indexOf(unit)>=0?<Button style={{marginRight:15}} disabled={reportBtnDisable} onClick={()=>this.handleReportClick()}>上报</Button>:''}
       {['0','1','2'].indexOf(unit)>=0?<Button style={{marginRight:15}} disabled={reportBtnDisable} onClick={()=>this.handleApprovalClick(0)}>驳回</Button>:''}
       <Button onClick={()=>this.props.history.goBack()}>返回</Button>
     </div>)

@@ -5,9 +5,9 @@ import moment from 'moment'
 const columns = [
   {
     title: '操作类型',
-    dataIndex: 'operationType',
-    render: type => {
-      return operationType[type - 1];
+    render: ({operationType:type, operationUnit:unit}) => {
+      
+      return type==='2'&&unit==='4'?'通过':operationType[type];
     },
   },
   {
