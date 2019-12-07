@@ -473,7 +473,7 @@ export const applyModel = `
             lang='EN-US' style='font-size:14.0pt;line-height:150%;'> <%=teachers.map(item=>item.realName).join('、')%></span></p>
     <p class='MsoNormal' style='text-indent:5em;margin-left:42.0pt;line-height:  150%'><span
             style='font-size:14.0pt;line-height:150%;mso-ascii-font-family:  "Times New Roman";mso-hansi-font-family:"Times New Roman"'>推荐单位：</span><span
-            lang='EN-US' style='font-size:14.0pt;line-height:150%;'><%=belongCollege%></span>
+            lang='EN-US' style='font-size:14.0pt;line-height:150%;'><td></span>
     </p>
     <p class='MsoNormal'><span lang='EN-US' style='font-size:14.0pt;mso-bidi-font-size:  12.0pt'></span>
     </p>
