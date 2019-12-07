@@ -92,7 +92,9 @@ const Model = {
     role:0 ,  //0-实验室，1-学院，2-职能部门，3-指导老师
     fileList:[],
     unit:9,
-    reportToAgree:false
+    reportToAgree:false,
+    budget:undefined,
+    membersInfo:undefined
 
   },
   effects: {
@@ -273,6 +275,14 @@ const Model = {
       return {...state,unit:payload}
 
     },
+    saveBudget(state,{payload}){
+      return {...state,budget:payload}
+    }
+    ,
+    saveMembersInfo(state,{payload}){
+      return {...state,membersInfo:payload}
+    }
+    ,
     saveReportToAgree(state,{payload}){
       return {...state,reportToAgree:payload}
     }

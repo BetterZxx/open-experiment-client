@@ -406,8 +406,20 @@ export const applyModel = `
         th,
         td {
             border: 1px solid black;
-			text-align:center;
+			    text-align:center;
         }
+        table {
+          border-collapse: collapse;
+          table-layout: fixed;
+          word-break:break-all;
+          font-size: 10px;
+          width: 100%;
+          text-align: center;
+      }
+      td {
+        word-break:break-all;
+        word-wrap : break-word;
+      }
 
         @page {
 			size:210mm 297mm;//纸张大小A4
@@ -598,17 +610,17 @@ export const applyModel = `
 	<div>
 		  <table  border="0" cellspacing="0" cellpadding="0" align="center">
     <tr>
-    <td colspan="7">
+    <td colspan="8">
       <p><span>项目名称：<%=projectName%></span></p>
     </td>
     </tr>
     <tr>
-      <td colspan="7">
+      <td colspan="8">
         <p><span>项目类型：重点</span></p>
       </td>
     </tr>
     <tr>
-      <td rowspan="<%=students.length+1%>">
+      <td width="20" style="width: 20;" rowspan="<%=students.length+1%>">
         <p><span>项目成员</span>
         </p>
       </td>
@@ -634,6 +646,10 @@ export const applyModel = `
       </td>
       <td>
         <p><span>QQ</span><span>号</span>
+        </p>
+      </td>
+      <td>
+        <p><span>个人签名</span>
         </p>
       </td>
     </tr>
@@ -663,20 +679,24 @@ export const applyModel = `
         <p><span><%=students[i].qqNum||''%></span>
         </p>
       </td>
+      <td>
+        <p><span></span>
+        </p>
+      </td>
     </tr>
 	<%}%>
     <tr>
-      <td rowspan="2">
+      <td width="20" style="width: 20pt;" rowspan="2">
         <p><span>项目成员简介</span>
         </p>
       </td>
-      <td colspan="6">
-        <p><span>项目组长 </span>简介</p>
+      <td colspan="7">
+        <p><span>项目组长简介 ：<%=membersInfo.leader%> </span></p>
       </td>
     </tr>
     <tr>
-      <td colspan="6">
-        <p><span>其他成员简介，在项目中的分工及工作。</span></p>
+      <td colspan="7">
+        <p><span>其他成员简介(在项目中的分工及工作)：<%=membersInfo.members%></span></p>
         <p><span></span>
         </p>
         <p><span></span>
@@ -686,7 +706,7 @@ export const applyModel = `
       </td>
     </tr>
     <tr>
-      <td rowspan="<%=teachers.length+1%>">
+      <td width="20" style="width: 20pt;" rowspan="<%=teachers.length+1%>">
         <p><span>指导教师<span></span></span>
         </p>
       </td>
@@ -710,6 +730,10 @@ export const applyModel = `
       </td>
       <td>
         <p><span>联系电话<span></span></span>
+        </p>
+      </td>
+      <td>
+        <p><span>个人签名<span></span></span>
         </p>
       </td>
      
@@ -740,6 +764,10 @@ export const applyModel = `
         <p><span><%=teachers[i].mobilePhone||''%></span>
         </p>
       </td>
+      <td>
+        <p><span></span>
+        </p>
+      </td>
     </tr>
 <%}%>
     <tr>
@@ -759,7 +787,7 @@ export const applyModel = `
         <p><span>资料、印刷费<span></span></span>
         </p>
       </td>
-      <td colspan="1">
+      <td colspan="2">
         <p><span>出版费等<span></span></span>
         </p>
       </td>
@@ -774,23 +802,23 @@ export const applyModel = `
     </tr>
     <tr>
       <td colspan="2">
-        <p><span></span>
+        <p><span><%=budget.material%></span>
         </p>
       </td>
       <td>
-        <p><span></span>
-        </p>
-      </td>
-      <td >
-        <p><span></span>
-        </p>
-      </td>
-      <td>
-        <p><span></span>
+        <p><span><%=budget.print%></span>
         </p>
       </td>
       <td colspan="2">
-        <p><span><span></span></span></p>
+        <p><span><%=budget.publish%></span>
+        </p>
+      </td>
+      <td>
+        <p><span><%=budget.wages%></span>
+        </p>
+      </td>
+      <td colspan="2">
+        <p><span><%=budget.other%><span></span></span></p>
       </td>
     </tr>
 
