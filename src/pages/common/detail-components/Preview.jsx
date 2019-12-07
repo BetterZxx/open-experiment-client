@@ -61,6 +61,8 @@ class Preview extends Component {
       applyFunds:detail.applyFunds,
       major,
       grade,
+      MAJOR,
+      GRADE,
       students,
       teachers
     }
