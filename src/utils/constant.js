@@ -16,7 +16,18 @@ export const suggestGroupType = {
   '3':'C组-机械力学',
   '4':'E组-软件与数学',
   '5':'F组-经管法艺体人文'}
-export const operationType = ['拒绝','通过','上报','修改']
+export const operationType = {
+  '1':'同意',
+  '2':'拒绝',
+  '3':'上报',
+  '4':'修改',
+  '5':'线下检查通过',
+  '6':'结题审核通过',
+  '7':'线下检查不通过',
+  '8':'结题审核不通过',
+
+}
+
 export const roleNames={
   '0':'超级管理员',
   '1':'学生',
@@ -462,7 +473,7 @@ export const applyModel = `
             lang='EN-US' style='font-size:14.0pt;line-height:150%;'> <%=teachers.map(item=>item.realName).join('、')%></span></p>
     <p class='MsoNormal' style='text-indent:5em;margin-left:42.0pt;line-height:  150%'><span
             style='font-size:14.0pt;line-height:150%;mso-ascii-font-family:  "Times New Roman";mso-hansi-font-family:"Times New Roman"'>推荐单位：</span><span
-            lang='EN-US' style='font-size:14.0pt;line-height:150%;'></span>
+            lang='EN-US' style='font-size:14.0pt;line-height:150%;'><%=belongCollege%></span>
     </p>
     <p class='MsoNormal'><span lang='EN-US' style='font-size:14.0pt;mso-bidi-font-size:  12.0pt'></span>
     </p>
@@ -585,14 +596,14 @@ export const applyModel = `
             lang='EN-US' style='font-size:14.0pt;font-family:宋体;mso-hansi-font-family:  "Times New Roman"'></span></b>
     </p>
 	<div>
-		  <table border="0" cellspacing="0" cellpadding="0" align="center">
+		  <table  border="0" cellspacing="0" cellpadding="0" align="center">
     <tr>
-    <td colspan="8">
-      <p><span>项目名称：test2</span></p>
+    <td colspan="7">
+      <p><span>项目名称：<%=projectName%></span></p>
     </td>
     </tr>
     <tr>
-      <td colspan="8">
+      <td colspan="7">
         <p><span>项目类型：重点</span></p>
       </td>
     </tr>
@@ -637,7 +648,7 @@ export const applyModel = `
         </p>
       </td>
       <td>
-        <p><span><%=MAJOR[students[i].major].mName%><%=students[i].grade+'级'%></span>
+        <p><span><%=MAJOR[students[i].major-1].mName%><%=students[i].grade+'级'%></span>
         </p>
       </td>
       <td>
@@ -659,12 +670,12 @@ export const applyModel = `
         <p><span>项目成员简介</span>
         </p>
       </td>
-      <td colspan="7">
+      <td colspan="6">
         <p><span>项目组长 </span>简介</p>
       </td>
     </tr>
     <tr>
-      <td colspan="7">
+      <td colspan="6">
         <p><span>其他成员简介，在项目中的分工及工作。</span></p>
         <p><span></span>
         </p>
@@ -735,7 +746,7 @@ export const applyModel = `
       <td colspan="2">
         <p><span>申请经费<span>(</span>元<span>)</span></span></p>
       </td>
-      <td colspan="7">
+      <td colspan="6">
         <p><span>2500</span>
         </p>
       </td>
@@ -748,7 +759,7 @@ export const applyModel = `
         <p><span>资料、印刷费<span></span></span>
         </p>
       </td>
-      <td colspan="2">
+      <td colspan="1">
         <p><span>出版费等<span></span></span>
         </p>
       </td>
@@ -770,7 +781,7 @@ export const applyModel = `
         <p><span></span>
         </p>
       </td>
-      <td colspan="2">
+      <td >
         <p><span></span>
         </p>
       </td>

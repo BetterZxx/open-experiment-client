@@ -74,11 +74,11 @@ class TableList extends Component {
     {
       title: '项目级别',
       dataIndex: 'projectType',
-      render:(type)=>type===1?'重点':'普通'
+      render:(type)=>type===1?'普通':'重点'
     },
     {
       title: '已选学生数',
-      dataIndex: 'subordinateCollege',
+      dataIndex: 'memberOfSelected',
     },
     {
       title: '实验类型',

@@ -7,7 +7,7 @@ const columns = [
     title: '操作类型',
     render: ({operationType:type, operationUnit:unit}) => {
       
-      return type==='2'&&unit==='4'?'通过':operationType[type];
+      return type==='3'&&unit==='4'?'同意':operationType[type];
     },
   },
   {

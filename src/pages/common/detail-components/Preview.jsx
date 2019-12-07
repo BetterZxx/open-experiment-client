@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card, Button, Upload, Icon } from 'antd';
 import {connect} from 'dva'
 import {saveAs} from 'file-saver'
-import {applyModel,major as MAJOR,grade as GRADE} from '@/utils/constant'
+import {applyModel,major as MAJOR,grade as GRADE,majorCollege} from '@/utils/constant'
 import baidu from 'baidu-template-pro'
 @connect(({
   detail,
@@ -53,8 +53,8 @@ class Preview extends Component {
     const {detail,fileList,loading} = this.props
     const students = detail.list.filter(item=>item.memberRole!==1)
     const teachers = detail.list.filter(item=>item.memberRole===1)
-    const major = [...new Set(...students.map(item=>MAJOR[item.major].mName))].join('、')
-    const grade = [...new Set(...students.map(item=>item+'级'))].join('、')
+    const major = [...new Set(students.map(item=>MAJOR[item.major-1].mName))].join('、')
+    const grade = [...new Set(students.map(item=>item.grade+'级'))].join('、')
     const data = {
       projectName:detail.projectName,
       projectType:detail.projectType===1?'普通':'重点',
@@ -64,7 +64,8 @@ class Preview extends Component {
       MAJOR,
       GRADE,
       students,
-      teachers
+      teachers,
+      belongCollege:majorCollege[detail.subordinateCollege-1].cName
     }
     let html = baidu.template(applyModel,data)
     var blob = new Blob([html], {type: "application/msword"});
