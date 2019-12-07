@@ -733,7 +733,7 @@ export const applyModel = `
         </p>
       </td>
       <td>
-        <p><span><%=teachers[i].realName||''%></span>
+        <p><span></span>
         </p>
       </td>
       <td>
@@ -790,7 +790,7 @@ export const applyModel = `
         </p>
       </td>
       <td colspan="2">
-        <p><span>此项费用需详细说明<span></span></span></p>
+        <p><span><span></span></span></p>
       </td>
     </tr>
 

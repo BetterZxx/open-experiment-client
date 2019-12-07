@@ -419,12 +419,13 @@ class BasicForm extends Component {
                     message: '请输入适宜学生数',
                   },
                   {
-                    pattern:/\d+/,
-                    message:'请输入数字' 
+                    pattern:/[3-6]/,
+                    message:'限选人数3~6人' 
                   }
                 ],
               })(<Input placeholder="请输入适宜学生数" />)}
             </FormItem>
+           
             <FormItem {...formItemLayout} label={<Label>预申请金额</Label>}>
               {getFieldDecorator('applyFunds', {
                 rules: [
@@ -492,7 +493,16 @@ class BasicForm extends Component {
                 />,
               )}
             </FormItem>
-  
+            <FormItem {...formItemLayout} label={'第二指导老师'}>
+              {getFieldDecorator('anotherTeacherCodes', {
+                rules: [
+                  {
+                    pattern:/^\d\d\d\d\d\d\d\d\d\d\d\d$/,
+                    message:'请输入12位工号' 
+                  }
+                ],
+              })(<Input placeholder="输入教师工号 (选填)" />)}
+            </FormItem>
             <FormItem {...formItemLayout} label={<Label>是否开放选题</Label>}>
               <div>
                 {getFieldDecorator('isOpenTopic', {
