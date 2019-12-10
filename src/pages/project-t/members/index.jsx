@@ -516,12 +516,12 @@ class TableList extends Component {
                 {apply.mobilePhone}
               </Descriptions.Item>
               <Descriptions.Item label='专业'>
-                {apply.major}
+                {major[apply.major-1]&&major[apply.major-1].mName}
               </Descriptions.Item>
               <Descriptions.Item label='年级'>
                 {apply.grade+'级'}
               </Descriptions.Item>
-              <Descriptions.Item span={2} label='学习绩点'>
+              {/* <Descriptions.Item span={2} label='学习绩点'>
                 <Descriptions bordered>
                   <Descriptions.Item label='学期一'>
                     3.3
@@ -542,12 +542,12 @@ class TableList extends Component {
                     3.3
                   </Descriptions.Item>
                 </Descriptions>
-              </Descriptions.Item>
+              </Descriptions.Item> */}
               <Descriptions.Item span={2} label='个人特长'>
                 {apply.personJudge} 
               </Descriptions.Item>
               <Descriptions.Item span={2} label='已修课程及具备知识'>
-                XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX{apply.technicalRole} 
+                {apply.technicalRole} 
               </Descriptions.Item>
               
             </Descriptions>

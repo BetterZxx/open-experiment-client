@@ -397,6 +397,8 @@ class TableList extends Component {
    }).filter(item=>{
     return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
    })
+   console.log(selectedRows)
+   const hasSelected = selectedRows.length > 0;
    const extra  = (
     <div>
       <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
@@ -456,6 +458,9 @@ class TableList extends Component {
                 </Button>
               </span>} */}
             {preTabActiveKey==='0'&&<Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button>} 
+            <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
+              </span>
             </div>}
             <StandardTable
               selectedRows={selectedRows}
@@ -465,6 +470,7 @@ class TableList extends Component {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               rowKey={(item,index)=>index}
+              pagination={{pageSize:13}}
             />
           </div>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

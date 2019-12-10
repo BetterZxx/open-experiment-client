@@ -349,8 +349,8 @@ class TableList extends Component {
           </Timeline.Item>
         case '4':
             return <Timeline.Item key={index}>
-            <p>{`${operationUnit[item.operationUnit]}已修改，请确认  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
-            <p>备注： {item.reason}</p>
+            <p>{`${operationUnit[item.operationUnit]}修改  ${moment(item.operationTime).format('YYYY-MM-DD')}`}</p>
+            {/* <p>备注： {item.reason}</p> */}
           </Timeline.Item>
         default: return ''
       }
