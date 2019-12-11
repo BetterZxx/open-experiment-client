@@ -290,7 +290,7 @@ class TableList extends Component {
       payload:{
         status:tabActiveKey,
         data:{
-          operationType:tabActiveKey,
+          operationType:tabActiveKey==='2'?'0':tabActiveKey,
           operationUnit:4
         }
       }

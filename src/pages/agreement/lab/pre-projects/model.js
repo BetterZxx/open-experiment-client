@@ -1,17 +1,28 @@
-import { addRule, queryRule, removeRule, updateRule ,reqLabProjects,reqLabKeyProjects} from './service';
+import { addRule, queryRule, removeRule, updateRule ,reqLabProjects} from './service';
 import { message } from 'antd';
 
 const Model = {
   namespace: 'lab',
   state: {
     labProjects:[],
-    tabActiveKey:'1',
+    tabActiveKey:'1',  
     preTabActiveKey:'0'
   },
   effects: {
+    /**
+     * 获取实验室拟题、普通审批项目
+     * payload{
+     *  status:string,  //项目状态 0-待审批，1-带上报，(2，3，4)-获取历史操作项目
+     *  data:{
+     *    operationType:sting,  //操作类型
+     *    operationUnit:string  //操作单位
+     *  }
+     * }
+     *  
+     */
     *fetchProjects({ payload }, { call, put }) {
       console.log(payload)
-      const response = payload.projectType===2?yield call(reqLabKeyProjects,payload):yield call(reqLabProjects, payload);
+      const response = yield call(reqLabProjects, payload);
       if(response.code===0){
         yield put({
           type: 'save',

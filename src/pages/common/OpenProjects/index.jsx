@@ -79,7 +79,7 @@ class TableList extends Component {
     },
     {
       title: '已加入学生数/限选',
-      render:(p)=><Statistic valueStyle={{fontSize:18}} value={p.amountOfSelected-1} suffix={`/ ${p.fitPeopleNum}`} />
+      render:(p)=><Statistic valueStyle={{fontSize:18}} value={p.amountOfSelected} suffix={`/ ${p.fitPeopleNum}`} />
     },
     {
       title: '计划实验时间',

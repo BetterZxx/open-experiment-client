@@ -8,8 +8,9 @@ const roleURL =  ['','/tproject/manage/detail','/auth/lab/projects/detail','']
  * 单位unit:0-实验室，1-学院，2-职能部门，3-指导老师
  * 操作类型type:0-驳回，1-通过，2-上报
  */
+//'/project/rejectProjectApplyByLabAdministrator'
 const approvalUrl = [
-  ['/project/rejectProjectApplyByLabAdministrator','/project/approveProjectApplyByLabAdministrator','/project/reportToCollegeLeader'],
+  ['/project/rejectProjectReportByLabAdministrator','/project/approveProjectApplyByLabAdministrator','/project/reportToCollegeLeader','/project/rejectProjectApplyByLabAdministrator'],
   ['/project/rejectProjectApplyBySecondaryUnit','/project/approveProjectApplyBySecondaryUnit','/project/reportToFunctionalDepartment'],
   ['/project/rejectProjectApplyByFunctionalDepartment','/project/agreeEstablish']
 ]

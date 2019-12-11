@@ -1,5 +1,5 @@
 import request from '@/utils/request';
-const projectsUrl = ['/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader','/project/getHistoricalProjectInfoByUnitAndOperation','/project/getHistoricalProjectInfoByUnitAndOperation']
+const projectsUrl = ['/project/getPendingApprovalProjectByLabAdministrator','/project/getToBeReportedProjectByLabLeader','/project/getHistoricalProjectInfoByUnitAndOperation','/project/getHistoricalProjectInfoByUnitAndOperation','/project/getHistoricalProjectInfoByUnitAndOperation']
 
 
 export async function reqLabProjects(payload) {

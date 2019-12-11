@@ -289,7 +289,7 @@ class TableList extends Component {
       payload:{
         status:preTabActiveKey,
         data:{
-          operationType:preTabActiveKey,
+          operationType:preTabActiveKey==='4'?'1':preTabActiveKey,
           operationUnit:4
         }
       }
@@ -418,7 +418,7 @@ class TableList extends Component {
           tab: '待审批',
         },
         {
-          key: '1',
+          key: '4',
           tab: '已通过',
         },
         {
@@ -457,7 +457,7 @@ class TableList extends Component {
                   修改审批意见
                 </Button>
               </span>} */}
-            {preTabActiveKey==='0'&&<Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button>} 
+            {preTabActiveKey==='0'&&<Button disabled={btnDisable} onClick={()=>this.showApprovalModal(3)}>驳回</Button>} 
             <span style={{ marginLeft: 8 }}>
                 {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
               </span>
