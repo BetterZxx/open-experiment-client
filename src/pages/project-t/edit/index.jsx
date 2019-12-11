@@ -296,7 +296,7 @@ class BasicForm extends Component {
                   initialValue:detail.suggestGroupType+''
                 })(
                   <Radio.Group>
-                    {Object.keys(suggestGroupType).map(item=>{
+                    {['1','2','3','6','4','5'].map(item=>{
                       return <Radio value={item} key={item}>
                         {suggestGroupType[item]}
                       </Radio>

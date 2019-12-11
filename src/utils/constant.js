@@ -14,6 +14,7 @@ export const suggestGroupType = {
   '1':'A组-石工地勘',
   '2':'B组-化工材料',
   '3':'C组-机械力学',
+  '6':'D组-电气及制作',
   '4':'E组-软件与数学',
   '5':'F组-经管法艺体人文'}
 export const operationType = {
