@@ -1,7 +1,7 @@
 import React from 'react'
 import { RouteContext } from '@ant-design/pro-layout';
 import {Descriptions} from 'antd'
-import {experimentType,suggestGroupType,majorCollege,major} from '@/utils/constant'
+import {experimentType,suggestGroupType,majorCollege,major, openType} from '@/utils/constant'
 import moment from 'moment'
 export default ({detail})=>(
       <Descriptions  size="small" column={3} >
@@ -33,5 +33,6 @@ export default ({detail})=>(
         <Descriptions.Item label="成果及考核方式">{detail.achievementCheck}</Descriptions.Item>
         <Descriptions.Item label="计划实验小时">{detail.totalHours}</Descriptions.Item>
         <Descriptions.Item label="开放实验条件">{detail.experimentCondition}</Descriptions.Item>
+        <Descriptions.Item label="是否开放选题">{openType[detail.isOpenTopic]}</Descriptions.Item>
       </Descriptions>
 );

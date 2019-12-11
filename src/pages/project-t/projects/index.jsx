@@ -56,6 +56,7 @@ class TableList extends Component {
     {
       title: '项目名称',
       dataIndex: 'projectName',
+      width:230
     },
     {
       title: '实验室',

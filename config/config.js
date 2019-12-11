@@ -333,6 +333,13 @@ export default {
                       icon: 'team'
                     },
                     {
+                      name: '项目详情',
+                      path: '/auth/lab/pre-projects/detail',
+                      component: './common/detail',
+                      hideInMenu:true,
+                      icon: 'team'
+                    },
+                    {
                       name: '重点项目详情',
                       path: '/auth/lab/key-projects/detail',
                       component: './common/key-detail',

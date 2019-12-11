@@ -70,7 +70,7 @@ class TableList extends Component {
     {
       title: '指导老师',
       dataIndex: 'teachers',
-      render:(teachers)=>teachers[0].realName
+      render:(teachers)=>teachers.map(item=>item.realName).join('、')
     },
     {
       title: '项目级别',
@@ -199,10 +199,29 @@ class TableList extends Component {
               {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          {/* <Col md={8} sm={24}>
             <FormItem label="指导老师">
               {getFieldDecorator('teacher')(
                 <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col> */}
+          <Col md={8} sm={24}>
+            <FormItem label="开放学院">
+              {getFieldDecorator('college')(
+                <Select
+                placeholder="请选择"
+                style={{
+                  width: '100%',
+                }}
+              >
+                {
+                    majorCollege.map((item)=>{
+                    return item?<Option key={item.cId} value={item.cId}>{item.cName}</Option>:''
+                  })
+                }
+                
+              </Select>,
               )}
             </FormItem>
           </Col>
@@ -252,14 +271,15 @@ class TableList extends Component {
               {getFieldDecorator('projectName')(<Input placeholder="请输入" />)}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
+          {/* <Col md={8} sm={24}>
             <FormItem label="指导老师">
               {getFieldDecorator('teacherName')(
                 <Input placeholder="请输入" />
                 
               )}
             </FormItem>
-          </Col>
+          </Col> */}
+           
           <Col md={8} sm={24}>
             <FormItem label="开放学院">
               {getFieldDecorator('college')(
@@ -276,6 +296,21 @@ class TableList extends Component {
                 }
                 
               </Select>,
+              )}
+            </FormItem>
+          </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="普通/重点项目">
+              {getFieldDecorator('projectType')(
+                <Select
+                  placeholder="请选择"
+                  style={{
+                    width: '100%',
+                  }}
+                >
+                  <Option value="1">普通</Option>
+                  <Option value="2">重点</Option>
+                </Select>,
               )}
             </FormItem>
           </Col>
@@ -306,7 +341,7 @@ class TableList extends Component {
                 <TreeSelect                     
                 placeholder="请选择适应专业"
                 allowClear
-                multiple={true}
+                
                 onChange={this.onChange}
               >             
                 {this.renderTreeNode(majorCollege)}
@@ -322,7 +357,7 @@ class TableList extends Component {
                   style={{
                     width: '100%',
                   }}
-                  mode="multiple"
+                  
                 >
                   {
                     majorCollege.map((item)=>{
@@ -349,7 +384,7 @@ class TableList extends Component {
                 style={{
                   width: '100%',
                 }}
-                mode="multiple"
+                
               >
                 {grade.map((item,index)=>{
                   return <Option key={index} value={item}>{item+'级'}</Option>
@@ -376,21 +411,7 @@ class TableList extends Component {
               )}
             </FormItem>
           </Col>
-          <Col md={8} sm={24}>
-            <FormItem label="普通/重点项目">
-              {getFieldDecorator('projectType')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  <Option value="1">普通</Option>
-                  <Option value="2">重点</Option>
-                </Select>,
-              )}
-            </FormItem>
-          </Col>
+         
         </Row>
         <div
           style={{

@@ -140,7 +140,7 @@ class TableList extends Component {
       type:'detail/fetchDetail',
       payload:{
         projectGroupId:id,
-        role:0
+        role:9
       }
     })
     dispatch({

@@ -13,6 +13,7 @@ import router from 'umi/router';
  * 6-学生申请页公示项目详情,
  * 7-学生查看详情,
  * 8-老师修改立项申请
+ * 9-实验室查看拟题项目详情
  */
 const roleURL = [
   '/auth/lab/projects/detail',
@@ -24,6 +25,7 @@ const roleURL = [
   '/sproject/join/all/detail',
   '/sproject/manage/detail',
   '/tproject/manage/edit',
+  '/auth/lab/pre-projects/detail'
 ];
 /**
  * 将传入role映射为对应身份unit(查看普通项目)
@@ -42,6 +44,7 @@ const roleToUnitMap = {
   '6':'9',
   '7':'9',
   '8':'9',
+  '9':'0',
 }
 
 
@@ -92,9 +95,9 @@ const Model = {
     role:0 ,  //0-实验室，1-学院，2-职能部门，3-指导老师
     fileList:[],
     unit:9,
-    reportToAgree:false,
-    budget:undefined,
-    membersInfo:undefined
+    reportToAgree:false, //实验室查看详情，是否上报来审批通过
+    budget:undefined,  //重点项目经费预算
+    membersInfo:undefined //重点项目成员简介
 
   },
   effects: {
