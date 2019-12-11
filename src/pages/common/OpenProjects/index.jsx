@@ -462,7 +462,7 @@ class TableList extends Component {
               rowKey={(item,index)=>index}
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
-              
+              pagination={{pageSize:13}}
               onChange={this.handleStandardTableChange}
             />
           </div>
