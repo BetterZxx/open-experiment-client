@@ -7,11 +7,12 @@ const Model = {
     students:[]
   },
   effects: {
-    *submitRegularForm({ payload }, { call }) {
+    *submitRegularForm({ payload,form }, { call }) {
 
       const res = yield call(reqApplyForm, payload);
       if(res.code===0){
         message.success('提交成功');
+        form.resetFields();
       }else{
         message.error(`提交失败：${res.msg}`)
       }

@@ -210,7 +210,7 @@ class BasicForm extends Component {
         </Card>
         <Card 
         bordered={false}
-        title='申请表'
+        title={<span>申请表 <span style={{fontSize:14,color:'#aaa',marginLeft:10}}>(申请前请先完善个人信息)</span></span>}
         >
           <Form
             onSubmit={this.handleSubmit}

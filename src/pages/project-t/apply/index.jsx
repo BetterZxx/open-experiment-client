@@ -61,8 +61,9 @@ class BasicForm extends Component {
          dispatch({
           type: 'applyForm/submitRegularForm',
           payload,
+          form
         });
-        form.resetFields()
+        //form.resetFields()
         console.log(payload)
       }
     });
