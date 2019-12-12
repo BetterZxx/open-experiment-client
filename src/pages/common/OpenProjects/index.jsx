@@ -208,7 +208,7 @@ class TableList extends Component {
           </Col> */}
           <Col md={8} sm={24}>
             <FormItem label="开放学院">
-              {getFieldDecorator('college')(
+              {getFieldDecorator('subordinateCollege')(
                 <Select
                 placeholder="请选择"
                 style={{
