@@ -106,7 +106,7 @@ class TableList extends Component {
         }
       })
       ,
-      onFilter: (value, record) => record.experimentType === value,
+      onFilter: (value, record) => record.experimentType == value,
 
     },
  

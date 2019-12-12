@@ -111,7 +111,7 @@ class TableList extends Component {
         }
       })
       ,
-      onFilter: (value, record) => record.experimentType === value,
+      onFilter: (value, record) => record.experimentType == value,
 
     },
     {
@@ -136,7 +136,7 @@ class TableList extends Component {
         }
 
       ],
-      onFilter: (value, record) => record.applyFunds === value,
+      onFilter: (value, record) => record.applyFunds == value,
       render:(funds)=> {
         return (
           <div>
