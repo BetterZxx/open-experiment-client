@@ -71,6 +71,7 @@ class Member extends Component {
         dataSource={memberList}
         columns={this.columns}
         pagination={false}
+        rowKey={(history,index) =>index }
         >
 
         </Table>

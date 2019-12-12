@@ -39,57 +39,63 @@ const Model = {
       }
 
     },
-    *reject({payload},{call,put}){
+    *reject({payload,filterData},{call,put}){
       const res = yield call(reqRejectStudent,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({
-          type:'fetch',
+          type:'filter',
+          payload:filterData
         })
       }else{
         message.error(`操作失败:${res.msg}`)
       }
     },
-    *remove({payload},{call,put}){
+    *remove({payload,filterData},{call,put}){
+      
       const res = yield call(reqRemoveStudent,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({
-          type:'fetch',
+          type:'filter',
+          payload:filterData
         })
       }else{
         message.error(`操作失败:${res.msg}`)
       }
     }
     ,
-    *agree({payload},{call,put}){
+    *agree({payload,filterData},{call,put}){
       const res = yield call(reqAgreeStudent,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({
-          type:'fetch',
+          type:'filter',
+          payload:filterData
         })
       }else{
         message.error(`操作失败:${res.msg}`)
       }
     },
-    *setLeader({payload},{call,put}){
+    *setLeader({payload,filterData},{call,put}){
       const res = yield call(reqSetProjectLeader,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({
-          type:'fetch',
+          type:'filter',
+          payload:filterData
         })
       }else{
         message.error(`操作失败:${res.msg}`)
       }
     },
-    *add({payload},{call,put}){
+    *add({payload,filterData},{call,put}){
       const res = yield call(reqAddStudent,payload)
       if(res.code===0){
         message.success('操作成功')
         yield put({
-          type:'fetch',
+          type:'filter',
+          payload:filterData
         })
       }else{
         message.error(`操作失败:${res.msg}`)

@@ -318,6 +318,7 @@ class TableList extends Component {
   }
   handleModalOk = ()=>{
     const {selectedRows,text,approvalType} = this.state
+    debugger
     const {dispatch,tabActiveKey} = this.props
     const data = selectedRows.map(item=>{
       return {

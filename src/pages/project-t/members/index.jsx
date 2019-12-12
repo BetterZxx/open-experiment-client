@@ -130,9 +130,10 @@ class TableList extends Component {
   ];
   componentDidMount() {
     const { dispatch } = this.props;
-    dispatch({
-      type: 'applyStudents/fetch',
-    });
+    // dispatch({
+    //   type: 'applyStudents/fetch',
+    // });
+    this.handleFilter()
     dispatch({
       type:'tprojects/fetch',
       payload:{
@@ -188,8 +189,12 @@ class TableList extends Component {
       dispatch({
         type: 'applyStudents/add',
         payload: values,
+        filterData:values
       });
     });
+    this.setState({
+      selectedRows:[]
+    })
   };
 
 
@@ -286,7 +291,7 @@ class TableList extends Component {
     })
   }
   handleAgree = ()=>{
-    const {dispatch} = this.props
+    const {dispatch,form} = this.props
     const {selectedRows} = this.state
     let payload = selectedRows.map(item=>{
       return {
@@ -295,13 +300,20 @@ class TableList extends Component {
         userId:item.code
       }
     })
-    dispatch({
-      type:'applyStudents/agree',
-      payload
+    form.validateFields((err,values)=>{
+      dispatch({
+        type:'applyStudents/agree',
+        payload,
+        filterData:values
+      })
     })
+    this.setState({
+      selectedRows:[]
+    })
+    
   }
   handleReject = ()=>{
-    const {dispatch} = this.props
+    const {dispatch,form} = this.props
     const {selectedRows} = this.state
     let payload = selectedRows.map(item=>{
       return {
@@ -310,13 +322,20 @@ class TableList extends Component {
         userId:item.code
       }
     })
-    dispatch({
-      type:'applyStudents/reject',
-      payload
+    form.validateFields((err,values)=>{
+      dispatch({
+        type:'applyStudents/reject',
+        payload,
+        filterData:values
+      })
+    })
+    this.setState({
+      selectedRows:[]
     })
   }
   handleRemove = ()=>{
     const {selectedRows} = this.state
+    const {form} = this.props
     if(selectedRows.length>1)
     message.warning('不能设置批量移除')
     const {dispatch} = this.props
@@ -325,12 +344,20 @@ class TableList extends Component {
         projectId:selectedRows[0].id,
         userId:selectedRows[0].code
     }
-    dispatch({
-      type:'applyStudents/remove',
-      payload
+    form.validateFields((err,values)=>{
+      dispatch({
+        type:'applyStudents/remove',
+        payload,
+        filterData:values
+      })
     })
+    this.setState({
+      selectedRows:[]
+    })
+    
   }
   handleSetLeader = ()=>{
+    const {form} = this.props
     const {selectedRows} = this.state
     if(selectedRows.length>1){
       message.warning('不能设置多个项目组长')
@@ -344,10 +371,17 @@ class TableList extends Component {
         userId:selectedRows[0].code,
         memberRole:2
     }
-    dispatch({
-      type:'applyStudents/setLeader',
-      payload
+    form.validateFields((err,values)=>{
+      dispatch({
+        type:'applyStudents/setLeader',
+        payload,
+        filterData:values
+      })
     })
+    this.setState({
+      selectedRows:[]
+    })
+    
   }
   handleSearch = value => {
     const {dispatch} = this.props
