@@ -542,7 +542,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey={(item,index)=>index}
+              rowKey='id'
               columns={this.columns}
               pagination={{pageSize:12}}
               onSelectRow={this.handleSelectRows}

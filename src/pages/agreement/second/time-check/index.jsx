@@ -137,7 +137,7 @@ class Settings extends Component {
         <Table
         columns={this.columns}
         dataSource={timeLimits}
-        rowKey={(item,index)=>index}
+        rowKey="id"
         />
 
       </Card>

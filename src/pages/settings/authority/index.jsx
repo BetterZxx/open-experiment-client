@@ -137,7 +137,7 @@ class Authority extends Component {
         <Table
         columns={this.columns}
         dataSource={roles}
-        rowKey={(item,index)=>index}
+        rowKey="id"
         />
 
       </Card>

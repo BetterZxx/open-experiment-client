@@ -429,12 +429,14 @@ class TableList extends Component {
     const {getFieldDecorator} = form
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible,apply } = this.state;
     const btnDisable = selectedRows.length===0
+    const studentsWithKey = students.map((item,index)=>({key:index,...item}))
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
         <Menu.Item key="remove" onClick={this.handleSetLeader}>设为组长</Menu.Item>
         <Menu.Item key="approval" onClick={this.handleRemove} >删除成员</Menu.Item>
       </Menu>
     );
+    const hasSelected = selectedRows.length > 0;
     const options = searchStudents.map((s,index) => <Option key={index} value={s.code}>
     <span>{s.realName}</span>
     <span style={{margin:'0 30px'}}>{s.code}</span>
@@ -457,6 +459,9 @@ class TableList extends Component {
                   <Button onClick={this.handleReject} disabled={btnDisable}>拒绝</Button>
                   <Button  onClick={this.handleSetLeader} disabled={btnDisable}>设为组长</Button>
                   <Button type='danger' onClick={this.handleRemove} disabled={btnDisable}>删除成员</Button>
+                  <span style={{ marginLeft: 15 }}>
+                  {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
+                </span>
                   {/* <Dropdown overlay={menu} disabled={btnDisable}>
                     <Button disabled={btnDisable}>
                       更多操作 <Icon type="down" />
@@ -468,8 +473,8 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              dataSource={students}
-              rowKey={(item,index)=>index}
+              dataSource={studentsWithKey}
+              rowKey='key'
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               pagination={{pageSize:10}}

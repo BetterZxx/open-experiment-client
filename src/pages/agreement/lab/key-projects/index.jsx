@@ -457,7 +457,7 @@ class TableList extends Component {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               pagination={{pageSize:12}}
-              rowKey={(item,index)=>index}
+              rowKey='id'
             />
           </div>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

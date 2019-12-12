@@ -140,7 +140,7 @@ class StandardTable extends Component {
           />
         </div> */}
         <Table
-          rowKey={(item,index)=>index}
+          rowKey="id"
           rowSelection={rowSelection}
           dataSource={list}
           pagination={paginationProps}

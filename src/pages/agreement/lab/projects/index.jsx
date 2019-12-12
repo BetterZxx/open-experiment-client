@@ -16,6 +16,7 @@ import {
   Timeline,
   Select,
   message,
+  Table
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -26,6 +27,7 @@ import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
 import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
+import StandTable from './components/StandardTable.jsx'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -59,7 +61,8 @@ class TableList extends Component {
     approvalType:1,
     mVisible:false,
     experimentType:undefined,
-    projectType:undefined
+    projectType:undefined,
+    currentPage:2
   };
 
   columns = [
@@ -386,6 +389,7 @@ class TableList extends Component {
       })
     }
   }
+
   render() {
     const {
      
@@ -394,11 +398,7 @@ class TableList extends Component {
       tabActiveKey
     } = this.props;
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues,approvalType,mVisible,text,formValues } = this.state;
-   let projects = labProjects.filter(item=>{
-     return formValues.projectType?item.projectType===formValues.projectType:true
-   }).filter(item=>{
-    return formValues.experimentType!==undefined?item.experimentType===formValues.experimentType:true
-   })
+   let projects = labProjects.map((item,index)=>({key:index,...item}))
    const extra  = (
     <div>
       <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
@@ -407,6 +407,7 @@ class TableList extends Component {
     
   );
     const btnDisable = selectedRows.length===0
+    const { currentPage } = this.state
     return (
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
@@ -466,9 +467,16 @@ class TableList extends Component {
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              rowKey={(item,index)=>index}
               pagination={{pageSize:12}}
             />
+            {/* <StandTable
+              //selectedRows={selectedRows}
+              onSelectRow={this.handleSelectRows}
+              dataSource={projects}
+              columns={this.columns}
+              // rowKey="id"
+              pagination={{pageSize:12}}
+            /> */}
           </div>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
           {stepFormValues && Object.keys(stepFormValues).length ? (

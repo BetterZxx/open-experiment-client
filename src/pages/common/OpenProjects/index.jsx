@@ -411,6 +411,13 @@ class TableList extends Component {
               )}
             </FormItem>
           </Col>
+          <Col md={8} sm={24}>
+            <FormItem label="指导老师">
+              {getFieldDecorator('creator')(
+                <Input placeholder="请输入" />
+              )}
+            </FormItem>
+          </Col>
          
         </Row>
         <div
@@ -480,7 +487,7 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey={(item,index)=>index}
+              rowKey="id"
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               pagination={{pageSize:13}}

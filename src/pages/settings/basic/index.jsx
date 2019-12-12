@@ -230,7 +230,7 @@ class Authority extends Component {
         loading={loading}
         columns={this.columns}
         dataSource={colleges}
-        rowKey={(item,index)=>index}
+        rowKey='id'
         />
 
       </Card>

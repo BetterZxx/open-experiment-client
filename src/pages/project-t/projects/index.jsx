@@ -280,11 +280,11 @@ class TableList extends Component {
               selectedRows={selectedRows}
               loading={loading}
               dataSource={projects}
-              rowKey={(item,index)=>index}
+              rowKey="id"
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
-              pagination={{ pageSize: 11 }}
+              // pagination={{ pageSize: 11 }}
             />
           </div>
           {/* footer={<Button type='primary'>确认修改</Button>} */}
