@@ -302,14 +302,20 @@ class BasicForm extends Component {
                     required: true,
                     message: '请输入个人特长',
                   },
+                  {
+                    min:10,
+                    message:"字数不能少于10"
+                  },
+                  {
+                    max:199,
+                    message:"字数不能超过200"
+                  },
                 ],
               })(
                 <TextArea
-                  style={{
-                    minHeight: 32,
-                  }}
+      
                   placeholder="请输入个人特长"
-                  rows={4}
+                  rows={6}
                 />,
               )}
             </FormItem>
@@ -321,14 +327,20 @@ class BasicForm extends Component {
                     required: true,
                     message: '请输入已修课程及具备知识',
                   },
+                  {
+                    min:10,
+                    message:"字数不能少于10"
+                  },
+                  {
+                    max:199,
+                    message:"字数不能超过200"
+                  },
                 ],
               })(
                 <TextArea
-                  style={{
-                    minHeight: 32,
-                  }}
+                
                   placeholder="请输入已修课程及具备知识"
-                  rows={4}
+                  rows={6}
                 />,
               )}
             </FormItem>

@@ -516,7 +516,7 @@ class TableList extends Component {
               </span>
             <StandardTable
               selectedRows={selectedRows}
-             
+              pagination={{pageSize:12}}
               dataSource={projects}
               rowKey = 'id' 
               columns={this.columns}

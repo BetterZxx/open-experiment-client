@@ -173,7 +173,7 @@ class TableList extends Component {
       payload:{
         status:tabActiveKey,
         data:{
-          operationType:tabActiveKey,
+          operationType:tabActiveKey==='2'?'0':tabActiveKey,
           operationUnit:4
         }
       }
@@ -466,6 +466,7 @@ class TableList extends Component {
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
               rowKey={(item,index)=>index}
+              pagination={{pageSize:12}}
             />
           </div>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

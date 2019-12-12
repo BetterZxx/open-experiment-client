@@ -544,6 +544,7 @@ class TableList extends Component {
               dataSource={projects}
               rowKey={(item,index)=>index}
               columns={this.columns}
+              pagination={{pageSize:12}}
               onSelectRow={this.handleSelectRows}
               onChange={this.handleStandardTableChange}
             />
