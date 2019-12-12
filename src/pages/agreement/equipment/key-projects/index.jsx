@@ -578,7 +578,7 @@ class TableList extends Component {
               marginLeft:15
             }} onClick={()=>this.showApprovalModal(0)}>驳回</Button> }
             </div>
-            <Standard
+            <StandardTable
               pagination={{pageSize:12}}
               selectedRows={selectedRows}
               loading={loading}
