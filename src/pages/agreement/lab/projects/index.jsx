@@ -405,6 +405,7 @@ class TableList extends Component {
     
   );
     const btnDisable = selectedRows.length===0
+    const hasSelected = selectedRows.length > 0;
     const { currentPage } = this.state
     return (
       <PageHeaderWrapper
@@ -458,6 +459,9 @@ class TableList extends Component {
               </span>} */}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
             </div>}
+            <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
+              </span>
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}

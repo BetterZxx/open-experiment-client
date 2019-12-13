@@ -416,6 +416,7 @@ class Advanced extends Component {
               }}
             >
               {detail.mainContent}
+              {/* <span>服务器数据异常，正在紧急修复中...</span> */}
               
             </Card>
            

@@ -395,6 +395,7 @@ class TableList extends Component {
       handleUpdate: this.handleUpdate,
     };
     const btnDisable = selectedRows.length===0
+    const hasSelected = selectedRows.length > 0;    
     const extra  = (
       <div>
         <Button icon='export' type='primary' style={{marginRight:15}} onClick={()=>this.handleExportExcel()}>导出立项一览表</Button>
@@ -406,7 +407,7 @@ class TableList extends Component {
       '驳回理由',
       '审核意见',
       '',
-      '降级通过'
+      '转普通立项'
     ]
     return (
       <PageHeaderWrapper
@@ -439,7 +440,7 @@ class TableList extends Component {
         onCancel={this.handleModalCancel}
         title={modalText[approvalType]}
         >
-          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'驳回理由':'审核意见'}/>
 
         </Modal>
         <Card bordered={false}>
@@ -460,9 +461,13 @@ class TableList extends Component {
               </span>} */}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
               {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(3)}}>
-                降级通过
+                转普通立项
               </Button>}
+              <span style={{ marginLeft: 8 }}>
+                {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
+              </span>
             </div>}
+            
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
