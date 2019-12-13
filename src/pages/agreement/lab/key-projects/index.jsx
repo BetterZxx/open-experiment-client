@@ -109,6 +109,11 @@ class TableList extends Component {
       onFilter: (value, record) => record.experimentType == value,
 
     },
+    {
+      title:'已选人数',
+      dataIndex:'numberOfTheSelected',
+      
+    },
  
     {
       title: '计划实验时间',
@@ -397,6 +402,12 @@ class TableList extends Component {
       </div>
       
     );
+    const modalText = [
+      '驳回理由',
+      '审核意见',
+      '',
+      '降级通过'
+    ]
     return (
       <PageHeaderWrapper
       tabActiveKey={tabActiveKey}
@@ -426,7 +437,7 @@ class TableList extends Component {
         visible={mVisible}
         onOk={this.handleModalOk}
         onCancel={this.handleModalCancel}
-        title={approvalType===0?'驳回理由':'审核意见'}
+        title={modalText[approvalType]}
         >
           <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
 
@@ -448,6 +459,9 @@ class TableList extends Component {
                 </Button>
               </span>} */}
               <Button disabled={btnDisable} onClick={()=>this.showApprovalModal(0)}>驳回</Button> 
+              {tabActiveKey==='0'&&<Button type="primary" disabled={btnDisable} onClick={()=>{this.showApprovalModal(3)}}>
+                降级通过
+              </Button>}
             </div>}
             <StandardTable
               selectedRows={selectedRows}

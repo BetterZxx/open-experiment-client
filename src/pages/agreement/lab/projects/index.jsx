@@ -113,11 +113,9 @@ class TableList extends Component {
 
     },
     {
-      title:'开放性',
-      dataIndex:'isOpenTopic',
-      render:(val)=>{
-        return openType[val]
-      }
+      title:'已选人数',
+      dataIndex:'numberOfTheSelected',
+      
     },
  
     {

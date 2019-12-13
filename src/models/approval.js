@@ -21,7 +21,7 @@ const approvalUrl = [
  * 操作类型type:0-驳回，1-通过，2-上报
  */
 const keyApprovalUrl = [
-  ['/project/rejectKeyProjectByLabAdministrator','/project/agreeKeyProjectByLabAdministrator','/project/reportKeyProjectByLabAdministrator'],
+  ['/project/rejectKeyProjectByLabAdministrator','/project/agreeKeyProjectByLabAdministrator','/project/reportKeyProjectByLabAdministrator','/project/changeKeyProjectToGeneral'],
   ['/project/rejectKeyProjectBySecondaryUnit','/project/agreeKeyProjectBySecondaryUnit','/project/reportKeyProjectBySecondaryUnit'],
   ['/project/rejectKeyProjectByFunctionalDepartment','/project/agreeKeyProjectByFunctionalDepartment',],
   ['/project/rejectKeyProjectByGuideTeacher','/project/agreeKeyProjectByGuideTeacher']
