@@ -16,7 +16,7 @@ import {
   Timeline,
   Select,
   message,
-  Descriptions
+  Descriptions,
 } from 'antd';
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
@@ -25,12 +25,13 @@ import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
-import {projectType,memberRole, experimentType,major} from '@/utils/constant'
+import { projectType, memberRole, experimentType, major } from '@/utils/constant';
 import styles from './style.less';
 
 const FormItem = Form.Item;
 const { Option } = Select;
 const { RangePicker } = DatePicker;
+const {confirm} = Modal
 
 const getValue = obj =>
   Object.keys(obj)
@@ -38,14 +39,14 @@ const getValue = obj =>
     .join(',');
 
 const statusMap = ['default', 'success', 'error'];
-const status = ['待审核','已通过','已拒绝'];
+const status = ['待审核', '已通过', '已拒绝'];
 
 /* eslint react/no-multi-comp:0 */
-@connect(({ loading,applyStudents,tprojects }) => ({
+@connect(({ loading, applyStudents, tprojects }) => ({
   loading: loading.models.applyStudents,
-  students:applyStudents.data,
-  projects:tprojects.projects,
-  searchStudents:applyStudents.searchStudents
+  students: applyStudents.data,
+  projects: tprojects.projects,
+  searchStudents: applyStudents.searchStudents,
 }))
 class TableList extends Component {
   state = {
@@ -55,8 +56,10 @@ class TableList extends Component {
     selectedRows: [],
     formValues: {},
     stepFormValues: {},
-    detailModalVisible:false,
-    apply:{}
+    detailModalVisible: false,
+    apply: {},
+    setLeaderModalVisible: false,
+    role:'3'
   };
 
   columns = [
@@ -70,45 +73,45 @@ class TableList extends Component {
     },
     {
       title: '项目级别',
-      dataIndex:'projectType',
-      render:(type)=>{
-        return type===1?'普通':'重点'
-      }
+      dataIndex: 'projectType',
+      render: type => {
+        return type === 1 ? '普通' : '重点';
+      },
     },
     {
       title: '专业',
       dataIndex: 'major',
-      render:(m)=>major[m-1]?major[m-1].mName:null
+      render: m => (major[m - 1] ? major[m - 1].mName : null),
     },
     {
       title: '年级',
       dataIndex: 'grade',
-      render:(val)=>{
-        return val+'级'
-
-      }
+      render: val => {
+        return val + '级';
+      },
     },
     {
       title: '项目角色',
       dataIndex: 'memberRole',
-      render:(val)=>{
-        return memberRole[val]
-      }
+      render: val => {
+        return memberRole[val];
+      },
     },
     {
       title: '实验类型',
       dataIndex: 'experimentType',
-      render:(type)=>experimentType[type]
-
+      render: type => experimentType[type],
     },
     {
       title: '状态',
       dataIndex: 'status',
-      
-      render:(val) => {
-        return <span>
-          <Badge status={statusMap[val-1]} text={status[val-1]} />
-        </span>;
+
+      render: val => {
+        return (
+          <span>
+            <Badge status={statusMap[val - 1]} text={status[val - 1]} />
+          </span>
+        );
       },
     },
     {
@@ -119,11 +122,10 @@ class TableList extends Component {
     },
     {
       title: '操作',
-      render: (val) => (
+      render: val => (
         <Fragment>
-          <a onClick={()=>this.showDetailModal(val)}>详情</a>
+          <a onClick={() => this.showDetailModal(val)}>详情</a>
           {/* <Divider type="vertical" /> */}
-          
         </Fragment>
       ),
     },
@@ -133,13 +135,11 @@ class TableList extends Component {
     // dispatch({
     //   type: 'applyStudents/fetch',
     // });
-    this.handleFilter()
+    this.handleFilter();
     dispatch({
-      type:'tprojects/fetch',
-      payload:{
-        
-      }
-    })
+      type: 'tprojects/fetch',
+      payload: {},
+    });
   }
 
   handleFormReset = () => {
@@ -159,7 +159,7 @@ class TableList extends Component {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log(fieldsValue)
+      console.log(fieldsValue);
       const values = {
         ...fieldsValue,
       };
@@ -173,33 +173,41 @@ class TableList extends Component {
     });
   };
 
-
+  hideSetLeaderModal = () => {
+    this.setState({
+      setLeaderModalVisible: false,
+    });
+  };
+  showSetLeaderModal = () => {
+    this.setState({
+      setLeaderModalVisible: true,
+    });
+  };
   handleAdd = () => {
     const { dispatch, form } = this.props;
     form.validateFields((err, fieldsValue) => {
       if (err) return;
-      console.log(fieldsValue)
+      console.log(fieldsValue);
       const values = {
         ...fieldsValue,
       };
       this.setState({
         formValues: values,
-        modalVisible:false
+        modalVisible: false,
       });
       dispatch({
         type: 'applyStudents/add',
         payload: values,
-        filterData:values
+        filterData: values,
       });
     });
     this.setState({
-      selectedRows:[]
-    })
+      selectedRows: [],
+    });
   };
 
-
   renderSimpleForm() {
-    const { form,projects } = this.props;
+    const { form, projects } = this.props;
     const { getFieldDecorator } = form;
     return (
       <Form onSubmit={this.handleFilter} layout="inline">
@@ -219,9 +227,12 @@ class TableList extends Component {
                     width: '100%',
                   }}
                 >
-                  {projects.map((item,index)=>{
-                    return <Option key={index} value={item.id}>{item.projectName}</Option>
-
+                  {projects.map((item, index) => {
+                    return (
+                      <Option key={index} value={item.id}>
+                        {item.projectName}
+                      </Option>
+                    );
                   })}
                 </Select>,
               )}
@@ -229,8 +240,8 @@ class TableList extends Component {
           </Col>
           <Col md={8} sm={24}>
             <FormItem label="审核状态">
-              {getFieldDecorator('status',{
-                initialValue:''
+              {getFieldDecorator('status', {
+                initialValue: '',
               })(
                 <Select
                   placeholder="请选择"
@@ -267,300 +278,370 @@ class TableList extends Component {
   }
 
   renderForm() {
-    return  this.renderSimpleForm();
+    return this.renderSimpleForm();
   }
-  hideModal = ()=>{
+  hideModal = () => {
     this.setState({
-      modalVisible:false
-    })
-  }
-  showModal = ()=>{
+      modalVisible: false,
+    });
+  };
+  showModal = () => {
     this.setState({
-      modalVisible:true
-    })
-  }
-  showDetailModal = (apply)=>{
+      modalVisible: true,
+    });
+  };
+  showDetailModal = apply => {
     this.setState({
-      detailModalVisible:true,
-      apply
-    })
-  }
-  hideDetailModal = ()=>{
+      detailModalVisible: true,
+      apply,
+    });
+  };
+  hideDetailModal = () => {
     this.setState({
-      detailModalVisible:false
-    })
-  }
-  handleAgree = ()=>{
-    const {dispatch,form} = this.props
-    const {selectedRows} = this.state
-    let payload = selectedRows.map(item=>{
+      detailModalVisible: false,
+    });
+  };
+  handleAgree = () => {
+    const { dispatch, form } = this.props;
+    const { selectedRows } = this.state;
+    let payload = selectedRows.map(item => {
       return {
-        projectGroupId:item.id,
-        reason:'',
-        userId:item.code
-      }
-    })
-    form.validateFields((err,values)=>{
+        projectGroupId: item.id,
+        reason: '',
+        userId: item.code,
+      };
+    });
+    form.validateFields((err, values) => {
       dispatch({
-        type:'applyStudents/agree',
+        type: 'applyStudents/agree',
         payload,
-        filterData:values
-      })
-    })
+        filterData: values,
+      });
+    });
     this.setState({
-      selectedRows:[]
-    })
+      selectedRows: [],
+    });
+  };
+  handleReject = () => {
+    const { dispatch, form } = this.props;
+    const { selectedRows } = this.state;
+    confirm({
+      title: '确认拒绝以下成员申请?',
+      content: `${selectedRows.map(item=>item.realName).join('、')}`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk:()=> {
+        let payload = selectedRows.map(item => {
+          return {
+            projectGroupId: item.id,
+            reason: '',
+            userId: item.code,
+          };
+        });
+        form.validateFields((err, values) => {
+          dispatch({
+            type: 'applyStudents/reject',
+            payload,
+            filterData: values,
+          });
+        });
+        this.setState({
+          selectedRows: [],
+        });
+      },
+      onCancel:()=> {
+        this.setState({
+          selectedRows: [],
+        });
+      },
+    });
     
-  }
-  handleReject = ()=>{
-    const {dispatch,form} = this.props
-    const {selectedRows} = this.state
-    let payload = selectedRows.map(item=>{
-      return {
-        projectGroupId:item.id,
-        reason:'',
-        userId:item.code
-      }
-    })
-    form.validateFields((err,values)=>{
-      dispatch({
-        type:'applyStudents/reject',
-        payload,
-        filterData:values
-      })
-    })
-    this.setState({
-      selectedRows:[]
-    })
-  }
-  handleRemove = ()=>{
-    const {selectedRows} = this.state
-    const {form} = this.props
-    if(selectedRows.length>1)
-    message.warning('不能设置批量移除')
-    const {dispatch} = this.props
     
-    let payload = {
-        projectId:selectedRows[0].id,
-        userId:selectedRows[0].code
-    }
-    form.validateFields((err,values)=>{
-      dispatch({
-        type:'applyStudents/remove',
-        payload,
-        filterData:values
-      })
-    })
-    this.setState({
-      selectedRows:[]
-    })
+  };
+  handleRemove = () => {
+    const { selectedRows } = this.state;
+    const { form,dispatch } = this.props;
+    confirm({
+      title: `确定删除成员${selectedRows[0].realName}?`,
+      content: `${selectedRows[0].projectName}`,
+      okText: 'Yes',
+      okType: 'danger',
+      cancelText: 'No',
+      onOk:()=>{
+        
+        if (selectedRows.length > 1) {
+          message.warning('不能批量移除成员')
+          return;
+        };
+          let payload = {
+            projectId: selectedRows[0].id,
+            userId: selectedRows[0].code,
+          };
+          form.validateFields((err, values) => {
+            dispatch({
+              type: 'applyStudents/remove',
+              payload,
+              filterData: values,
+            });
+          });
+          this.setState({
+            selectedRows: [],
+          });
+      },
+      onCancel:()=> {
+        this.setState({
+          selectedRows: [],
+        });
+      },
+    });
     
-  }
-  handleSetLeader = ()=>{
-    const {form} = this.props
-    const {selectedRows} = this.state
-    if(selectedRows.length>1){
-      message.warning('不能设置多个项目组长')
+    
+  };
+  handleSetLeader = () => {
+    const { form } = this.props;
+    const { selectedRows,role } = this.state;
+    if (selectedRows.length > 1) {
+      message.warning('该操作不能批量进行');
+      this.setState({
+        selectedRows: [],
+        setLeaderModalVisible:false
+      });
       return;
     }
-    const {dispatch} = this.props
-    
-    let payload = {
-        projectGroupId:selectedRows[0].id,
-        reason:'',
-        userId:selectedRows[0].code,
-        memberRole:2
+    if(!role){
+      message.warning('请选择角色')
+      this.setState({
+        selectedRows: [],
+        setLeaderModalVisible:false
+      });
+      return;
     }
-    form.validateFields((err,values)=>{
+    const { dispatch } = this.props;
+
+    let payload = {
+      projectGroupId: selectedRows[0].id,
+      reason: '',
+      userId: selectedRows[0].code,
+      memberRole: role,
+    };
+    form.validateFields((err, values) => {
       dispatch({
-        type:'applyStudents/setLeader',
+        type: 'applyStudents/setLeader',
         payload,
-        filterData:values
-      })
-    })
+        filterData: values,
+      });
+    });
     this.setState({
-      selectedRows:[]
-    })
-    
-  }
+      selectedRows: [],
+      setLeaderModalVisible:false
+    });
+  };
   handleSearch = value => {
-    const {dispatch} = this.props
+    const { dispatch } = this.props;
     if (value) {
       this.fetchStudents(value);
     } else {
       dispatch({
-        type:'applyStudents/saveStudents',
-        payload:[]
-      })
+        type: 'applyStudents/saveStudents',
+        payload: [],
+      });
     }
   };
 
-  fetchStudents = (value)=> {
+  fetchStudents = value => {
     if (this.timeout) {
       clearTimeout(this.timeout);
       this.timeout = null;
     }
     this.currentValue = value;
-    const {dispatch} = this.props
-    this.timeout = setTimeout(()=>{
+    const { dispatch } = this.props;
+    this.timeout = setTimeout(() => {
       dispatch({
-        type:'applyStudents/fetchStudents',
-        payload:{
-          keyWord:value,
-          isTeacher:false
-        }
-      })
+        type: 'applyStudents/fetchStudents',
+        payload: {
+          keyWord: value,
+          isTeacher: false,
+        },
+      });
     }, 300);
-  }
-  handleSelect = (value)=>{
-    const {form} = this.props
-    console.log(value)
-   // form.setFieldValue('')
-
-  }
+  };
+  handleSelect = value => {
+    const { form } = this.props;
+    console.log(value);
+    // form.setFieldValue('')
+  };
+  onSelectRoleChange = e => {
+    this.setState({
+      role: e,
+    });
+  };
   render() {
+    const { loading, students, form, projects, searchStudents } = this.props;
+    const { getFieldDecorator } = form;
     const {
-      loading,
-      students,
-      form,
-      projects,
-      searchStudents
-    } = this.props;
-    const {getFieldDecorator} = form
-    const { selectedRows, modalVisible, updateModalVisible, stepFormValues,detailModalVisible,apply } = this.state;
-    const btnDisable = selectedRows.length===0
-    const studentsWithKey = students.map((item,index)=>({key:index,...item}))
+      selectedRows,
+      modalVisible,
+      updateModalVisible,
+      stepFormValues,
+      detailModalVisible,
+      apply,
+      setLeaderModalVisible,
+    } = this.state;
+    const btnDisable = selectedRows.length === 0;
+    const studentsWithKey = students.map((item, index) => ({ key: index, ...item }));
     const menu = (
       <Menu onClick={this.handleMenuClick} selectedKeys={[]}>
-        <Menu.Item key="remove" onClick={this.handleSetLeader}>设为组长</Menu.Item>
-        <Menu.Item key="approval" onClick={this.handleRemove} >删除成员</Menu.Item>
+        <Menu.Item key="remove" onClick={this.handleSetLeader}>
+          设为组长
+        </Menu.Item>
+        <Menu.Item key="approval" onClick={this.handleRemove}>
+          删除成员
+        </Menu.Item>
       </Menu>
     );
     const hasSelected = selectedRows.length > 0;
-    const options = searchStudents.map((s,index) => <Option key={index} value={s.code}>
-    <span>{s.realName}</span>
-    <span style={{margin:'0 30px'}}>{s.code}</span>
-    <span>{(major.find(item=>item.mId===s.major)||{}).mName}</span>
-   </Option>).slice(0,50);
+    const options = searchStudents
+      .map((s, index) => (
+        <Option key={index} value={s.code}>
+          <span>{s.realName}</span>
+          <span style={{ margin: '0 30px' }}>{s.code}</span>
+          <span>{(major.find(item => item.mId === s.major) || {}).mName}</span>
+        </Option>
+      ))
+      .slice(0, 50);
     return (
       <PageHeaderWrapper>
-        <Card 
-        bordered={false}
-        >
+        <Card bordered={false}>
           <div className={styles.tableList}>
             <div className={styles.tableListForm}>{this.renderForm()}</div>
             <div className={styles.tableListOperator}>
               <Button icon="plus" type="primary" onClick={this.showModal}>
                 增添成员
               </Button>
-             
-                <span>
-                  <Button type='primary' disabled={btnDisable} onClick={this.handleAgree}>通过</Button>
-                  <Button onClick={this.handleReject} disabled={btnDisable}>拒绝</Button>
-                  <Button  onClick={this.handleSetLeader} disabled={btnDisable}>设为组长</Button>
-                  <Button type='danger' onClick={this.handleRemove} disabled={btnDisable}>删除成员</Button>
-                  <span style={{ marginLeft: 15 }}>
+
+              <span>
+                <Button type="primary" disabled={btnDisable} onClick={this.handleAgree}>
+                  通过
+                </Button>
+                <Button onClick={this.handleReject} disabled={btnDisable}>
+                  拒绝
+                </Button>
+                <Button onClick={this.showSetLeaderModal} disabled={btnDisable}>
+                  更改成员角色
+                </Button>
+                <Button type="danger" onClick={this.handleRemove} disabled={btnDisable}>
+                  删除成员
+                </Button>
+                <span style={{ marginLeft: 15 }}>
                   {hasSelected ? `已选中 ${selectedRows.length} 项` : ''}
                 </span>
-                  {/* <Dropdown overlay={menu} disabled={btnDisable}>
+                {/* <Dropdown overlay={menu} disabled={btnDisable}>
                     <Button disabled={btnDisable}>
                       更多操作 <Icon type="down" />
                     </Button>
                   </Dropdown> */}
-                </span>
-              
+              </span>
             </div>
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
               dataSource={studentsWithKey}
-              rowKey='key'
+              rowKey="key"
               columns={this.columns}
               onSelectRow={this.handleSelectRows}
-              pagination={{pageSize:10}}
+              pagination={{ pageSize: 10 }}
               onChange={this.handleStandardTableChange}
             />
           </div>
           <Modal
-          title="添加项目成员"
+            visible={setLeaderModalVisible}
+            onOk={()=>this.handleSetLeader()}
+            onCancel={this.hideSetLeaderModal}
+            width="400px"
+          >
+            <Select
+              placeholder="请选择"
+              style={{
+                width: '90%',
+              }}
+              value={this.state.role}
+              onChange={this.onSelectRoleChange}
+            >
+              <Option value="2">项目组长</Option>
+              <Option value="3">普通成员</Option>
+            </Select>
+          </Modal>
+          <Modal
+            title="添加项目成员"
             visible={modalVisible}
             onCancel={this.hideModal}
             onOk={this.handleAdd}
             width={450}
-            
           >
             <Form
-            labelCol={{
-              span:4
-            }}
-            wrapperCol={{
-              span:20
-            }}
+              labelCol={{
+                span: 4,
+              }}
+              wrapperCol={{
+                span: 20,
+              }}
             >
-            <FormItem label="项目名称">
-              {getFieldDecorator('projectGroupId')(
-                <Select
-                  placeholder="请选择"
-                  style={{
-                    width: '100%',
-                  }}
-                >
-                  {projects.map((item,index)=>{
-                    return <Option key={index} value={item.id}>{item.projectName}</Option>
-
-                  })}
-                </Select>,
-              )}
-            </FormItem>
-            <FormItem label="学生">
-              {getFieldDecorator('userId')(
-                <Select
-                showSearch    
-                defaultActiveFirstOption={false}
-                showArrow={false}
-                filterOption={false}
-                onSearch={this.handleSearch}
-                notFoundContent={null}
-                onSelect ={this.handleSelect}
-                placeholder='姓名或学号'
-              >
-                {options}
-              </Select>
-              )}
-            </FormItem>
-            </Form>  
+              <FormItem label="项目名称">
+                {getFieldDecorator('projectGroupId')(
+                  <Select
+                    placeholder="请选择"
+                    style={{
+                      width: '100%',
+                    }}
+                  >
+                    {projects.map((item, index) => {
+                      return (
+                        <Option key={index} value={item.id}>
+                          {item.projectName}
+                        </Option>
+                      );
+                    })}
+                  </Select>,
+                )}
+              </FormItem>
+              <FormItem label="学生">
+                {getFieldDecorator('userId')(
+                  <Select
+                    showSearch
+                    defaultActiveFirstOption={false}
+                    showArrow={false}
+                    filterOption={false}
+                    onSearch={this.handleSearch}
+                    notFoundContent={null}
+                    onSelect={this.handleSelect}
+                    placeholder="姓名或学号"
+                  >
+                    {options}
+                  </Select>,
+                )}
+              </FormItem>
+            </Form>
           </Modal>
           <Modal
-          visible={detailModalVisible}
-          onCancel={this.hideDetailModal}
-          onOk={this.hideDetailModal}
-          width={700}
+            visible={detailModalVisible}
+            onCancel={this.hideDetailModal}
+            onOk={this.hideDetailModal}
+            width={700}
           >
-            <Descriptions column={2} >
-              <Descriptions.Item label='姓名'>
-                {apply.realName}
+            <Descriptions column={2}>
+              <Descriptions.Item label="姓名">{apply.realName}</Descriptions.Item>
+              <Descriptions.Item label="学号">{apply.code}</Descriptions.Item>
+              <Descriptions.Item label="申请项目">{apply.projectName}</Descriptions.Item>
+              <Descriptions.Item label="项目层次">
+                {apply.projectType === 1 ? '普通' : '重点'}
               </Descriptions.Item>
-              <Descriptions.Item label='学号'>
-                {apply.code}
+              <Descriptions.Item label="QQ">{apply.qqNum}</Descriptions.Item>
+              <Descriptions.Item label="联系电话">{apply.mobilePhone}</Descriptions.Item>
+              <Descriptions.Item label="专业">
+                {major[apply.major - 1] && major[apply.major - 1].mName}
               </Descriptions.Item>
-              <Descriptions.Item label='申请项目'>
-                {apply.projectName}
-              </Descriptions.Item>
-              <Descriptions.Item label='项目层次'>
-                {apply.projectType===1?'普通':'重点'}
-              </Descriptions.Item>
-              <Descriptions.Item label='QQ'>
-                {apply.qqNum}
-              </Descriptions.Item>
-              <Descriptions.Item label='联系电话'>
-                {apply.mobilePhone}
-              </Descriptions.Item>
-              <Descriptions.Item label='专业'>
-                {major[apply.major-1]&&major[apply.major-1].mName}
-              </Descriptions.Item>
-              <Descriptions.Item label='年级'>
-                {apply.grade+'级'}
-              </Descriptions.Item>
+              <Descriptions.Item label="年级">{apply.grade + '级'}</Descriptions.Item>
               {/* <Descriptions.Item span={2} label='学习绩点'>
                 <Descriptions bordered>
                   <Descriptions.Item label='学期一'>
@@ -583,13 +664,12 @@ class TableList extends Component {
                   </Descriptions.Item>
                 </Descriptions>
               </Descriptions.Item> */}
-              <Descriptions.Item span={2} label='个人特长'>
-                {apply.personJudge} 
+              <Descriptions.Item span={2} label="个人特长">
+                {apply.personJudge}
               </Descriptions.Item>
-              <Descriptions.Item span={2} label='已修课程及具备知识'>
-                {apply.technicalRole} 
+              <Descriptions.Item span={2} label="已修课程及具备知识">
+                {apply.technicalRole}
               </Descriptions.Item>
-              
             </Descriptions>
           </Modal>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

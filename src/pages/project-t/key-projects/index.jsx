@@ -87,8 +87,8 @@ class TableList extends Component {
       }
     },
     {
-      title: '已选学生数',
-      render:()=>('12')
+      title: '项目总人数',
+      dataIndex:'numberOfTheSelected'
     },
     {
       title: '限选',
@@ -111,18 +111,18 @@ class TableList extends Component {
         </span>;
       },
     },
-    {
-      title: '计划实验时间',
-      render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
-    },
+    // {
+    //   title: '计划实验时间',
+    //   render: project => <span>{moment(project.startTime).format('YYYY-MM-DD')+'~'+moment(project.endTime).format('YYYY-MM-DD')}</span>,
+    // },
     {
       title: '操作',
       dataIndex:'id',
       render: (id) => (
         <Fragment>
-          <a onClick={() => this.handleEdit(id)}>编辑</a>
+          {/* <a onClick={() => this.handleEdit(id)}>编辑</a>
           
-          <Divider type="vertical" />
+          <Divider type="vertical" /> */}
           <a onClick={()=>this.handleDetailClick(id)}>查看详情</a>
         </Fragment>
       ),
@@ -338,7 +338,7 @@ class TableList extends Component {
         onCancel={this.handleModalCancel}
         title={approvalType===0?'驳回理由':'审核意见'}
         >
-          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'批量驳回理由':'批量审核意见'}/>
+          <TextArea onChange={this.handleInputChange} style={{height:150}} value={text} placeholder={approvalType===0?'驳回理由':'审核意见'}/>
 
         </Modal>
         <Card bordered={false}>

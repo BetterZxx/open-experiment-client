@@ -390,7 +390,7 @@ class TableList extends Component {
                 <span>
                   {/* <Button>上传材料</Button> */}
                   {/* <Button>修改申请书</Button> */}
-                  <Button disabled={btnDisable} onClick={()=>this.handleKeyApply()}>重点项目申请</Button>
+                  <Button disabled={btnDisable} onClick={()=>this.handleKeyApply()}>填写重点项目申请书</Button>
                   <Dropdown disabled overlay={menu}>
                     <Button>
                       更多操作 <Icon type="down" />
