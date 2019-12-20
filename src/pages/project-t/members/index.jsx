@@ -667,9 +667,9 @@ class TableList extends Component {
               <Descriptions.Item span={2} label="个人特长">
                 {apply.personJudge}
               </Descriptions.Item>
-              <Descriptions.Item span={2} label="已修课程及具备知识">
+              {/* <Descriptions.Item span={2} label="已修课程及具备知识">
                 {apply.technicalRole}
-              </Descriptions.Item>
+              </Descriptions.Item> */}
             </Descriptions>
           </Modal>
           {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />

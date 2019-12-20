@@ -57,8 +57,8 @@ class TableList extends Component {
     },
     {
       title: '开放学院',
-      dataIndex: 'openCollege',
-      render:()=>'计科院'
+      dataIndex: 'subordinateCollege',
+      render:(college)=>majorCollege[college-1].cName
     },
     {
       title: '实验类型',

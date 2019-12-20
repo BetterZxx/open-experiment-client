@@ -320,7 +320,7 @@ class BasicForm extends Component {
               )}
             </FormItem>
             
-            <FormItem {...formItemLayout} label={<Label>已修课程及具备知识</Label>}>
+            {/* <FormItem {...formItemLayout} label={<Label>已修课程及具备知识</Label>}>
               {getFieldDecorator('technicalRole', {
                 rules: [
                   {
@@ -343,7 +343,7 @@ class BasicForm extends Component {
                   rows={6}
                 />,
               )}
-            </FormItem>
+            </FormItem> */}
             {/* <FormItem {...formItemLayout} label="建议审分组">
               <div>
                 {getFieldDecorator('suggestGroupType', {
