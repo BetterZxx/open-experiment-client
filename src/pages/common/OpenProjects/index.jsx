@@ -477,6 +477,9 @@ class TableList extends Component {
       loading,
       projects
     } = this.props;
+    const availableProjects = projects&&projects.filter(item=>{
+      return item.amountOfSelected<item.fitPeopleNum
+    })
     const { selectedRows, modalVisible, updateModalVisible, stepFormValues } = this.state;
     const extra = <Button onClick={()=>router.push('/timeLimit/detail')}>时间限制查询</Button>
     return (
@@ -486,7 +489,7 @@ class TableList extends Component {
             <StandardTable
               selectedRows={selectedRows}
               loading={loading}
-              dataSource={projects}
+              dataSource={availableProjects}
               rowKey="id"
               columns={this.columns}
               onSelectRow={this.handleSelectRows}

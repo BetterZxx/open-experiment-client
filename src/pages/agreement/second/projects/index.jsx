@@ -97,8 +97,7 @@ class TableList extends Component {
     },
     {
       title: '已选学生数',
-      dataIndex: 'memberStudents',
-      render:(students)=>students?students.length:0
+      dataIndex: 'numberOfTheSelected',
     },
     {
       title: '实验类型',
