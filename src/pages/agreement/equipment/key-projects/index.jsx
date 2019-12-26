@@ -83,7 +83,7 @@ class TableList extends Component {
     },
     {
       title: '已选学生数',
-      dataIndex: 'numberOfSelected'
+      dataIndex: 'numberOfTheSelected'
     },
     {
       title: '实验类型',
