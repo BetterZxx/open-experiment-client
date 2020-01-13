@@ -27,7 +27,7 @@ import StandardTable from './components/StandardTable';
 import UpdateForm from './components/UpdateForm';
 import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
-import StandTable from './components/StandardTable.jsx'
+// import StandTable from './components/StandardTable.jsx.js'
 import styles from './style.less';
 
 const FormItem = Form.Item;

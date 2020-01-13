@@ -6,7 +6,7 @@ import PageLoading from './components/PageLoading';
 import { getTimeDistance } from './utils/utils';
 import OpenProjects from '../common/OpenProjects'
 import styles from './style.less';
-import Projects from '@/pages/account/center/components/Projects';
+// import Projects from '@/pages/account/center/components/Projects';
 
 const IntroduceRow = React.lazy(() => import('./components/IntroduceRow'));
 const SalesCard = React.lazy(() => import('./components/SalesCard'));

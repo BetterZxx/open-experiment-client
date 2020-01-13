@@ -9,7 +9,7 @@ const { ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION } = process.env;
 const isAntDesignProPreview = ANT_DESIGN_PRO_ONLY_DO_NOT_USE_IN_YOUR_PRODUCTION === 'site';
 
 //开发模式代理
-const proxyURL ='http://172.23.252.212:8000'//'http://220.167.105.201:8083'//172.23.252.212 //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
+const proxyURL ='http://220.167.105.201:8000'//'http://220.167.105.201:8083'//172.23.252.212 //'http://192.168.43.153:8083' //'http://10.20.0.77:8083' 
 const proxyKeys = ['/anon','/user/getMyInfo','/project/','/funds','/announcemen','/file','/permission','/amount','/timeLimit',
 '/user/getMyInfo',
 '/user/getUserInfoByUserId',
@@ -148,7 +148,7 @@ export default {
               path: '/timeLimit/detail',
               name: '项目时间限制',
               icon: 'home',
-              component:'./agreement/second/time-check',
+              component:'./management/second/time-check',
               hideInMenu:true
             },
             {
@@ -310,19 +310,19 @@ export default {
                     {
                       name: '拟题审批',
                       path: '/auth/lab/pre-projects',
-                      component: './agreement/lab/pre-projects',
+                      component: './management/lab/pre-projects',
                       icon: 'solution'
                     },
                     {
                       name: '普通项目审批',
                       path: '/auth/lab/projects',
-                      component: './agreement/lab/projects',
+                      component: './management/lab/projects',
                       icon: 'solution'
                     },
                     {
                       name: '重点项目审批',
                       path: '/auth/lab/key-projects',
-                      component: './agreement/lab/key-projects',
+                      component: './management/lab/key-projects',
                       icon: 'solution'
                     },
                     {
@@ -353,7 +353,7 @@ export default {
                   name: '时限设置',
                   authority:[4],
                   path: '/auth/second/settings',
-                  component: './agreement/second/settings',
+                  component: './management/second/settings',
                   icon: 'setting'
                 },
                 {
@@ -364,14 +364,14 @@ export default {
                     {
                       name: '普通项目审批',
                       path: '/auth/second/projects',
-                      component: './agreement/second/projects',
+                      component: './management/second/projects',
                       icon: 'solution'
                     },
                     
                     {
                       name: '重点项目审批',
                       path: '/auth/second/key-projects',
-                      component: './agreement/second/key-projects',
+                      component: './management/second/key-projects',
                       icon: 'solution'
                     },
                     {
@@ -404,13 +404,13 @@ export default {
                     {
                       name: '普通项目审批',
                       path: '/auth/equipment/projects',
-                      component: './agreement/equipment/projects',
+                      component: './management/equipment/projects',
                       icon: 'solution'
                     },
                     {
                       name: '重点项目审批',
                       path: '/auth/equipment/key-projects',
-                      component: './agreement/equipment/key-projects',
+                      component: './management/equipment/key-projects',
                       icon: 'solution'
                     },
                     {
