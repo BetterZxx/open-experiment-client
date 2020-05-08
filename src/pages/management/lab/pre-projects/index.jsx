@@ -20,10 +20,8 @@ import {
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
-import UpdateForm from './components/UpdateForm';
 import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
 import styles from './style.less';
@@ -473,14 +471,6 @@ class TableList extends Component {
               pagination={{pageSize:13}}
             />
           </div>
-          {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
-          {stepFormValues && Object.keys(stepFormValues).length ? (
-            <UpdateForm
-              {...updateMethods}
-              updateModalVisible={updateModalVisible}
-              values={stepFormValues}
-            />
-          ) : null} */}
         </Card>
       </PageHeaderWrapper>
     );

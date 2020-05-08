@@ -21,13 +21,10 @@ import {
 import React, { Component, Fragment } from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
-import CreateForm from './components/CreateForm';
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 import StandardTable from './components/StandardTable';
-import UpdateForm from './components/UpdateForm';
 import {experimentType, openType} from '@/utils/constant'
 import {projectType} from '@/utils/constant'
-// import StandTable from './components/StandardTable.jsx.js'
 import styles from './style.less';
 
 const FormItem = Form.Item;
@@ -152,14 +149,6 @@ class TableList extends Component {
         role:0
       }
     })
-  }
-  editWarning = ()=>{
-    Modal.warning({
-      title: '提醒',
-      content: '编辑申请表会导致审核重新开始',
-      okText:'知道了',
-      onOk:()=>{this.props.history.push('/tproject/manage/edit')}
-    });
   }
   handleExportExcel = ()=>{
     const {dispatch} = this.props
@@ -471,23 +460,8 @@ class TableList extends Component {
               onChange={this.handleStandardTableChange}
               pagination={{pageSize:12}}
             />
-            {/* <StandTable
-              //selectedRows={selectedRows}
-              onSelectRow={this.handleSelectRows}
-              dataSource={projects}
-              columns={this.columns}
-              // rowKey="id"
-              pagination={{pageSize:12}}
-            /> */}
           </div>
-          {/* <CreateForm {...parentMethods} modalVisible={modalVisible} />
-          {stepFormValues && Object.keys(stepFormValues).length ? (
-            <UpdateForm
-              {...updateMethods}
-              updateModalVisible={updateModalVisible}
-              values={stepFormValues}
-            />
-          ) : null} */}
+     
         </Card>
       </PageHeaderWrapper>
     );
